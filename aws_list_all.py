@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# pylint: disable=import-error,invalid-name
+# pylint: disable=import-error
 """Module providing listing functions for all AWS services using boto3"""
 from __future__ import print_function
 
