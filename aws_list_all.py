@@ -56,7 +56,7 @@ AWS_RESOURCE_QUERIES = {
             'DescribeReservedInstancesOfferings', 'DescribeIdFormat',
             'DescribeVpcClassicLinkDnsSupport'],
     'elasticache': ['DescribeCacheParameterGroups', 'DescribeCacheEngineVersions'],
-    'elasticbeanstalk': ['ListAvailableSolutionStacks'],
+    'elasticbeanstalk': ['ListAvailableSolutionStacks', 'PlatformSummaryList'],
     'elastictranscoder': ['ListPresets'],
     'elb': ['DescribeLoadBalancerPolicyTypes', 'DescribeLoadBalancerPolicies'],
     'elbv2': ['DescribeSSLPolicies'],
@@ -87,8 +87,10 @@ NOT_RESOURCE_DESCRIPTIONS = {
             'DescribeVpcClassicLinkDnsSupport'],
     'ecr': ['GetAuthorizationToken'],
     'elasticache': ['DescribeReservedCacheNodesOfferings'],
+    'elasticbeanstalk': ['DescribeEvents'],
     'gamelift': ['DescribeEC2InstanceLimits'],
-    'iam': ['GetAccountPasswordPolicy', 'GetAccountSummary', 'GetUser'],
+    'iam': ['GetAccountPasswordPolicy', 'GetAccountSummary', 'GetUser',
+            'GetAccountAuthorizationDetails'],
     'inspector': ['DescribeCrossAccountAccessRole'],
     'iot': ['GetRegistrationCode', 'DescribeEndpoint'],
     'kinesis': ['DescribeLimits'],
@@ -142,6 +144,9 @@ PARAMETERS = {
     'ec2': {
         'DescribeSnapshots': {'OwnerIds': ['self']},
         'DescribeImages': {'Owners': ['self']},
+    },
+    'elasticbeanstalk': {
+        'ListPlatformVersions': {'Filters': [{'Operator': '=', 'Type': 'PlatformOwner', 'Values': ['self']}]}
     },
     'iam': {
         'ListPolicies': {'Scope': 'Local'},
