@@ -6,11 +6,17 @@ from __future__ import print_function
 import pickle
 import pprint
 import re
+import os
+import sys
 from random import shuffle
 from multiprocessing.pool import ThreadPool
+from collections import defaultdict
 
 import boto3
 
+RESULT_NOTHING = '---'
+RESULT_SOMETHING = '+++'
+RESULT_ERROR = '!!!'
 
 SERVICE_BLACKLIST = [
     'cur', # costs and usage reports
@@ -116,7 +122,8 @@ PARAMETERS_REQUIRED = {
     'elasticache': ['ListAllowedNodeTypeModifications', 'DescribeCacheSecurityGroups'],
     'elasticbeanstalk': ['DescribeEnvironmentManagedActionHistory', 'DescribeEnvironmentResources',
                          'DescribeEnvironmentManagedActions', 'DescribeEnvironmentHealth',
-                         'DescribeInstancesHealth', 'DescribeConfigurationOptions'],
+                         'DescribeInstancesHealth', 'DescribeConfigurationOptions',
+                         'DescribePlatformVersion'],
     'elbv2': ['DescribeRules', 'DescribeListeners'],
     'gamelift': ['DescribeGameSessionDetails', 'DescribeGameSessions', 'DescribePlayerSessions'],
     'health': ['DescribeEventTypes', 'DescribeEntityAggregates', 'DescribeEvents'],
@@ -253,8 +260,8 @@ class Listing(object):
                 "ListCloudFrontOriginAccessIdentities",
                 "ListDistributions",
                 "ListStreamingDistributions"]:
-            key = response.keys()[0][:-len("List")]
-            response = response.values()[0]
+            key = list(response.keys())[0][:-len("List")]
+            response = list(response.values())[0]
             response[key] = response.get("Items", [])
 
         # SNS ListSubscriptions always sends a next token...
@@ -286,13 +293,15 @@ class Listing(object):
         if self.service == "kms" and self.operation == "ListAliases":
             response["Aliases"] = [alias for alias in response.get("Aliases", [])
                                    if not alias.get("AliasName").lower().startswith("alias/aws")]
+
         # Filter PUBLIC images from appstream
         if self.service == "appstream" and self.operation == "DescribeImages":
             response["Images"] = [image for image in response.get("Images", [])
                                   if not image.get("Visibility", "PRIVATE") == "PUBLIC"]
+
         # This API returns a dict instead of a list
         if self.service == 'cloudsearch' and self.operation == 'ListDomainNames':
-            response["DomainNames"] = response["DomainNames"].items()
+            response["DomainNames"] = list(response["DomainNames"].items())
 
         # Remove AWS supplied policies
         if self.service == "iam" and self.operation == "ListPolicies":
@@ -337,22 +346,37 @@ def acquire_listing(what):
         if listing.resource_total_count > 0:
             with open("{}_{}_{}.pickle".format(service, operation, region), "wb") as picklefile:
                 pickle.dump(listing, picklefile)
-            return ("-->", service, region, operation, ', '.join(listing.resource_types))
+            return (RESULT_SOMETHING, service, region, operation, ', '.join(listing.resource_types))
         else:
-            return ("---", service, region, operation, ', '.join(listing.resource_types))
+            return (RESULT_NOTHING, service, region, operation, ', '.join(listing.resource_types))
     except Exception as exc:  # pylint:disable=broad-except
-        return ("!!!", service, region, operation, repr(exc))
+        result_type = RESULT_ERROR
+        if service == 'storagegateway' and 'InvalidGatewayRequestException' in str(exc):
+            # The storagegateway advertised but not available in some regions
+            result_type = RESULT_NOTHING
+        if service == 'config' and operation == 'DescribeConfigRules' \
+                and 'AccessDeniedException' in str(exc):
+            # The config service is advertised but not available in some regions
+            result_type = RESULT_NOTHING
+        if "is not supported in this region" in str(exc):
+            result_type = RESULT_NOTHING
+        if "is not available in this region" in str(exc):
+            result_type = RESULT_NOTHING
+        if "This request has been administratively disabled" in str(exc):
+            result_type = RESULT_NOTHING
+        return (result_type, service, region, operation, repr(exc))
 
 
-def do_list_files(filenames):
+def do_list_files(filenames, verbose=False):
     """Print out a rudimentary summary of the Listing objects contained in the given files"""
     for listing_filename in filenames:
         listing = pickle.load(open(listing_filename, "rb"))
         resources = listing.resources
         for resource_type, value in resources.items():
             print(listing.service, listing.region, listing.operation, resource_type, len(value))
-            for item in value:
-                print("    - ", pprint.pformat(item).replace("\n", "\n      "))
+            if verbose:
+                for item in value:
+                    print("    - ", pprint.pformat(item).replace("\n", "\n      "))
 
 
 def do_query(services, selected_regions=(), selected_operations=()):
@@ -364,15 +388,24 @@ def do_query(services, selected_regions=(), selected_operations=()):
             for operation in selected_operations or get_listing_operations(service):
                 to_run.append([service, region, operation])
     shuffle(to_run)  # Distribute requests across endpoints
+    results_by_type = defaultdict(list)
     for result in ThreadPool(32).imap_unordered(acquire_listing, to_run):
-        print(*result)
+        results_by_type[result[0]].append(result)
+        print(result[0][-1], end='')
+        sys.stdout.flush()
+    print()
+    for result_type in (RESULT_NOTHING, RESULT_SOMETHING, RESULT_ERROR):
+        for result in sorted(results_by_type[result_type]):
+            print(*result)
 
 
 def main():
     """Parse CLI arguments to either list services, operations, queries or existing pickles"""
     import argparse
     parser = argparse.ArgumentParser(
-        description="List AWS resources on one account across regions and services"
+        description=("List AWS resources on one account across regions and services. "
+                     "Saves result into pickle files, which can then be passed to this tool again"
+                     "to list the contents.")
     )
     parser.add_argument('--list-services', action='store_true', help='List the services')
     parser.add_argument('--list-operations', action='store_true', help='List the operations')
@@ -386,12 +419,14 @@ def main():
     parser.add_argument('--operation', action='append',
                         help='Restrict the given action to the given operation '
                         '(can be specified multiple times)')
+    parser.add_argument('--directory', default='.', help='Directory to save result pickle files to')
     parser.add_argument('listingfile', nargs='*', help='listing file to load and print')
+    parser.add_argument('--verbose', action='store_true', help='print given listing files with detailed info')
     args = parser.parse_args()
 
     services = args.service or get_services()
     if args.listingfile:
-        do_list_files(args.listingfile)
+        do_list_files(args.listingfile, verbose=args.verbose)
     elif args.list_services:
         for service in services:
             print(service)
@@ -400,6 +435,12 @@ def main():
             for operation in get_listing_operations(service):
                 print(service, operation)
     elif args.query:
+        if args.directory:
+            try:
+                os.makedirs(args.directory)
+            except OSError:
+                pass
+            os.chdir(args.directory)
         do_query(services, args.region, args.operation)
     else:
         parser.print_help()
