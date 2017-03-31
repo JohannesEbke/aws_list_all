@@ -156,6 +156,10 @@ PARAMETERS = {
     },
 }
 
+ssf = list(boto3.client("cloudformation").meta.service_model.shape_for("ListStacksInput").members["StackStatusFilter"].member.enum)
+ssf.remove("DELETE_COMPLETE")
+PARAMETERS.setdefault("cloudformation", {})["ListStacks"] = {"StackStatusFilter": ssf}
+
 VERBS_LISTINGS = ['Describe', 'Get', 'List']
 
 def get_services():
