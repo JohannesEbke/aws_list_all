@@ -168,6 +168,26 @@ ssf.remove("DELETE_COMPLETE")
 PARAMETERS.setdefault("cloudformation", {})["ListStacks"] = {"StackStatusFilter": ssf}
 
 VERBS_LISTINGS = ['Describe', 'Get', 'List']
+ORIGINAL_VERBS_DELETIONS = ['Delete', 'Remove', 'Stop', 'Disable', 'Cancel', 'Deregister', 'Disassociate', 'Terminate', 'Detach', 'Revoke', 'Unsubscribe', 'Reject', 'Abort', 'Unassign', 'Release', 'Deprecate', 'Deactivate', 'Unpeer', 'Unmonitor', 'Unlink', 'Shutdown', 'Retire', 'Purge', 'Forget', 'Expire', 'Exit', 'Close']
+VERBS_DELETIONS = ['Delete', 'Remove', 'Disable', 'Cancel', 'Deregister', 'Terminate', 'Revoke', 'Unsubscribe', 'Reject', 'Abort', 'Unassign', 'Release', 'Deprecate', 'Deactivate', 'Unpeer', 'Unlink', 'Shutdown', 'Retire', 'Purge', 'Forget', 'Expire', 'Exit', 'Close']
+
+DELETION_MAPPINGS = {
+    'sns': {
+        'ListSubscriptions': 'Unsubscribe'
+    }
+}
+
+def ask_user_for_delete_confirmation(service, region, operation, item):
+    print("PLEASE CONFIRM DELETION OF:")
+    pprint.pprint(item)
+    print("OF", service, "IN", region, "USING", operation)
+    print("Type yes in uppercase to confirm")
+    result = raw_input("$ ") == "YES"
+    if result:
+        print("---> CONFIRMED")
+    else:
+        print("<<<< DECLINED")
+    return result
 
 def get_services():
     """Return a list of all service names where listable resources can be present"""
@@ -216,6 +236,68 @@ def get_listing_operations(service):
             continue
         operations.append(operation)
     return operations
+
+def get_deletion_operations(service, list_operation, resource_type, items=[], region=None):
+    """Return a list of API calls which (probably) delete resources created by the user
+    in the given service (in contrast to AWS-managed or default resources)"""
+    list_object = list_operation[1:].lstrip("abcdefghijklmnopqrstuvwxyz")
+    list_objects = [list_object]
+    if list_object.endswith("ies"):
+        list_objects.append(list_object[:-len("ies")] + "y")
+    elif list_object.endswith("s"):
+        list_objects.append(list_object[:-1])
+    else:
+        list_objects.append(list_object + "s")
+    client = get_client(service)
+    deletion_operation = DELETION_MAPPINGS.get(service, {}).get(list_operation)
+    operations = []
+    for operation in client.meta.service_model.operation_names:
+        if operation != deletion_operation and not any(operation.startswith(prefix) for prefix in VERBS_DELETIONS):
+            continue
+        deletion_object = operation[1:].lstrip("abcdefghijklmnopqrstuvwxyz")
+
+        if deletion_object in list_objects or deletion_operation == operation:
+            op_model = client.meta.service_model.operation_model(operation)
+            assert op_model.input_shape
+            calls = []
+            for item in items:
+                params = {}
+                required_members = op_model.input_shape.required_members
+                if service == "ec2" and list_operation == "DescribeSecurityGroups":
+                    required_members = ["GroupId"]
+                for member in required_members:
+                    if isinstance(item, str):
+                        params[member] = item
+                        continue
+                    params[member] = item.get(member, None)
+                    if not params[member]:
+                        if member.lower().endswith("id") and "id" in item:
+                            params[member] = item["id"]
+                        elif member.endswith("s") and member[:-1] in item:
+                            params[member] = [item[member[:-1]]]
+                        elif member.endswith("Arn") and "Arn" in item:
+                            params[member] = item["Arn"]
+                        else:
+                            print("not found", member, "in", item)
+                if ask_user_for_delete_confirmation(service, region, operation, item):
+                    calls.append(params)
+                    try:
+                        response = run_raw_deletion_operation(service, region, operation, params)
+                        if response["ResponseMetadata"]["HTTPStatusCode"] in (200, 204):
+                            print("DELETION OK")
+                        else:
+                            print("DELETION FAILED:", response)
+                    except ClientError as exc:
+                        print("DELETION FAILED:", exc)
+
+            operations.append((operation, calls))
+    return operations
+
+def run_raw_deletion_operation(service, region, operation, parameters):
+    """Execute a given operation and return its raw result"""
+    client = get_client(service, region)
+    api_to_method_mapping = dict((v, k) for k, v in client.meta.method_to_api_mapping.items())
+    return getattr(client, api_to_method_mapping[operation])(**parameters)
 
 def run_raw_listing_operation(service, region, operation):
     """Execute a given operation and return its raw result"""
@@ -412,6 +494,7 @@ def do_list_files(filenames, verbose=False):
         resources = listing.resources
         for resource_type, value in resources.items():
             print(listing.service, listing.region, listing.operation, resource_type, len(value))
+            get_deletion_operations(listing.service, listing.operation, resource_type, value, listing.region)
             if verbose:
                 for item in value:
                     print("    - ", pprint.pformat(item).replace("\n", "\n      "))
