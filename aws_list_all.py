@@ -13,6 +13,12 @@ from multiprocessing.pool import ThreadPool
 from collections import defaultdict
 
 import boto3
+from botocore.exceptions import ClientError
+
+try:
+    raw_input
+except NameError:
+    raw_input = input
 
 RESULT_NOTHING = '---'
 RESULT_SOMETHING = '+++'
@@ -76,6 +82,7 @@ NOT_RESOURCE_DESCRIPTIONS = {
     'autoscaling': ['DescribeAccountLimits'],
     'cloudformation': ['DescribeAccountLimits'],
     'cloudwatch': ['DescribeAlarmHistory'],
+    'codebuild': ['ListBuilds'],
     'config': ['GetComplianceSummaryByResourceType', 'GetComplianceSummaryByConfigRule',
                'DescribeComplianceByConfigRule', 'DescribeComplianceByResource',
                'DescribeConfigRuleEvaluationStatus'],
@@ -217,7 +224,6 @@ def run_raw_listing_operation(service, region, operation):
     parameters = PARAMETERS.get(service, {}).get(operation, {})
     return getattr(client, api_to_method_mapping[operation])(**parameters)
 
-
 class Listing(object):
     """Represents a listing operation on an AWS service and its result"""
     def __init__(self, service, region, operation, response):
@@ -335,6 +341,29 @@ class Listing(object):
         if self.service == "rds" and self.operation == "DescribeDBSecurityGroups":
             response["DBSecurityGroups"] = [group for group in response["DBSecurityGroups"]
                                             if group['DBSecurityGroupName'] != 'default']
+
+        # Filter default VPCs
+        if self.service == "ec2" and self.operation == "DescribeVpcs":
+            response["Vpcs"] = [vpc for vpc in response["Vpcs"] if not vpc["IsDefault"]]
+
+        # Filter default Subnets
+        if self.service == "ec2" and self.operation == "DescribeSubnets":
+            response["Subnets"] = [net for net in response["Subnets"] if not net["DefaultForAz"]]
+
+        # Filter default SGs
+        if self.service == "ec2" and self.operation == "DescribeSecurityGroups":
+            response["SecurityGroups"] = [sg for sg in response["SecurityGroups"]
+                                          if sg["GroupName"] != "default"]
+
+        # Filter main route tables
+        if self.service == "ec2" and self.operation == "DescribeRouteTables":
+            response["RouteTables"] = [rt for rt in response["RouteTables"]
+                                          if not any(x["Main"] for x in rt["Associations"])]
+
+        # Filter default Network ACLs
+        if self.service == "ec2" and self.operation == "DescribeNetworkAcls":
+            response["NetworkAcls"] = [nacl for nacl in response["NetworkAcls"] if not nacl["IsDefault"]]
+
 
         for key, value in response.items():
             if not isinstance(value, list):
