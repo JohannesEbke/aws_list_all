@@ -37,10 +37,10 @@ start with "``-->``" if at least one resource has been found.
 Currently, some default resources are still considered "user-created", this may
 change in the future.
 
-Details about found resources are saved in pickle files named after the service,
+Details about found resources are saved in json files named after the service,
 region, and operation used to find them. They can be dumped with::
 
-  python -m aws_list_all ec2_DescribeSecurityGroups_eu-west-1.pickle
+  python -m aws_list_all ec2_DescribeSecurityGroups_eu-west-1.json
 
 Enough of this, how do I really list everything?
 ------------------------------------------------

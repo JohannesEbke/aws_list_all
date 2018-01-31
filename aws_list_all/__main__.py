@@ -3,7 +3,7 @@
 """Module providing listing functions for all AWS services using boto3"""
 from __future__ import print_function
 
-import pickle
+import json
 import pprint
 import re
 import os
@@ -11,6 +11,7 @@ import sys
 from random import shuffle
 from multiprocessing.pool import ThreadPool
 from collections import defaultdict
+from datetime import datetime
 
 import boto3
 
@@ -269,6 +270,23 @@ class Listing(object):
         self.operation = operation
         self.response = response
 
+    def to_json(self):
+        return {
+            'service': self.service,
+            'region': self.region,
+            'operation': self.operation,
+            'response': self.response,
+        }
+
+    @classmethod
+    def from_json(cls, data):
+        return cls(
+            service=data.get('service'),
+            region=data.get('region'),
+            operation=data.get('operation'),
+            response=data.get('response')
+        )
+
     @property
     def resource_types(self):
         """The list of resource types (Keys with list content) in the response"""
@@ -417,14 +435,14 @@ class Listing(object):
 
 
 def acquire_listing(what):
-    """Given a service, region and operation execute the operation, pickle and save the result and
+    """Given a service, region and operation execute the operation, serialize and save the result and
     return a tuple of strings describing the result."""
     service, region, operation = what
     try:
         listing = Listing.acquire(service, region, operation)
         if listing.resource_total_count > 0:
-            with open("{}_{}_{}.pickle".format(service, operation, region), "wb") as picklefile:
-                pickle.dump(listing, picklefile)
+            with open("{}_{}_{}.json".format(service, operation, region), "w") as jsonfile:
+                json.dump(listing.to_json(), jsonfile, default=datetime.isoformat)
             return (RESULT_SOMETHING, service, region, operation, ', '.join(listing.resource_types))
         else:
             return (RESULT_NOTHING, service, region, operation, ', '.join(listing.resource_types))
@@ -449,7 +467,7 @@ def acquire_listing(what):
 def do_list_files(filenames, verbose=False):
     """Print out a rudimentary summary of the Listing objects contained in the given files"""
     for listing_filename in filenames:
-        listing = pickle.load(open(listing_filename, "rb"))
+        listing = Listing.from_json(json.load(open(listing_filename, "rb")))
         resources = listing.resources
         for resource_type, value in resources.items():
             print(listing.service, listing.region, listing.operation, resource_type, len(value))
@@ -479,13 +497,13 @@ def do_query(services, selected_regions=(), selected_operations=()):
 
 
 def main():
-    """Parse CLI arguments to either list services, operations, queries or existing pickles"""
+    """Parse CLI arguments to either list services, operations, queries or existing json files"""
     import argparse
     parser = argparse.ArgumentParser(
         prog="aws_list_all",
         description=(
             "List AWS resources on one account across regions and services. "
-            "Saves result into pickle files, which can then be passed to this tool again "
+            "Saves result into json files, which can then be passed to this tool again "
             "to list the contents."
         )
     )
