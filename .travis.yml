@@ -3,6 +3,9 @@ python:
   - "2.7"
   - "3.6"
 install:
+  - pip install flake8 yapf
   - python setup.py install
 script:
   - aws_list_all --help
+  - flake8
+  - yapf -d -r aws_list_all/

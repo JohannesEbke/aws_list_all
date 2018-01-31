@@ -13,7 +13,6 @@ from multiprocessing.pool import ThreadPool
 from collections import defaultdict
 
 import boto3
-from botocore.exceptions import ClientError
 
 try:
     raw_input
@@ -201,7 +200,7 @@ VERBS_LISTINGS = ['Describe', 'Get', 'List']
 
 def get_services():
     """Return a list of all service names where listable resources can be present"""
-    return [service for service in boto3.Session().get_available_services() if not service in SERVICE_BLACKLIST]
+    return [service for service in boto3.Session().get_available_services() if service not in SERVICE_BLACKLIST]
 
 
 def get_regions_for_service(service):
