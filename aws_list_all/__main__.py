@@ -25,30 +25,33 @@ RESULT_SOMETHING = '+++'
 RESULT_ERROR = '!!!'
 
 SERVICE_BLACKLIST = [
-    'cur', # costs and usage reports
-    'discovery', # requires manual whitelisting
-    'support', # support has no payable resources
+    'cur',  # costs and usage reports
+    'discovery',  # requires manual whitelisting
+    'support',  # support has no payable resources
 ]
 
 DEPRECATED_OR_DISALLOWED = {
-    'directconnect': ['DescribeInterconnects'], # needs opt-in
-    'ec2': ['DescribeScheduledInstances', 'DescribeReservedInstancesListings'], # needs opt-in
-    'emr': ['DescribeJobFlows'], # deprecated
-    'iam': ['GetCredentialReport'], # credential report needs to be created
+    'directconnect': ['DescribeInterconnects'],  # needs opt-in
+    'ec2': ['DescribeScheduledInstances', 'DescribeReservedInstancesListings'],  # needs opt-in
+    'emr': ['DescribeJobFlows'],  # deprecated
+    'iam': ['GetCredentialReport'],  # credential report needs to be created
 }
 
 DISALLOWED_FOR_IAM_USERS = {
-    'iam': ["ListAccessKeys", "ListMFADevices", "ListSSHPublicKeys",
-            "ListServiceSpecificCredentials", "ListSigningCertificates"],
+    'iam': [
+        "ListAccessKeys", "ListMFADevices", "ListSSHPublicKeys", "ListServiceSpecificCredentials",
+        "ListSigningCertificates"
+    ],
     'importexport': ["ListJobs"],
 }
 # DEPRECATED_OR_DISALLOWED.update(DISALLOWED_FOR_IAM_USERS)
 
 AWS_RESOURCE_QUERIES = {
     'apigateway': ['GetSdkTypes'],
-    'autoscaling': ['DescribeAdjustmentTypes', 'DescribeTerminationPolicyTypes',
-                    'DescribeAutoScalingNotificationTypes', 'DescribeScalingProcessTypes',
-                    'DescribeMetricCollectionTypes', 'DescribeLifecycleHookTypes'],
+    'autoscaling': [
+        'DescribeAdjustmentTypes', 'DescribeTerminationPolicyTypes', 'DescribeAutoScalingNotificationTypes',
+        'DescribeScalingProcessTypes', 'DescribeMetricCollectionTypes', 'DescribeLifecycleHookTypes'
+    ],
     'cloudhsm': ['ListAvailableZones'],
     'cloudtrail': ['ListPublicKeys'],
     'codebuild': ['ListCuratedEnvironmentImages'],
@@ -57,10 +60,11 @@ AWS_RESOURCE_QUERIES = {
     'devicefarm': ['ListDevices', 'ListOfferings', 'ListOfferingTransactions'],
     'directconnect': ['DescribeLocations'],
     'dms': ['DescribeEndpointTypes', 'DescribeOrderableReplicationInstances'],
-    'ec2': ['DescribePrefixLists', 'DescribeAvailabilityZones', 'DescribeVpcEndpointServices',
-            'DescribeSpotPriceHistory', 'DescribeHostReservationOfferings', 'DescribeRegions',
-            'DescribeReservedInstancesOfferings', 'DescribeIdFormat',
-            'DescribeVpcClassicLinkDnsSupport'],
+    'ec2': [
+        'DescribePrefixLists', 'DescribeAvailabilityZones', 'DescribeVpcEndpointServices', 'DescribeSpotPriceHistory',
+        'DescribeHostReservationOfferings', 'DescribeRegions', 'DescribeReservedInstancesOfferings', 'DescribeIdFormat',
+        'DescribeVpcClassicLinkDnsSupport'
+    ],
     'elasticache': ['DescribeCacheParameterGroups', 'DescribeCacheEngineVersions'],
     'elasticbeanstalk': ['ListAvailableSolutionStacks', 'PlatformSummaryList'],
     'elastictranscoder': ['ListPresets'],
@@ -70,10 +74,11 @@ AWS_RESOURCE_QUERIES = {
     'lex-models': ['GetBuiltinIntents'],
     'lightsail': ['GetBlueprints', 'GetBundles', 'GetRegions'],
     'polly': ['DescribeVoices'],
-    'rds': ['DescribeDBEngineVersions', 'DescribeSourceRegions', 'DescribeCertificates',
-            'DescribeEventCategories'],
-    'redshift': ['DescribeClusterVersions', 'DescribeReservedNodeOfferings',
-                 'DescribeOrderableClusterOptions', 'DescribeEventCategories'],
+    'rds': ['DescribeDBEngineVersions', 'DescribeSourceRegions', 'DescribeCertificates', 'DescribeEventCategories'],
+    'redshift': [
+        'DescribeClusterVersions', 'DescribeReservedNodeOfferings', 'DescribeOrderableClusterOptions',
+        'DescribeEventCategories'
+    ],
     'route53': ['GetCheckerIpRanges', 'ListGeoLocations'],
     'ssm': ['DescribeAvailablePatches', 'GetInventorySchema'],
 }
@@ -84,15 +89,17 @@ NOT_RESOURCE_DESCRIPTIONS = {
     'cloudformation': ['DescribeAccountLimits'],
     'cloudwatch': ['DescribeAlarmHistory'],
     'codebuild': ['ListBuilds'],
-    'config': ['GetComplianceSummaryByResourceType', 'GetComplianceSummaryByConfigRule',
-               'DescribeComplianceByConfigRule', 'DescribeComplianceByResource',
-               'DescribeConfigRuleEvaluationStatus'],
+    'config': [
+        'GetComplianceSummaryByResourceType', 'GetComplianceSummaryByConfigRule', 'DescribeComplianceByConfigRule',
+        'DescribeComplianceByResource', 'DescribeConfigRuleEvaluationStatus'
+    ],
     'devicefarm': ['GetAccountSettings', 'GetOfferingStatus'],
     'dms': ['DescribeAccountAttributes'],
     'ds': ['GetDirectoryLimits'],
     'dynamodb': ['DescribeLimits'],
-    'ec2': ['DescribeAccountAttributes', 'DescribeDhcpOptions', 'DescribeVpcClassicLink',
-            'DescribeVpcClassicLinkDnsSupport'],
+    'ec2': [
+        'DescribeAccountAttributes', 'DescribeDhcpOptions', 'DescribeVpcClassicLink', 'DescribeVpcClassicLinkDnsSupport'
+    ],
     'ecr': ['GetAuthorizationToken'],
     'elasticache': ['DescribeReservedCacheNodesOfferings'],
     'elasticbeanstalk': ['DescribeEvents'],
@@ -100,18 +107,15 @@ NOT_RESOURCE_DESCRIPTIONS = {
     'elbv2': ['DescribeAccountLimits'],
     'es': ['ListElasticsearchVersions'],
     'gamelift': ['DescribeEC2InstanceLimits'],
-    'iam': ['GetAccountPasswordPolicy', 'GetAccountSummary', 'GetUser',
-            'GetAccountAuthorizationDetails'],
+    'iam': ['GetAccountPasswordPolicy', 'GetAccountSummary', 'GetUser', 'GetAccountAuthorizationDetails'],
     'inspector': ['DescribeCrossAccountAccessRole'],
     'iot': ['GetRegistrationCode', 'DescribeEndpoint'],
     'kinesis': ['DescribeLimits'],
     'lambda': ['GetAccountSettings'],
     'opsworks': ['DescribeMyUserProfile', 'DescribeUserProfiles'],
     'opsworkscm': ['DescribeAccountAttributes'],
-    'rds': ['DescribeAccountAttributes', 'DescribeDBEngineVersions',
-            'DescribeReservedDBInstancesOfferings'],
-    'route53': ['GetTrafficPolicyInstanceCount', 'GetHostedZoneCount', 'GetHealthCheckCount',
-                'GetGeoLocation'],
+    'rds': ['DescribeAccountAttributes', 'DescribeDBEngineVersions', 'DescribeReservedDBInstancesOfferings'],
+    'route53': ['GetTrafficPolicyInstanceCount', 'GetHostedZoneCount', 'GetHealthCheckCount', 'GetGeoLocation'],
     'ses': ['GetSendQuota'],
     'sms': ['GetServers'],
     'snowball': ['GetSnowballUsage'],
@@ -123,8 +127,7 @@ NOT_RESOURCE_DESCRIPTIONS = {
 }
 
 PARAMETERS_REQUIRED = {
-    'cloudformation': ['GetTemplateSummary', 'DescribeStackResources', 'DescribeStackEvents',
-                       'GetTemplate'],
+    'cloudformation': ['GetTemplateSummary', 'DescribeStackResources', 'DescribeStackEvents', 'GetTemplate'],
     'cloudhsm': ['DescribeHsm', 'DescribeLunaClient'],
     'cloudtrail': ['GetEventSelectors'],
     'codecommit': ['GetBranch'],
@@ -133,18 +136,20 @@ PARAMETERS_REQUIRED = {
     'ecs': ['ListContainerInstances', 'ListServices', 'ListTasks'],
     'efs': ['DescribeMountTargets'],
     'elasticache': ['ListAllowedNodeTypeModifications', 'DescribeCacheSecurityGroups'],
-    'elasticbeanstalk': ['DescribeEnvironmentManagedActionHistory', 'DescribeEnvironmentResources',
-                         'DescribeEnvironmentManagedActions', 'DescribeEnvironmentHealth',
-                         'DescribeInstancesHealth', 'DescribeConfigurationOptions',
-                         'DescribePlatformVersion'],
+    'elasticbeanstalk': [
+        'DescribeEnvironmentManagedActionHistory', 'DescribeEnvironmentResources', 'DescribeEnvironmentManagedActions',
+        'DescribeEnvironmentHealth', 'DescribeInstancesHealth', 'DescribeConfigurationOptions',
+        'DescribePlatformVersion'
+    ],
     'elbv2': ['DescribeRules', 'DescribeListeners'],
     'gamelift': ['DescribeGameSessionDetails', 'DescribeGameSessions', 'DescribePlayerSessions'],
     'health': ['DescribeEventTypes', 'DescribeEntityAggregates', 'DescribeEvents'],
     'iot': ['GetLoggingOptions'],
-    'opsworks': ['DescribeAgentVersions', 'DescribeApps', 'DescribeCommands', 'DescribeDeployments',
-                 'DescribeEcsClusters', 'DescribeElasticIps', 'DescribeElasticLoadBalancers',
-                 'DescribeInstances', 'DescribeLayers', 'DescribePermissions', 'DescribeRaidArrays',
-                 'DescribeVolumes'],
+    'opsworks': [
+        'DescribeAgentVersions', 'DescribeApps', 'DescribeCommands', 'DescribeDeployments', 'DescribeEcsClusters',
+        'DescribeElasticIps', 'DescribeElasticLoadBalancers', 'DescribeInstances', 'DescribeLayers',
+        'DescribePermissions', 'DescribeRaidArrays', 'DescribeVolumes'
+    ],
     'redshift': ['DescribeTableRestoreStatus', 'DescribeClusterSecurityGroups'],
     'route53domains': ['GetContactReachabilityStatus'],
     'shield': ['DescribeSubscription', 'ListProtections'],
@@ -153,38 +158,62 @@ PARAMETERS_REQUIRED = {
 
 PARAMETERS = {
     'ec2': {
-        'DescribeSnapshots': {'OwnerIds': ['self']},
-        'DescribeImages': {'Owners': ['self']},
+        'DescribeSnapshots': {
+            'OwnerIds': ['self']
+        },
+        'DescribeImages': {
+            'Owners': ['self']
+        },
     },
     'elasticbeanstalk': {
-        'ListPlatformVersions': {'Filters': [{'Operator': '=', 'Type': 'PlatformOwner', 'Values': ['self']}]}
+        'ListPlatformVersions': {
+            'Filters': [{
+                'Operator': '=',
+                'Type': 'PlatformOwner',
+                'Values': ['self']
+            }]
+        }
     },
     'iam': {
-        'ListPolicies': {'Scope': 'Local'},
+        'ListPolicies': {
+            'Scope': 'Local'
+        },
     },
     'ssm': {
-        'ListDocuments': {'DocumentFilterList': [{'key': 'Owner', 'value': 'self'}]},
+        'ListDocuments': {
+            'DocumentFilterList': [{
+                'key': 'Owner',
+                'value': 'self'
+            }]
+        },
     },
 }
 
-ssf = list(boto3.client("cloudformation").meta.service_model.shape_for("ListStacksInput").members["StackStatusFilter"].member.enum)
+ssf = list(
+    boto3.client("cloudformation").meta.service_model.shape_for("ListStacksInput").members["StackStatusFilter"]
+    .member.enum
+)
 ssf.remove("DELETE_COMPLETE")
 PARAMETERS.setdefault("cloudformation", {})["ListStacks"] = {"StackStatusFilter": ssf}
 
 VERBS_LISTINGS = ['Describe', 'Get', 'List']
 
+
 def get_services():
     """Return a list of all service names where listable resources can be present"""
-    return [service for service in boto3.Session().get_available_services()
-            if not service in SERVICE_BLACKLIST]
+    return [service for service in boto3.Session().get_available_services() if not service in SERVICE_BLACKLIST]
+
 
 def get_regions_for_service(service):
     """Given a service name, return a list of region names where this service can have resources"""
     if service == "s3":
-        return ['us-east-1'] # s3 ListBuckets is a global request, so no region required.
+        return ['us-east-1']  # s3 ListBuckets is a global request, so no region required.
     return boto3.Session().get_available_regions(service) or [None]
 
+
 CLIENTS = {}
+
+
 def get_client(service, region=None):
     """Return (cached) boto3 clients for this service and this region"""
     if not region:
@@ -193,11 +222,12 @@ def get_client(service, region=None):
         CLIENTS[(service, region)] = boto3.Session(region_name=region).client(service)
     return CLIENTS[(service, region)]
 
+
 def get_verbs(client):
     """Return a list of "Verbs" given a boto3 service client. A "Verb" in this context is
     the first CamelCased word in an API call"""
-    return set(re.sub("([A-Z])", "_\\1", x).split("_")[1]
-               for x in client.meta.method_to_api_mapping.values())
+    return set(re.sub("([A-Z])", "_\\1", x).split("_")[1] for x in client.meta.method_to_api_mapping.values())
+
 
 def get_listing_operations(service):
     """Return a list of API calls which (probably) list resources created by the user
@@ -221,6 +251,7 @@ def get_listing_operations(service):
         operations.append(operation)
     return operations
 
+
 def run_raw_listing_operation(service, region, operation):
     """Execute a given operation and return its raw result"""
     client = get_client(service, region)
@@ -228,8 +259,10 @@ def run_raw_listing_operation(service, region, operation):
     parameters = PARAMETERS.get(service, {}).get(operation, {})
     return getattr(client, api_to_method_mapping[operation])(**parameters)
 
+
 class Listing(object):
     """Represents a listing operation on an AWS service and its result"""
+
     def __init__(self, service, region, operation, response):
         self.service = service
         self.region = region
@@ -255,8 +288,7 @@ class Listing(object):
         opdesc = '{} {} {}'.format(self.service, self.region, self.operation)
         if len(self.resource_types) == 0 or self.resource_total_count == 0:
             return "{} (no resources found)".format(opdesc)
-        return opdesc + ', '.join('#{}: {}'.format(key, len(listing))
-                                  for key, listing in self.resources.items())
+        return opdesc + ', '.join('#{}: {}'.format(key, len(listing)) for key, listing in self.resources.items())
 
     @classmethod
     def acquire(cls, service, region, operation):
@@ -276,9 +308,8 @@ class Listing(object):
 
         # Transmogrify strange cloudfront results into standard AWS format
         if self.service == "cloudfront" and self.operation in [
-                "ListCloudFrontOriginAccessIdentities",
-                "ListDistributions",
-                "ListStreamingDistributions"]:
+            "ListCloudFrontOriginAccessIdentities", "ListDistributions", "ListStreamingDistributions"
+        ]:
             key = list(response.keys())[0][:-len("List")]
             response = list(response.values())[0]
             response[key] = response.get("Items", [])
@@ -300,9 +331,10 @@ class Listing(object):
         if "Quantity" in response:
             del response["Quantity"]
 
-        for bad_thing in ("hasMoreResults", "IsTruncated", "Truncated", "HasMoreApplications",
-                          "HasMoreDeliveryStreams", "HasMoreStreams", "NextToken", "NextMarker",
-                          "Marker"):
+        for bad_thing in (
+            "hasMoreResults", "IsTruncated", "Truncated", "HasMoreApplications", "HasMoreDeliveryStreams",
+            "HasMoreStreams", "NextToken", "NextMarker", "Marker"
+        ):
             if bad_thing in response:
                 if response[bad_thing]:
                     complete = False
@@ -310,13 +342,16 @@ class Listing(object):
 
         # Special handling for Aliases in kms, there are some reserved AWS-managed aliases.
         if self.service == "kms" and self.operation == "ListAliases":
-            response["Aliases"] = [alias for alias in response.get("Aliases", [])
-                                   if not alias.get("AliasName").lower().startswith("alias/aws")]
+            response["Aliases"] = [
+                alias for alias in response.get("Aliases", [])
+                if not alias.get("AliasName").lower().startswith("alias/aws")
+            ]
 
         # Filter PUBLIC images from appstream
         if self.service == "appstream" and self.operation == "DescribeImages":
-            response["Images"] = [image for image in response.get("Images", [])
-                                  if not image.get("Visibility", "PRIVATE") == "PUBLIC"]
+            response["Images"] = [
+                image for image in response.get("Images", []) if not image.get("Visibility", "PRIVATE") == "PUBLIC"
+            ]
 
         # This API returns a dict instead of a list
         if self.service == 'cloudsearch' and self.operation == 'ListDomainNames':
@@ -324,8 +359,9 @@ class Listing(object):
 
         # Remove AWS supplied policies
         if self.service == "iam" and self.operation == "ListPolicies":
-            response["Policies"] = [policy for policy in response["Policies"]
-                                    if not policy['Arn'].startswith('arn:aws:iam::aws:')]
+            response["Policies"] = [
+                policy for policy in response["Policies"] if not policy['Arn'].startswith('arn:aws:iam::aws:')
+            ]
 
         # Owner Info is not necessary
         if self.service == "s3" and self.operation == "ListBuckets":
@@ -338,13 +374,15 @@ class Listing(object):
 
         # Remove default Baseline
         if self.service == "ssm" and self.operation == "DescribePatchBaselines":
-            response["BaselineIdentities"] = [line for line in response["BaselineIdentities"]
-                                              if line['BaselineName'] != 'AWS-DefaultPatchBaseline']
+            response["BaselineIdentities"] = [
+                line for line in response["BaselineIdentities"] if line['BaselineName'] != 'AWS-DefaultPatchBaseline'
+            ]
 
         # Remove default DB Security Group
         if self.service == "rds" and self.operation == "DescribeDBSecurityGroups":
-            response["DBSecurityGroups"] = [group for group in response["DBSecurityGroups"]
-                                            if group['DBSecurityGroupName'] != 'default']
+            response["DBSecurityGroups"] = [
+                group for group in response["DBSecurityGroups"] if group['DBSecurityGroupName'] != 'default'
+            ]
 
         # Filter default VPCs
         if self.service == "ec2" and self.operation == "DescribeVpcs":
@@ -356,18 +394,17 @@ class Listing(object):
 
         # Filter default SGs
         if self.service == "ec2" and self.operation == "DescribeSecurityGroups":
-            response["SecurityGroups"] = [sg for sg in response["SecurityGroups"]
-                                          if sg["GroupName"] != "default"]
+            response["SecurityGroups"] = [sg for sg in response["SecurityGroups"] if sg["GroupName"] != "default"]
 
         # Filter main route tables
         if self.service == "ec2" and self.operation == "DescribeRouteTables":
-            response["RouteTables"] = [rt for rt in response["RouteTables"]
-                                          if not any(x["Main"] for x in rt["Associations"])]
+            response["RouteTables"] = [
+                rt for rt in response["RouteTables"] if not any(x["Main"] for x in rt["Associations"])
+            ]
 
         # Filter default Network ACLs
         if self.service == "ec2" and self.operation == "DescribeNetworkAcls":
             response["NetworkAcls"] = [nacl for nacl in response["NetworkAcls"] if not nacl["IsDefault"]]
-
 
         for key, value in response.items():
             if not isinstance(value, list):
@@ -446,22 +483,33 @@ def main():
     import argparse
     parser = argparse.ArgumentParser(
         prog="aws_list_all",
-        description=("List AWS resources on one account across regions and services. "
-                     "Saves result into pickle files, which can then be passed to this tool again "
-                     "to list the contents.")
+        description=(
+            "List AWS resources on one account across regions and services. "
+            "Saves result into pickle files, which can then be passed to this tool again "
+            "to list the contents."
+        )
     )
     parser.add_argument('--list-services', action='store_true', help='List the services')
     parser.add_argument('--list-operations', action='store_true', help='List the operations')
     parser.add_argument('--query', action='store_true', help='Execute and query AWS')
-    parser.add_argument('--service', action='append',
-                        help='Restrict the given action to the given service'
-                        ' (can be specified multiple times)')
-    parser.add_argument('--region', action='append',
-                        help='Restrict the given action to the given region '
-                        '(can be specified multiple times)')
-    parser.add_argument('--operation', action='append',
-                        help='Restrict the given action to the given operation '
-                        '(can be specified multiple times)')
+    parser.add_argument(
+        '--service',
+        action='append',
+        help='Restrict the given action to the given service'
+        ' (can be specified multiple times)'
+    )
+    parser.add_argument(
+        '--region',
+        action='append',
+        help='Restrict the given action to the given region '
+        '(can be specified multiple times)'
+    )
+    parser.add_argument(
+        '--operation',
+        action='append',
+        help='Restrict the given action to the given operation '
+        '(can be specified multiple times)'
+    )
     parser.add_argument('--directory', default='.', help='Directory to save result pickle files to')
     parser.add_argument('listingfile', nargs='*', help='listing file to load and print')
     parser.add_argument('--verbose', action='store_true', help='print given listing files with detailed info')

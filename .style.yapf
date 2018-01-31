@@ -1,0 +1,6 @@
+[style]
+based_on_style=pep8
+column_limit=120
+coalesce_brackets=True
+dedent_closing_brackets=True
+indent_dictionary_value=True
