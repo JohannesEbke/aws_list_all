@@ -189,8 +189,9 @@ PARAMETERS = {
 }
 
 ssf = list(
-    boto3.client("cloudformation").meta.service_model.shape_for("ListStacksInput").members["StackStatusFilter"]
-    .member.enum
+    boto3.Session(
+        region_name="us-east-1"
+    ).client("cloudformation").meta.service_model.shape_for("ListStacksInput").members["StackStatusFilter"].member.enum
 )
 ssf.remove("DELETE_COMPLETE")
 PARAMETERS.setdefault("cloudformation", {})["ListStacks"] = {"StackStatusFilter": ssf}

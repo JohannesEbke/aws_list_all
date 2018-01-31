@@ -4,6 +4,8 @@ List all resources in an AWS account, all regions, all services(*).
 
 (*) No guarantees for completeness. Use billing alerts if you are worried about costs.
 
+[![Build Status](https://travis-ci.org/JohannesEbke/aws_list_all.svg?branch=master)](https://travis-ci.org/JohannesEbke/aws_list_all)
+
 ## Usage
 
 You need to have python (both 2 or 3 work) with boto3 installed,
