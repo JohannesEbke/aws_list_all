@@ -489,17 +489,17 @@ def main():
             "to list the contents."
         )
     )
-    subparsers = parser.add_subparsers(description='List of subcommands. Use <subcommand> --help for more parameters', dest='command', metavar='COMMAND')
+    subparsers = parser.add_subparsers(
+        description='List of subcommands. Use <subcommand> --help for more parameters',
+        dest='command',
+        metavar='COMMAND'
+    )
     query = subparsers.add_parser('query', description='Query AWS for resources', help='Query AWS for resources')
     query.add_argument(
-        '--service',
-        action='append',
-        help='Restrict querying to the given service (can be specified multiple times)'
+        '--service', action='append', help='Restrict querying to the given service (can be specified multiple times)'
     )
     query.add_argument(
-        '--region',
-        action='append',
-        help='Restrict querying to the given region (can be specified multiple times)'
+        '--region', action='append', help='Restrict querying to the given region (can be specified multiple times)'
     )
     query.add_argument(
         '--operation',
@@ -507,11 +507,21 @@ def main():
         help='Restrict querying to the given operation (can be specified multiple times)'
     )
     query.add_argument('--directory', default='.', help='Directory to save result listings to')
-    show = subparsers.add_parser('show', description='Show a summary or details of a saved listing', help='Display saved listings')
+    show = subparsers.add_parser(
+        'show', description='Show a summary or details of a saved listing', help='Display saved listings'
+    )
     show.add_argument('listingfile', nargs='*', help='listing file(s) to load and print')
     show.add_argument('--verbose', action='store_true', help='print given listing files with detailed info')
-    subparsers.add_parser('list-services', description='Lists short names of AWS services that the current boto3 version has clients for.', help='List available AWS services')
-    ops = subparsers.add_parser('list-operations', description='List all discovered listing operations on all services', help='List discovered listing operations')
+    subparsers.add_parser(
+        'list-services',
+        description='Lists short names of AWS services that the current boto3 version has clients for.',
+        help='List available AWS services'
+    )
+    ops = subparsers.add_parser(
+        'list-operations',
+        description='List all discovered listing operations on all services',
+        help='List discovered listing operations'
+    )
     ops.add_argument(
         '--service',
         action='append',
