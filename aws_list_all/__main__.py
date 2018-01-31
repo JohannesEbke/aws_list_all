@@ -489,49 +489,53 @@ def main():
             "to list the contents."
         )
     )
-    parser.add_argument('--list-services', action='store_true', help='List the services')
-    parser.add_argument('--list-operations', action='store_true', help='List the operations')
-    parser.add_argument('--query', action='store_true', help='Execute and query AWS')
-    parser.add_argument(
+    subparsers = parser.add_subparsers(description='List of subcommands. Use <subcommand> --help for more parameters', dest='command', metavar='COMMAND')
+    query = subparsers.add_parser('query', description='Query AWS for resources', help='Query AWS for resources')
+    query.add_argument(
         '--service',
         action='append',
-        help='Restrict the given action to the given service'
-        ' (can be specified multiple times)'
+        help='Restrict querying to the given service (can be specified multiple times)'
     )
-    parser.add_argument(
+    query.add_argument(
         '--region',
         action='append',
-        help='Restrict the given action to the given region '
-        '(can be specified multiple times)'
+        help='Restrict querying to the given region (can be specified multiple times)'
     )
-    parser.add_argument(
+    query.add_argument(
         '--operation',
         action='append',
-        help='Restrict the given action to the given operation '
-        '(can be specified multiple times)'
+        help='Restrict querying to the given operation (can be specified multiple times)'
     )
-    parser.add_argument('--directory', default='.', help='Directory to save result pickle files to')
-    parser.add_argument('listingfile', nargs='*', help='listing file to load and print')
-    parser.add_argument('--verbose', action='store_true', help='print given listing files with detailed info')
+    query.add_argument('--directory', default='.', help='Directory to save result listings to')
+    show = subparsers.add_parser('show', description='Show a summary or details of a saved listing', help='Display saved listings')
+    show.add_argument('listingfile', nargs='*', help='listing file(s) to load and print')
+    show.add_argument('--verbose', action='store_true', help='print given listing files with detailed info')
+    subparsers.add_parser('list-services', description='Lists short names of AWS services that the current boto3 version has clients for.', help='List available AWS services')
+    ops = subparsers.add_parser('list-operations', description='List all discovered listing operations on all services', help='List discovered listing operations')
+    ops.add_argument(
+        '--service',
+        action='append',
+        help='Only list discovered operations of the given service (can be specified multiple times)'
+    )
     args = parser.parse_args()
 
-    services = args.service or get_services()
-    if args.listingfile:
+    if args.command == "show":
         do_list_files(args.listingfile, verbose=args.verbose)
-    elif args.list_services:
-        for service in services:
+    elif args.command == "list-services":
+        for service in get_services():
             print(service)
-    elif args.list_operations:
-        for service in services:
+    elif args.command == "list-operations":
+        for service in args.service or get_services():
             for operation in get_listing_operations(service):
                 print(service, operation)
-    elif args.query:
+    elif args.command == "query":
         if args.directory:
             try:
                 os.makedirs(args.directory)
             except OSError:
                 pass
             os.chdir(args.directory)
+        services = args.service or get_services()
         do_query(services, args.region, args.operation)
     else:
         parser.print_help()
