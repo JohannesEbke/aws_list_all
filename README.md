@@ -11,7 +11,7 @@ as well as AWS credentials which can be picked up by boto3.
 
 To list resources for a given service and region, do
 ```
-./aws_list_all.py --query --service ec2 --region eu-west-1
+python -m aws_list_all --query --service ec2 --region eu-west-1
 ```
 Example output:
 ```
@@ -36,7 +36,7 @@ Details about found resources are saved in pickle files named after the service,
 region, and operation used to find them. They can be dumped with
 
 ```
-./aws_list_all.py ec2_DescribeSecurityGroups_eu-west-1.pickle
+python -m aws_list_all ec2_DescribeSecurityGroups_eu-west-1.pickle
 ```
 
 ## Enough of this, how do I really list everything?

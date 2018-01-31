@@ -445,8 +445,9 @@ def main():
     """Parse CLI arguments to either list services, operations, queries or existing pickles"""
     import argparse
     parser = argparse.ArgumentParser(
+        prog="aws_list_all",
         description=("List AWS resources on one account across regions and services. "
-                     "Saves result into pickle files, which can then be passed to this tool again"
+                     "Saves result into pickle files, which can then be passed to this tool again "
                      "to list the contents.")
     )
     parser.add_argument('--list-services', action='store_true', help='List the services')
