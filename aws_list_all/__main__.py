@@ -56,7 +56,7 @@ def main():
         action='append',
         help='Only list discovered operations of the given service (can be specified multiple times)'
     )
-    introspect = subparsers.add_parser(
+    subparsers.add_parser(
         'introspect',
         description='Print introspection debugging information',
         help='Print introspection debugging information'
