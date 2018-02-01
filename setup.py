@@ -10,7 +10,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 setup(
     name='aws_list_all',
-    version='0.1.0',
+    version='0.2.0',
     description='List all your AWS resources, all regions, all services.',
     long_description=long_description,
     url='https://github.com/JohannesEbke/aws_list_all',
