@@ -33,6 +33,7 @@ setup(
     entry_points={
         'console_scripts': [
             'aws_list_all=aws_list_all.__main__:main',
+            'aws-list-all=aws_list_all.__main__:main',
         ],
     },
 )
