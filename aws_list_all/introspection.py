@@ -1,5 +1,7 @@
-import boto3
 import re
+
+import boto3
+
 from .client import get_client
 
 VERBS_LISTINGS = ['Describe', 'Get', 'List']

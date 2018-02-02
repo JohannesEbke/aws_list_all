@@ -2,13 +2,14 @@ from __future__ import print_function
 
 import json
 import sys
-from random import shuffle
-from multiprocessing.pool import ThreadPool
 from collections import defaultdict
 from datetime import datetime
+from multiprocessing.pool import ThreadPool
+from random import shuffle
+
 from .client import get_regions_for_service
-from .listing import Listing
 from .introspection import get_listing_operations
+from .listing import Listing
 
 RESULT_NOTHING = '---'
 RESULT_SOMETHING = '+++'
