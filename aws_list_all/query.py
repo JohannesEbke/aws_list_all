@@ -75,10 +75,17 @@ def do_list_files(filenames, verbose=False):
             print(listing.service, listing.region, listing.operation, resource_type, len(value))
             if verbose:
                 for item in value:
-                    # print("    - ", pprint.pformat(item).replace("\n", "\n      "))
+                    idkey = None
                     if isinstance(item, dict):
-                        idkey = [k for k in item.keys() if k == "id" or k.endswith("Id")]
-                        idk = idkey[0]
-                        print("    - ", item.get(idk, ', '.join(item.keys())))
+                        for heuristic in [
+                            lambda x: x == "id" or x.endswith("Id"),
+                            lambda x: x == "SerialNumber",
+                        ]:
+                            idkeys = [k for k in item.keys() if heuristic(k)]
+                            if idkeys:
+                                idkey = idkeys[0]
+                                break
+                    if idkey:
+                        print("    - ", item.get(idkey, ', '.join(item.keys())))
                     else:
                         print("    - ", item)
