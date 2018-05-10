@@ -125,6 +125,16 @@ class Listing(object):
             response = list(response.values())[0]
             response[key] = response.get("Items", [])
 
+        # medialive ListChannels sends a next token; remove if no channels
+        if self.service == "medialive" and self.operation == "ListChannels":
+            if "NextToken" in response and not response["Channels"]:
+                del response["NextToken"]
+
+        # ssm ListCommands sends a next token; remove if no channels
+        if self.service == "ssm" and self.operation == "ListCommands":
+            if "NextToken" in response and not response["Commands"]:
+                del response["NextToken"]
+
         # SNS ListSubscriptions always sends a next token...
         if self.service == "sns" and self.operation == "ListSubscriptions":
             del response["NextToken"]
@@ -133,14 +143,11 @@ class Listing(object):
             if "MaxResults" in response:
                 if response["MaxResults"] <= response["Count"]:
                     complete = False
-                del response["MaxResults"]
             del response["Count"]
 
-        if "MaxItems" in response:
-            del response["MaxItems"]
-
-        if "Quantity" in response:
-            del response["Quantity"]
+        for neutral_thing in ("MaxItems", "MaxResults", "Quantity"):
+            if neutral_thing in response:
+                del response[neutral_thing]
 
         for bad_thing in (
             "hasMoreResults", "IsTruncated", "Truncated", "HasMoreApplications", "HasMoreDeliveryStreams",
@@ -157,6 +164,15 @@ class Listing(object):
                 alias for alias in response.get("Aliases", [])
                 if not alias.get("AliasName").lower().startswith("alias/aws")
             ]
+
+        # Special handling for service-level kms keys; derived from alias name.
+        if self.service == "kms" and self.operation == "ListKeys":
+            list_aliases = run_raw_listing_operation(self.service, self.region, "ListAliases")
+            service_key_ids = [
+                k.get("TargetKeyId") for k in list_aliases.get("Aliases", [])
+                if k.get("AliasName").lower().startswith("alias/aws")
+            ]
+            response["Keys"] = [k for k in response.get("Keys", []) if k.get("KeyId") not in service_key_ids]
 
         # Filter PUBLIC images from appstream
         if self.service == "appstream" and self.operation == "DescribeImages":
@@ -183,10 +199,19 @@ class Listing(object):
             if 'failures' in response:
                 del response['failures']
 
+        # This API returns an empty list
+        if self.service == "medialive" and self.operation == "ListChannels":
+            if not response["Channels"]:
+                del response["Channels"]
+
+        # This API returns a dict instead of a list
+        if self.service == "pinpoint" and self.operation == "GetApps":
+            response["ApplicationsResponse"] = response.get("ApplicationsResponse", {}).get("Items", [])
+
         # Remove default Baseline
         if self.service == "ssm" and self.operation == "DescribePatchBaselines":
             response["BaselineIdentities"] = [
-                line for line in response["BaselineIdentities"] if line['BaselineName'] != 'AWS-DefaultPatchBaseline'
+                line for line in response["BaselineIdentities"] if not line['DefaultBaseline']
             ]
 
         # Remove default DB Security Group
@@ -217,7 +242,26 @@ class Listing(object):
         if self.service == "ec2" and self.operation == "DescribeNetworkAcls":
             response["NetworkAcls"] = [nacl for nacl in response["NetworkAcls"] if not nacl["IsDefault"]]
 
-        for key, value in response.items():
+        # Filter default Internet Gateways
+        if self.service == "ec2" and self.operation == "DescribeInternetGateways":
+            describe_vpcs = run_raw_listing_operation(self.service, self.region, "DescribeVpcs")
+            vpcs = {v["VpcId"]: v for v in describe_vpcs.get("Vpcs", [])}
+            internet_gateways = []
+            for ig in response["InternetGateways"]:
+                attachments = ig.get("Attachments", [])
+                # more than one, it cannot be default.
+                if len(attachments) != 1:
+                    continue
+                vpc = attachments[0].get("VpcId")
+                if not vpcs.get(vpc).get("IsDefault", False):
+                    internet_gateways.append(ig)
+            response["InternetGateways"] = internet_gateways
+
+        # Filter Public images from ec2.fpga images
+        if self.service == "ec2" and self.operation == "DescribeFpgaImages":
+            response["FpgaImages"] = [image for image in response.get("FpgaImages", []) if not image.get("Public")]
+
+        for _, value in response.items():
             if not isinstance(value, list):
                 raise Exception("No listing:", response)
 
