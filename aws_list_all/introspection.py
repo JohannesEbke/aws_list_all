@@ -8,7 +8,10 @@ VERBS_LISTINGS = ['Describe', 'Get', 'List']
 
 SERVICE_BLACKLIST = [
     'cur',  # costs and usage reports
+    'devicefarm',  # requires manual whitelisting
     'discovery',  # requires manual whitelisting
+    'fms',  # service needs opt-in
+    'kinesis-video-archived-media',  # service needs opt in
     'support',  # support has no payable resources
 ]
 
@@ -20,6 +23,11 @@ DEPRECATED_OR_DISALLOWED = {
         'GetRoom',
         'GetSkillGroup',
         'ListSkills',
+    ],
+    'config': [
+        'DescribeAggregationAuthorizations',
+        'DescribeConfigurationAggregators',
+        'DescribePendingAggregationRequests',
     ],
     # service need opt-in
     'cloudhsm': [
@@ -62,6 +70,7 @@ AWS_RESOURCE_QUERIES = {
         'DescribeAdjustmentTypes', 'DescribeTerminationPolicyTypes', 'DescribeAutoScalingNotificationTypes',
         'DescribeScalingProcessTypes', 'DescribeMetricCollectionTypes', 'DescribeLifecycleHookTypes'
     ],
+    'clouddirectory': ['ListManagedSchemaArns'],
     'cloudhsm': ['ListAvailableZones'],
     'cloudtrail': ['ListPublicKeys'],
     'codebuild': ['ListCuratedEnvironmentImages'],
@@ -69,6 +78,7 @@ AWS_RESOURCE_QUERIES = {
     'codepipeline': ['ListActionTypes'],
     'devicefarm': ['ListDevices', 'ListOfferings', 'ListOfferingTransactions'],
     'directconnect': ['DescribeLocations'],
+    'dynamodb': ['DescribeEndpoints'],
     'dms': ['DescribeEndpointTypes', 'DescribeOrderableReplicationInstances'],
     'ec2': [
         'DescribePrefixLists', 'DescribeAvailabilityZones', 'DescribeVpcEndpointServices', 'DescribeSpotPriceHistory',
@@ -80,19 +90,26 @@ AWS_RESOURCE_QUERIES = {
     'elastictranscoder': ['ListPresets'],
     'elb': ['DescribeLoadBalancerPolicyTypes', 'DescribeLoadBalancerPolicies'],
     'elbv2': ['DescribeSSLPolicies'],
+    'es': ['DescribeReservedElasticsearchInstanceOfferings', 'GetCompatibleElasticsearchVersions'],
     'inspector': ['ListRulesPackages'],
     'lex-models': ['GetBuiltinIntents', 'GetBuiltinSlotTypes'],
     'lightsail': ['GetBlueprints', 'GetBundles', 'GetRegions'],
     'mediaconvert': ['DescribeEndpoints'],
+    'medialive': ['ListOfferings'],
+    'neptune': ['DescribeDBEngineVersions', 'DescribeEventCategories'],
     'pricing': ['DescribeServices'],
     'polly': ['DescribeVoices'],
     'rds': ['DescribeDBEngineVersions', 'DescribeSourceRegions', 'DescribeCertificates', 'DescribeEventCategories'],
     'redshift': [
-        'DescribeClusterVersions', 'DescribeReservedNodeOfferings', 'DescribeOrderableClusterOptions',
-        'DescribeEventCategories'
+        'DescribeClusterVersions',
+        'DescribeReservedNodeOfferings',
+        'DescribeOrderableClusterOptions',
+        'DescribeEventCategories',
+        'DescribeClusterTracks',
     ],
     'route53': ['GetCheckerIpRanges', 'ListGeoLocations'],
     'ssm': ['DescribeAvailablePatches', 'GetInventorySchema'],
+    'xray': ['GetSamplingRules'],
 }
 
 NOT_RESOURCE_DESCRIPTIONS = {
@@ -169,9 +186,10 @@ PARAMETERS_REQUIRED = {
     'gamelift': ['DescribeGameSessionDetails', 'DescribeGameSessions', 'DescribePlayerSessions'],
     'glue': ['GetDataflowGraph'],
     'health': ['DescribeEventTypes', 'DescribeEntityAggregates', 'DescribeEvents'],
-    'iot': ['GetLoggingOptions', 'GetEffectivePolicies'],
-    'kinesis': ['ListShards'],
+    'iot': ['GetLoggingOptions', 'GetEffectivePolicies', 'ListAuditFindings'],
+    'kinesis': ['DescribeStreamConsumer', 'ListShards'],
     'kinesisvideo': ['DescribeStream', 'ListTagsForStream'],
+    'mediastore': ['DescribeContainer'],
     'opsworks': [
         'DescribeAgentVersions', 'DescribeApps', 'DescribeCommands', 'DescribeDeployments', 'DescribeEcsClusters',
         'DescribeElasticIps', 'DescribeElasticLoadBalancers', 'DescribeInstances', 'DescribeLayers',
@@ -180,6 +198,7 @@ PARAMETERS_REQUIRED = {
     'pricing': ['GetProducts'],
     'redshift': ['DescribeTableRestoreStatus', 'DescribeClusterSecurityGroups'],
     'route53domains': ['GetContactReachabilityStatus'],
+    'secretsmanager': ['GetRandomPassword'],
     'shield': ['DescribeSubscription', 'ListProtections'],
     'ssm': ['DescribeAssociation', 'ListComplianceItems'],
     'waf-regional': ['ListActivatedRulesInRuleGroup'],

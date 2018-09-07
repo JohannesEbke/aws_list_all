@@ -40,8 +40,17 @@ RESULT_IGNORE_ERRORS = {
     },
     'iot': {
         # full iot service not available in all advertised regions
+        'DescribeAccountAuditConfiguration': ['An error occurred', 'No listing'],
+        'ListActiveViolations': 'An error occurred',
+        'ListIndices': 'An error occurred',
+        'ListJobs': 'An error occurred',
         'ListOTAUpdates': 'An error occurred',
+        'ListScheduledAudits': 'An error occurred',
+        'ListSecurityProfiles': 'An error occurred',
         'ListStreams': 'An error occurred',
+    },
+    'iotanalytics': {
+        'DescribeLoggingOptions': 'An error occurred',
     },
     'lightsail': {
         # lightsail GetDomains only available in us-east-1
@@ -51,10 +60,20 @@ RESULT_IGNORE_ERRORS = {
         # rekognition stream processors not available in all advertised regions
         'ListStreamProcessors': 'AccessDeniedException',
     },
+    'shield': {
+        'DescribeDRTAccess': 'An error occurred',
+        'DescribeEmergencyContactSettings': 'An error occurred',
+    },
+    'snowball': {
+        'ListCompatibleImages': 'An error occurred',
+    },
     'storagegateway': {
         # The storagegateway advertised but not available in some regions
         'DescribeTapeArchives': 'InvalidGatewayRequestException',
         'ListTapes': 'InvalidGatewayRequestException',
+    },
+    'xray': {
+        'GetEncryptionConfig': 'No listing',
     },
 }
 
@@ -94,10 +113,13 @@ def acquire_listing(what):
     except Exception as exc:  # pylint:disable=broad-except
         result_type = RESULT_ERROR
 
-        ignored_str_err = RESULT_IGNORE_ERRORS.get(service, {}).get(operation)
-        if ignored_str_err is not None:
-            if ignored_str_err in str(exc):
-                result_type = RESULT_NOTHING
+        ignored_err = RESULT_IGNORE_ERRORS.get(service, {}).get(operation)
+        if ignored_err is not None:
+            if not isinstance(ignored_err, list):
+                ignored_err = list(ignored_err)
+            for ignored_str_err in ignored_err:
+                if ignored_str_err in str(exc):
+                    result_type = RESULT_NOTHING
 
         if "is not supported in this region" in str(exc):
             result_type = RESULT_NOTHING

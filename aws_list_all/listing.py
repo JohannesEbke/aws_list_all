@@ -35,6 +35,11 @@ PARAMETERS = {
             }]
         },
     },
+    'waf-regional': {
+        'ListLoggingConfigurations': {
+            'Limit': 100,
+        },
+    },
 }
 
 ssf = list(
@@ -125,10 +130,18 @@ class Listing(object):
             response = list(response.values())[0]
             response[key] = response.get("Items", [])
 
-        # medialive ListChannels sends a next token; remove if no channels
-        if self.service == "medialive" and self.operation == "ListChannels":
-            if "NextToken" in response and not response["Channels"]:
-                del response["NextToken"]
+        # medialive List* things sends a next token; remove if no channels/lists
+        if self.service == "medialive":
+            if self.operation == "ListChannels" and not response["Channels"]:
+                if "Channels" in response:
+                    del response["Channels"]
+                if "NextToken" in response:
+                    del response["NextToken"]
+            if self.operation == "ListInputs" and not response["Inputs"]:
+                if "Inputs" in response:
+                    del response["Inputs"]
+                if "NextToken" in response:
+                    del response["NextToken"]
 
         # ssm ListCommands sends a next token; remove if no channels
         if self.service == "ssm" and self.operation == "ListCommands":
@@ -184,6 +197,19 @@ class Listing(object):
         if self.service == 'cloudsearch' and self.operation == 'ListDomainNames':
             response["DomainNames"] = list(response["DomainNames"].items())
 
+        # Only list CloudTrail trails in own/Home Region
+        if self.service == 'cloudtrail' and self.operation == 'DescribeTrails':
+            response['trailList'] = [
+                trail for trail in response['trailList']
+                if trail.get('HomeRegion') == self.region or not trail.get('IsMultiRegionTrail')
+            ]
+
+        # Remove AWS-default cloudwatch metrics
+        if self.service == 'cloudwatch' and self.operation == 'ListMetrics':
+            response['Metrics'] = [
+                metric for metric in response['Metrics'] if not metric.get('Namespace').startswith('AWS/')
+            ]
+
         # Remove AWS supplied policies
         if self.service == "iam" and self.operation == "ListPolicies":
             response["Policies"] = [
@@ -198,11 +224,6 @@ class Listing(object):
         if self.service == 'ecs' and self.operation == 'DescribeClusters':
             if 'failures' in response:
                 del response['failures']
-
-        # This API returns an empty list
-        if self.service == "medialive" and self.operation == "ListChannels":
-            if not response["Channels"]:
-                del response["Channels"]
 
         # This API returns a dict instead of a list
         if self.service == "pinpoint" and self.operation == "GetApps":
