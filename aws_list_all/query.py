@@ -15,14 +15,76 @@ RESULT_NOTHING = '---'
 RESULT_SOMETHING = '+++'
 RESULT_ERROR = '!!!'
 
+RESULT_IGNORE_ERRORS = {
+    'apigateway': {
+        # apigateway<->vpc links not supported in all regions
+        'GetVpcLinks': 'vpc link not supported for region',
+    },
+    'autoscaling-plans': {
+        # autoscaling-plans service not available in all advertised regions
+        'DescribeScalingPlans': 'AccessDeniedException',
+    },
+    'config': {
+        # config service not available in all advertised regions
+        'DescribeConfigRules': 'AccessDeniedException',
+    },
+    'dynamodb': {
+        # dynamodb Backups not available in all advertised regions
+        'ListBackups': 'UnknownOperationException',
+        # dynamodb Global Tables not available in all advertised regions
+        'ListGlobalTables': 'UnknownOperationException',
+    },
+    'ec2': {
+        # ec2 FPGAs not available in all advertised regions
+        'DescribeFpgaImages': 'not valid for this web service',
+    },
+    'iot': {
+        # full iot service not available in all advertised regions
+        'DescribeAccountAuditConfiguration': ['An error occurred', 'No listing'],
+        'ListActiveViolations': 'An error occurred',
+        'ListIndices': 'An error occurred',
+        'ListJobs': 'An error occurred',
+        'ListOTAUpdates': 'An error occurred',
+        'ListScheduledAudits': 'An error occurred',
+        'ListSecurityProfiles': 'An error occurred',
+        'ListStreams': 'An error occurred',
+    },
+    'iotanalytics': {
+        'DescribeLoggingOptions': 'An error occurred',
+    },
+    'lightsail': {
+        # lightsail GetDomains only available in us-east-1
+        'GetDomains': 'only available in the us-east-1',
+    },
+    'rekognition': {
+        # rekognition stream processors not available in all advertised regions
+        'ListStreamProcessors': 'AccessDeniedException',
+    },
+    'shield': {
+        'DescribeDRTAccess': 'An error occurred',
+        'DescribeEmergencyContactSettings': 'An error occurred',
+    },
+    'snowball': {
+        'ListCompatibleImages': 'An error occurred',
+    },
+    'storagegateway': {
+        # The storagegateway advertised but not available in some regions
+        'DescribeTapeArchives': 'InvalidGatewayRequestException',
+        'ListTapes': 'InvalidGatewayRequestException',
+    },
+    'xray': {
+        'GetEncryptionConfig': 'No listing',
+    },
+}
+
 
 def do_query(services, selected_regions=(), selected_operations=()):
     """For the given services, execute all selected operations (default: all) in selected regions
     (default: all)"""
     to_run = []
     for service in services:
-        for region in selected_regions or get_regions_for_service(service):
-            for operation in selected_operations or get_listing_operations(service):
+        for region in get_regions_for_service(service, selected_regions):
+            for operation in get_listing_operations(service, region, selected_operations):
                 to_run.append([service, region, operation])
     shuffle(to_run)  # Distribute requests across endpoints
     results_by_type = defaultdict(list)
@@ -50,13 +112,15 @@ def acquire_listing(what):
             return (RESULT_NOTHING, service, region, operation, ', '.join(listing.resource_types))
     except Exception as exc:  # pylint:disable=broad-except
         result_type = RESULT_ERROR
-        if service == 'storagegateway' and 'InvalidGatewayRequestException' in str(exc):
-            # The storagegateway advertised but not available in some regions
-            result_type = RESULT_NOTHING
-        if service == 'config' and operation == 'DescribeConfigRules' \
-                and 'AccessDeniedException' in str(exc):
-            # The config service is advertised but not available in some regions
-            result_type = RESULT_NOTHING
+
+        ignored_err = RESULT_IGNORE_ERRORS.get(service, {}).get(operation)
+        if ignored_err is not None:
+            if not isinstance(ignored_err, list):
+                ignored_err = list(ignored_err)
+            for ignored_str_err in ignored_err:
+                if ignored_str_err in str(exc):
+                    result_type = RESULT_NOTHING
+
         if "is not supported in this region" in str(exc):
             result_type = RESULT_NOTHING
         if "is not available in this region" in str(exc):
