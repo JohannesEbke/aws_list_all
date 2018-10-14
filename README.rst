@@ -16,7 +16,7 @@ as well as AWS credentials which can be picked up by boto3.
 
 To list resources for a given service and region, do::
 
-  python -m aws_list_all --query --service ec2 --region eu-west-1
+  python -m aws_list_all query --service ec2 --region eu-west-1
 
 Example output::
 
@@ -45,6 +45,6 @@ region, and operation used to find them. They can be dumped with::
 Enough of this, how do I really list everything?
 ------------------------------------------------
 
-Restricting the region and service is optional, a simple ``--query`` lists everything.
+Restricting the region and service is optional, a simple ``query`` lists everything.
 It uses a thread pool to parallelize queries and randomizes the order to avoid
 hitting one endpoint in close succession. One run takes around two minutes for me.
