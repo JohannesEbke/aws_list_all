@@ -164,7 +164,7 @@ class Listing(object):
 
         for bad_thing in (
             "hasMoreResults", "IsTruncated", "Truncated", "HasMoreApplications", "HasMoreDeliveryStreams",
-            "HasMoreStreams", "NextToken", "NextMarker", "Marker"
+            "HasMoreStreams", "NextToken", "NextMarker", "nextMarker", "Marker"
         ):
             if bad_thing in response:
                 if response[bad_thing]:

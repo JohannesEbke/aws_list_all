@@ -139,13 +139,18 @@ NOT_RESOURCE_DESCRIPTIONS = {
     'es': ['ListElasticsearchVersions'],
     'events': ['DescribeEventBus'],
     'gamelift': ['DescribeEC2InstanceLimits', 'DescribeMatchmakingConfigurations', 'DescribeMatchmakingRuleSets'],
-    'glue': ['GetCatalogImportStatus'],
+    'glue': ['GetCatalogImportStatus', 'GetDataCatalogEncryptionSettings'],
     'guardduty': ['GetInvitationsCount'],
     'iam': ['GetAccountPasswordPolicy', 'GetAccountSummary', 'GetUser', 'GetAccountAuthorizationDetails'],
     'inspector': ['DescribeCrossAccountAccessRole'],
     'iot': [
-        'GetRegistrationCode', 'DescribeEndpoint', 'DescribeEventConfigurations', 'GetIndexingConfiguration',
-        'GetV2LoggingOptions', 'ListV2LoggingLevels'
+        'DescribeAccountAuditConfiguration',
+        'DescribeEndpoint',
+        'DescribeEventConfigurations',
+        'GetIndexingConfiguration',
+        'GetRegistrationCode',
+        'GetV2LoggingOptions',
+        'ListV2LoggingLevels',
     ],
     'kinesis': ['DescribeLimits'],
     'lambda': ['GetAccountSettings'],
@@ -200,7 +205,7 @@ PARAMETERS_REQUIRED = {
     'route53domains': ['GetContactReachabilityStatus'],
     'secretsmanager': ['GetRandomPassword'],
     'shield': ['DescribeSubscription', 'ListProtections'],
-    'ssm': ['DescribeAssociation', 'ListComplianceItems'],
+    'ssm': ['DescribeAssociation', 'DescribeMaintenanceWindowSchedule', 'ListComplianceItems'],
     'waf-regional': ['ListActivatedRulesInRuleGroup'],
     'workdocs': ['DescribeActivities'],  # need to be root
 }
