@@ -79,7 +79,7 @@ AWS_RESOURCE_QUERIES = {
     'devicefarm': ['ListDevices', 'ListOfferings', 'ListOfferingTransactions'],
     'directconnect': ['DescribeLocations'],
     'dynamodb': ['DescribeEndpoints'],
-    'dms': ['DescribeEndpointTypes', 'DescribeOrderableReplicationInstances'],
+    'dms': ['DescribeEndpointTypes', 'DescribeOrderableReplicationInstances', 'DescribeEventCategories'],
     'ec2': [
         'DescribePrefixLists', 'DescribeAvailabilityZones', 'DescribeVpcEndpointServices', 'DescribeSpotPriceHistory',
         'DescribeHostReservationOfferings', 'DescribeRegions', 'DescribeReservedInstancesOfferings', 'DescribeIdFormat',
