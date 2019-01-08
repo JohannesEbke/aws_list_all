@@ -54,7 +54,8 @@ change in the future.
 Details about found resources are saved in json files named after the service,
 region, and operation used to find them. They can be dumped with::
 
-  python -m aws_list_all ec2_DescribeSecurityGroups_eu-west-1.json
+  python -m aws_list_all show ec2_DescribeSecurityGroups_eu-west-1.json
+  python -m aws_list_all show --verbose ec2_DescribeSecurityGroups_eu-west-1.json
 
 Enough of this, how do I really list everything?
 ------------------------------------------------
