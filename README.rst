@@ -30,7 +30,7 @@ To list available operations for a given service, do::
 
 To list resources for a given service and region, do::
 
-  python -m aws_list_all query --service ec2 --region us-west-2
+  python -m aws_list_all query --service ec2 --region us-west-2 --directory data --verbose
 
 Example output::
 
