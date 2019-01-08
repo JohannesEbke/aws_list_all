@@ -92,3 +92,6 @@ ENV/
 
 # Pickle files from listing
 *.pickle
+
+# listing file data dir
+data/

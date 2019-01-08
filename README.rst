@@ -14,9 +14,23 @@ Usage
 You need to have python (both 2 or 3 work) with boto3 installed,
 as well as AWS credentials which can be picked up by boto3.
 
+MySetup::
+  mkvirtualenv aws-list-all
+  pip install awscli boto3
+  pip install -U -e .
+
+To list available services to query, do::
+  
+  python -m aws_list_all introspect list-services
+
+To list available operations for a given service, do::
+  
+  python -m aws_list_all introspect list-operations
+  python -m aws_list_all introspect list-operations --service ec2
+
 To list resources for a given service and region, do::
 
-  python -m aws_list_all query --service ec2 --region eu-west-1
+  python -m aws_list_all query --service ec2 --region us-west-2
 
 Example output::
 
@@ -48,3 +62,16 @@ Enough of this, how do I really list everything?
 Restricting the region and service is optional, a simple ``query`` lists everything.
 It uses a thread pool to parallelize queries and randomizes the order to avoid
 hitting one endpoint in close succession. One run takes around two minutes for me.
+
+Examples
+--------
+
+Query with verbose output, do::
+
+  python -m aws_list_all query --service ec2 --region us-west-2 --directory data --verbose 
+
+Show resources for all returned queries, do::
+  python -m aws_list_all show --verbose data/*
+
+Show resources for all ec2 returned queries, do::
+  python -m aws_list_all show --verbose data/ec2*

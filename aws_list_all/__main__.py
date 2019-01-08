@@ -38,6 +38,7 @@ def main():
         help='Restrict querying to the given operation (can be specified multiple times)'
     )
     query.add_argument('--directory', default='.', help='Directory to save result listings to')
+    query.add_argument('--verbose', action='store_true', help='print detailed info during run')
 
     # Once you have queried, show is the next most important command. So it comes second
     show = subparsers.add_parser(
@@ -84,7 +85,7 @@ def main():
                 pass
             os.chdir(args.directory)
         services = args.service or get_services()
-        do_query(services, args.region, args.operation)
+        do_query(services, args.region, args.operation, args.verbose)
     elif args.command == "show" and args.listingfile:
         do_list_files(args.listingfile, verbose=args.verbose)
     elif args.command == "introspect":
