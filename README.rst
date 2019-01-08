@@ -71,7 +71,9 @@ Query with verbose output, do::
   python -m aws_list_all query --service ec2 --region us-west-2 --directory data --verbose 
 
 Show resources for all returned queries, do::
+
   python -m aws_list_all show --verbose data/*
 
 Show resources for all ec2 returned queries, do::
+
   python -m aws_list_all show --verbose data/ec2*
