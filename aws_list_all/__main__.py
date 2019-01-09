@@ -3,9 +3,11 @@ from __future__ import print_function
 
 import os
 from argparse import ArgumentParser
+from collections import defaultdict
 
 from .introspection import get_listing_operations, get_services, get_verbs
 from .query import do_list_files, do_query
+from .client import get_regions_for_service
 
 
 def main():
@@ -63,6 +65,11 @@ def main():
         description='Lists short names of AWS services that the current boto3 version has clients for.',
         help='List available AWS services'
     )
+    subparsers.add_parser(
+        'list-service-regions',
+        description='Lists regions where AWS services are said to be available.',
+        help='List AWS service regions'
+    )
     ops = subparsers.add_parser(
         'list-operations',
         description='List all discovered listing operations on all (or specified) services',
@@ -91,6 +98,16 @@ def main():
         if args.introspect == "list-services":
             for service in get_services():
                 print(service)
+        elif args.introspect == "list-service-regions":
+            m = defaultdict(set)
+            for service in get_services():
+                m[frozenset(map(str, get_regions_for_service(service)))].add(service)
+            for regions, services in sorted(m.items()):
+                print("-"*80)
+                print("in the", len(regions), "regions", ", ".join(sorted(regions)))
+                print("...there are these", len(services), "services:")
+                for service in sorted(services):
+                    print(" -", service)
         elif args.introspect == "list-operations":
             for service in args.service or get_services():
                 for operation in get_listing_operations(service):
