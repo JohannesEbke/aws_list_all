@@ -133,23 +133,24 @@ def acquire_listing(what):
 def do_list_files(filenames, verbose=False):
     """Print out a rudimentary summary of the Listing objects contained in the given files"""
     for listing_filename in filenames:
-        listing = Listing.from_json(json.load(open(listing_filename, "rb")))
-        resources = listing.resources
-        for resource_type, value in resources.items():
-            print(listing.service, listing.region, listing.operation, resource_type, len(value))
-            if verbose:
-                for item in value:
-                    idkey = None
-                    if isinstance(item, dict):
-                        for heuristic in [
-                            lambda x: x == "id" or x.endswith("Id"),
-                            lambda x: x == "SerialNumber",
-                        ]:
-                            idkeys = [k for k in item.keys() if heuristic(k)]
-                            if idkeys:
-                                idkey = idkeys[0]
-                                break
-                    if idkey:
-                        print("    - ", item.get(idkey, ', '.join(item.keys())))
-                    else:
-                        print("    - ", item)
+        with open(listing_filename, "rb") as lst:
+            listing = Listing.from_json(json.load(lst))
+            resources = listing.resources
+            for resource_type, value in resources.items():
+                print(listing.service, listing.region, listing.operation, resource_type, len(value))
+                if verbose:
+                    for item in value:
+                        idkey = None
+                        if isinstance(item, dict):
+                            for heuristic in [
+                                lambda x: x == "id" or x.endswith("Id"),
+                                lambda x: x == "SerialNumber",
+                            ]:
+                                idkeys = [k for k in item.keys() if heuristic(k)]
+                                if idkeys:
+                                    idkey = idkeys[0]
+                                    break
+                        if idkey:
+                            print("    - ", item.get(idkey, ', '.join(item.keys())))
+                        else:
+                            print("    - ", item)
