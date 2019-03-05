@@ -103,7 +103,7 @@ def main():
             for service in get_services():
                 m[frozenset(map(str, get_regions_for_service(service)))].add(service)
             for regions, services in sorted(m.items()):
-                print("-"*80)
+                print("-" * 80)
                 print("in the", len(regions), "regions", ", ".join(sorted(regions)))
                 print("...there are these", len(services), "services:")
                 for service in sorted(services):
