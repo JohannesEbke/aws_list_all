@@ -1,6 +1,7 @@
-from setuptools import setup
 from codecs import open
 from os import path
+
+from setuptools import setup
 
 here = path.abspath(path.dirname(__file__))
 
@@ -29,7 +30,7 @@ setup(
     ],
     keywords='aws boto3 listings resources region services',
     packages=['aws_list_all'],
-    install_requires=['boto3'],
+    install_requires=['boto3>=1.9.116', 'app_json_file_cache>=0.2.2'],
     entry_points={
         'console_scripts': [
             'aws_list_all=aws_list_all.__main__:main',

@@ -123,9 +123,8 @@ class Listing(object):
         del response["ResponseMetadata"]
 
         # Transmogrify strange cloudfront results into standard AWS format
-        if self.service == "cloudfront" and self.operation in [
-            "ListCloudFrontOriginAccessIdentities", "ListDistributions", "ListStreamingDistributions"
-        ]:
+        if self.service == "cloudfront":
+            assert len(response.keys()) == 1, "Unexpected cloudfront response: {}".format(response)
             key = list(response.keys())[0][:-len("List")]
             response = list(response.values())[0]
             response[key] = response.get("Items", [])
@@ -156,7 +155,15 @@ class Listing(object):
             if "MaxResults" in response:
                 if response["MaxResults"] <= response["Count"]:
                     complete = False
+                del response["MaxResults"]
             del response["Count"]
+
+        if "Quantity" in response:
+            if "MaxItems" in response:
+                if response["MaxItems"] <= response["Quantity"]:
+                    complete = False
+                del response["MaxItems"]
+            del response["Quantity"]
 
         for neutral_thing in ("MaxItems", "MaxResults", "Quantity"):
             if neutral_thing in response:
@@ -282,9 +289,15 @@ class Listing(object):
         if self.service == "ec2" and self.operation == "DescribeFpgaImages":
             response["FpgaImages"] = [image for image in response.get("FpgaImages", []) if not image.get("Public")]
 
-        for _, value in response.items():
+        # interpret nextToken in several services
+        if (self.service, self.operation) in (("inspector", "ListFindings"), ('logs', 'DescribeLogGroups')):
+            if response.get('nextToken'):
+                complete = False
+                del response['nextToken']
+
+        for key, value in response.items():
             if not isinstance(value, list):
-                raise Exception("No listing:", response)
+                raise Exception("No listing: {} is no list:".format(key), response)
 
         if not complete:
             response['truncated'] = [True]

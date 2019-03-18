@@ -3,11 +3,12 @@ from __future__ import print_function
 
 import os
 from argparse import ArgumentParser
-from collections import defaultdict
+from sys import exit
 
-from .introspection import get_listing_operations, get_services, get_verbs
+from .introspection import (
+    get_listing_operations, get_services, get_verbs, introspect_regions_for_service, recreate_caches
+)
 from .query import do_list_files, do_query
-from .client import get_regions_for_service
 
 
 def main():
@@ -54,23 +55,23 @@ def main():
         description='Print introspection debugging information',
         help='Print introspection debugging information'
     )
-    subparsers = introspect.add_subparsers(
+    introspecters = introspect.add_subparsers(
         description='Pieces of debug information to collect. Use <DETAIL> --help for more parameters',
         dest='introspect',
         metavar='DETAIL'
     )
 
-    subparsers.add_parser(
+    introspecters.add_parser(
         'list-services',
         description='Lists short names of AWS services that the current boto3 version has clients for.',
         help='List available AWS services'
     )
-    subparsers.add_parser(
+    introspecters.add_parser(
         'list-service-regions',
         description='Lists regions where AWS services are said to be available.',
         help='List AWS service regions'
     )
-    ops = subparsers.add_parser(
+    ops = introspecters.add_parser(
         'list-operations',
         description='List all discovered listing operations on all (or specified) services',
         help='List discovered listing operations'
@@ -80,7 +81,18 @@ def main():
         action='append',
         help='Only list discovered operations of the given service (can be specified multiple times)'
     )
-    subparsers.add_parser('debug', description='Debug information', help='Debug information')
+    introspecters.add_parser('debug', description='Debug information', help='Debug information')
+
+    # Finally, refreshing the service/region caches comes last.
+    show = subparsers.add_parser(
+        'recreate-caches',
+        description=(
+            'Recreate the service/region availability caches, '
+            'in case service availability changed since the last release'
+        ),
+        help='Recreate service caches'
+    )
+
     args = parser.parse_args()
 
     if args.command == "query":
@@ -92,22 +104,19 @@ def main():
             os.chdir(args.directory)
         services = args.service or get_services()
         do_query(services, args.region, args.operation)
-    elif args.command == "show" and args.listingfile:
-        do_list_files(args.listingfile, verbose=args.verbose)
+    elif args.command == "show":
+        if args.listingfile:
+            do_list_files(args.listingfile, verbose=args.verbose)
+        else:
+            show.print_help()
+            return 1
     elif args.command == "introspect":
         if args.introspect == "list-services":
             for service in get_services():
                 print(service)
         elif args.introspect == "list-service-regions":
-            m = defaultdict(set)
-            for service in get_services():
-                m[frozenset(map(str, get_regions_for_service(service)))].add(service)
-            for regions, services in sorted(m.items()):
-                print("-" * 80)
-                print("in the", len(regions), "regions", ", ".join(sorted(regions)))
-                print("...there are these", len(services), "services:")
-                for service in sorted(services):
-                    print(" -", service)
+            introspect_regions_for_service()
+            return 0
         elif args.introspect == "list-operations":
             for service in args.service or get_services():
                 for operation in get_listing_operations(service):
@@ -118,9 +127,13 @@ def main():
                     print(service, verb)
         else:
             introspect.print_help()
+            return 1
+    elif args.command == "recreate-caches":
+        recreate_caches()
     else:
         parser.print_help()
+        return 1
 
 
 if __name__ == "__main__":
-    main()
+    exit(main())

@@ -1,56 +1,64 @@
 import re
+from collections import defaultdict
+from json import load
+from multiprocessing.pool import ThreadPool
+from socket import gethostbyname
 
 import boto3
+from pkg_resources import resource_stream
+
+from app_json_file_cache import AppCache
 
 from .client import get_client
+
+cache = AppCache('aws_list_all')
 
 VERBS_LISTINGS = ['Describe', 'Get', 'List']
 
 SERVICE_BLACKLIST = [
-    'cur',  # costs and usage reports
-    'devicefarm',  # requires manual whitelisting
-    'discovery',  # requires manual whitelisting
-    'fms',  # service needs opt-in
-    'kinesis-video-archived-media',  # service needs opt in
-    'support',  # support has no payable resources
+    'alexaforbusiness',  # TODO: Mostly organization-specific calls and would need to be queried differently
+    'apigatewaymanagementapi',  # This API allows management of deployed APIs, and requires an endpoint per API.
+    'cloudsearchdomain',  # Domain-specific endpoint required
+    'mediastore-data',  # Mediastore Container-specific endpoint required
+    's3control',  # TODO: Account-ID specific endpoint required
 ]
 
 DEPRECATED_OR_DISALLOWED = {
-    # service need opt-in
-    'alexaforbusiness': [
-        'GetDevice',
-        'GetProfile',
-        'GetRoom',
-        'GetSkillGroup',
-        'ListSkills',
-    ],
+    # # service need opt-in
+    # 'alexaforbusiness': [
+    # 'GetDevice',
+    # 'GetProfile',
+    # 'GetRoom',
+    # 'GetSkillGroup',
+    # 'ListSkills',
+    # ],
     'config': [
         'DescribeAggregationAuthorizations',
         'DescribeConfigurationAggregators',
         'DescribePendingAggregationRequests',
     ],
     # service need opt-in
-    'cloudhsm': [
-        'ListHapgs',
-        'ListHsms',
-        'ListLunaClients',
-    ],
-    'directconnect': ['DescribeInterconnects'],  # needs opt-in
+    # 'cloudhsm': [
+    # 'ListHapgs',
+    # 'ListHsms',
+    # 'ListLunaClients',
+    # ],
+    # 'directconnect': ['DescribeInterconnects'],  # needs opt-in
     'dms': [
         # migration service needs to be created
         'DescribeReplicationTaskAssessmentResults'
     ],
-    'ec2': ['DescribeScheduledInstances', 'DescribeReservedInstancesListings'],  # needs opt-in
+    # 'ec2': ['DescribeScheduledInstances', 'DescribeReservedInstancesListings'],  # needs opt-in
     'emr': ['DescribeJobFlows'],  # deprecated
     'greengrass': ['GetServiceRoleForAccount'],  # Role needs to be created
     'iam': ['GetCredentialReport'],  # credential report needs to be created
     'iot': ['DescribeDefaultAuthorizer'],  # authorizer needs to be created
     'mediaconvert': ['ListJobTemplates', 'ListJobs', 'ListPresets',
                      'ListQueues'],  # service needs customer-specific endpoint
-    'mturk': [
-        'GetAccountBalance', 'ListBonusPayments', 'ListHITs', 'ListQualificationRequests', 'ListReviewableHITs',
-        'ListWorkerBlocks'
-    ],  # service needs opt-in
+    # 'mturk': [
+    # 'GetAccountBalance', 'ListBonusPayments', 'ListHITs', 'ListQualificationRequests', 'ListReviewableHITs',
+    # 'ListWorkerBlocks'
+    # ],  # service needs opt-in
     'servicecatalog': ['ListTagOptions'],  # requires a Tag Option Migration
     'workdocs': ['DescribeUsers'],  # need to be AWS-root
 }
@@ -115,6 +123,8 @@ AWS_RESOURCE_QUERIES = {
 NOT_RESOURCE_DESCRIPTIONS = {
     'apigateway': ['GetAccount'],
     'autoscaling': ['DescribeAccountLimits'],
+    'alexaforbusiness': ['GetInvitationConfiguration'],
+    'chime': ['GetGlobalSettings'],
     'cloudformation': ['DescribeAccountLimits'],
     'cloudwatch': ['DescribeAlarmHistory'],
     'codebuild': ['ListBuilds'],
@@ -124,6 +134,7 @@ NOT_RESOURCE_DESCRIPTIONS = {
     ],
     'dax': ['DescribeDefaultParameters', 'DescribeParameterGroups'],
     'devicefarm': ['GetAccountSettings', 'GetOfferingStatus'],
+    'discovery': ['GetDiscoverySummary'],
     'dms': ['DescribeAccountAttributes', 'DescribeEventCategories'],
     'ds': ['GetDirectoryLimits'],
     'dynamodb': ['DescribeLimits'],
@@ -138,6 +149,7 @@ NOT_RESOURCE_DESCRIPTIONS = {
     'elbv2': ['DescribeAccountLimits'],
     'es': ['ListElasticsearchVersions'],
     'events': ['DescribeEventBus'],
+    'fms': ['GetAdminAccount', 'GetNotificationChannel'],
     'gamelift': ['DescribeEC2InstanceLimits', 'DescribeMatchmakingConfigurations', 'DescribeMatchmakingRuleSets'],
     'glue': ['GetCatalogImportStatus', 'GetDataCatalogEncryptionSettings'],
     'guardduty': ['GetInvitationsCount'],
@@ -156,9 +168,12 @@ NOT_RESOURCE_DESCRIPTIONS = {
     'lambda': ['GetAccountSettings'],
     'opsworks': ['DescribeMyUserProfile', 'DescribeUserProfiles', 'DescribeOperatingSystems'],
     'opsworkscm': ['DescribeAccountAttributes'],
+    'pinpoint-email': ['GetAccount', 'GetDeliverabilityDashboardOptions'],
+    'redshift': ['DescribeStorage'],
     'rds': ['DescribeAccountAttributes', 'DescribeDBEngineVersions', 'DescribeReservedDBInstancesOfferings'],
     'resourcegroupstaggingapi': ['GetResources', 'GetTagKeys'],
     'route53': ['GetTrafficPolicyInstanceCount', 'GetHostedZoneCount', 'GetHealthCheckCount', 'GetGeoLocation'],
+    'securityhub': ['GetInvitationsCount'],
     'ses': ['GetSendQuota', 'GetAccountSendingEnabled'],
     'shield': ['GetSubscriptionState'],
     'sms': ['GetServers'],
@@ -168,14 +183,18 @@ NOT_RESOURCE_DESCRIPTIONS = {
     'sts': ['GetSessionToken', 'GetCallerIdentity'],
     'waf': ['GetChangeToken'],
     'waf-regional': ['GetChangeToken'],
+    'xray': ['GetEncryptionConfig'],
+    'workspaces': ['DescribeAccount', 'DescribeAccountModifications'],
 }
 
 PARAMETERS_REQUIRED = {
+    'appstream': ['DescribeUserStackAssociations'],
     'batch': ['ListJobs'],
     'cloudformation': ['GetTemplateSummary', 'DescribeStackResources', 'DescribeStackEvents', 'GetTemplate'],
     'cloudhsm': ['DescribeHsm', 'DescribeLunaClient'],
     'cloudtrail': ['GetEventSelectors'],
     'codecommit': ['GetBranch'],
+    'codedeploy': ['GetDeploymentTarget', 'ListDeploymentTargets'],
     'cognito-idp': ['GetUser'],
     'directconnect': ['DescribeDirectConnectGatewayAssociations', 'DescribeDirectConnectGatewayAttachments'],
     'ec2': ['DescribeSpotDatafeedSubscription', 'DescribeLaunchTemplateVersions'],
@@ -189,11 +208,13 @@ PARAMETERS_REQUIRED = {
     ],
     'elbv2': ['DescribeRules', 'DescribeListeners'],
     'gamelift': ['DescribeGameSessionDetails', 'DescribeGameSessions', 'DescribePlayerSessions'],
-    'glue': ['GetDataflowGraph'],
+    'globalaccelerator': ['DescribeAcceleratorAttributes'],
+    'glue': ['GetDataflowGraph', 'GetResourcePolicy'],
     'health': ['DescribeEventTypes', 'DescribeEntityAggregates', 'DescribeEvents'],
     'iot': ['GetLoggingOptions', 'GetEffectivePolicies', 'ListAuditFindings'],
     'kinesis': ['DescribeStreamConsumer', 'ListShards'],
     'kinesisvideo': ['DescribeStream', 'ListTagsForStream'],
+    'kinesis-video-archived-media': ['GetHLSStreamingSessionURL'],
     'mediastore': ['DescribeContainer'],
     'opsworks': [
         'DescribeAgentVersions', 'DescribeApps', 'DescribeCommands', 'DescribeDeployments', 'DescribeEcsClusters',
@@ -204,10 +225,16 @@ PARAMETERS_REQUIRED = {
     'redshift': ['DescribeTableRestoreStatus', 'DescribeClusterSecurityGroups'],
     'route53domains': ['GetContactReachabilityStatus'],
     'secretsmanager': ['GetRandomPassword'],
-    'shield': ['DescribeSubscription', 'ListProtections'],
+    'shield': ['DescribeSubscription', 'DescribeProtection'],
+    'sms': ['GetApp', 'GetAppLaunchConfiguration', 'GetAppReplicationConfiguration'],
     'ssm': ['DescribeAssociation', 'DescribeMaintenanceWindowSchedule', 'ListComplianceItems'],
+    # TODO: waf ListLoggingConfigurations may just require fixing
+    'waf': ['ListActivatedRulesInRuleGroup', 'ListLoggingConfigurations'],
     'waf-regional': ['ListActivatedRulesInRuleGroup'],
-    'workdocs': ['DescribeActivities'],  # need to be root
+    'workdocs': ['DescribeActivities', 'GetResources'],
+    # TODO: worklink ListFleets might just require fixing
+    'worklink': ['ListFleets'],
+    'xray': ['GetGroup'],
 }
 
 
@@ -246,3 +273,97 @@ def get_listing_operations(service, region=None, selected_operations=()):
             continue
         operations.append(operation)
     return operations
+
+
+def recreate_caches():
+    get_endpoint_hosts.recalculate()
+    get_service_regions.recalculate()
+
+
+def packaged_endpoint_hosts():
+    return load(resource_stream(__package__, 'endpoint_hosts.json'))['data']
+
+
+@cache('endpoint_hosts', vary={'boto3_version': boto3.__version__}, cheap_default_func=packaged_endpoint_hosts)
+def get_endpoint_hosts():
+    print('Extracting endpoint list from boto3 version {} ...'.format(boto3.__version__))
+    EC2_REGIONS = set(boto3.Session().get_available_regions('ec2'))
+    S3_REGIONS = set(boto3.Session().get_available_regions('s3'))
+    ALL_REGIONS = sorted(EC2_REGIONS | S3_REGIONS)
+    ALL_SERVICES = get_services()
+    result = {
+        service:
+        {region: boto3.Session(region_name=region).client(service).meta.endpoint_url
+         for region in ALL_REGIONS}
+        for service in ALL_SERVICES
+    }
+    print('...done.')
+    return result
+
+
+def get_endpoint_ip(service_region_host):
+    (service, region), host = service_region_host
+    try:
+        result = gethostbyname(host.split("/")[2])
+        return (service, region, result)
+    except Exception:
+        return (service, region, None)
+
+
+def get_service_region_ip_in_dns():
+    service_region_host = {}
+    for service, region_host in get_endpoint_hosts().items():
+        for region, host in region_host.items():
+            service_region_host[(service, region)] = host
+    print('Resolving endpoint IPs to find active endpoints...')
+    result = ThreadPool(128).map(get_endpoint_ip, service_region_host.items())
+    print('...done')
+    return result
+
+
+def packaged_service_regions():
+    return load(resource_stream(__package__, 'service_regions.json'))['data']
+
+
+@cache('service_regions', vary={'boto3_version': boto3.__version__}, cheap_default_func=packaged_service_regions)
+def get_service_regions():
+    service_regions = {}
+    for service, region, ip in get_service_region_ip_in_dns():
+        service_regions.setdefault(service, set())
+        if ip is not None:
+            service_regions[service].add(region)
+    return {service: list(regions) for service, regions in service_regions.items()}
+
+
+def get_regions_for_service(requested_service, requested_regions=()):
+    """Given a service name, return a list of region names where this service can have resources,
+    restricted by a possible set of regions."""
+    regions = set(get_service_regions()[requested_service])
+    return list(regions) if not requested_regions else list(sorted(set(regions) & set(requested_regions)))
+
+
+def introspect_regions_for_service():
+    """Introspect and compare guessed and boto3-defined regions"""
+    print("Comparing service/region pairs reported by boto3 and found via DNS queries")
+    print("=" * 100)
+    guessed_regions = get_service_regions()
+    m = defaultdict(set)
+    for service, guessed in sorted(guessed_regions.items()):
+        reported = boto3.Session().get_available_regions(service)
+        if set(reported) == set(guessed):
+            print(service, "guessed.")
+        if set(guessed) - set(reported):
+            print(service, "more than reported:", set(guessed) - set(reported))
+        if set(reported) - set(guessed):
+            print(service, "less than reported:", set(reported) - set(guessed))
+        m[frozenset(map(str, guessed))].add(service)
+
+    print()
+    print("Listing service/region pairs by sets of supported regions")
+    print("=" * 100)
+    for regions, services in sorted(m.items()):
+        print("-" * 80)
+        print("in the", len(regions), "regions", ", ".join(sorted(regions)))
+        print("...there are these", len(services), "services:")
+        for service in sorted(services):
+            print(" -", service)
