@@ -2,8 +2,10 @@ aws\_list\_all
 ==============
 
 List all resources in an AWS account, all regions, all services(*).
+Writes JSON files into the current(**) directory for further processing.
 
 (*) No guarantees for completeness. Use billing alerts if you are worried about costs.
+(**) Configurable
 
 .. image:: https://travis-ci.org/JohannesEbke/aws_list_all.svg?branch=master
    :target: https://travis-ci.org/JohannesEbke/aws_list_all
@@ -11,71 +13,75 @@ List all resources in an AWS account, all regions, all services(*).
 Usage
 -----
 
-You need to have python (both 2 or 3 work) with boto3 installed,
-as well as AWS credentials which can be picked up by boto3.
+You need to have python (both 2 or 3 work) as well as AWS credentials set up as usual.
 
-MySetup::
-  mkvirtualenv aws-list-all
-  pip install awscli boto3
-  pip install -U -e .
+Quick Start with virtualenv::
 
-To list available services to query, do::
-  
-  python -m aws_list_all introspect list-services
+  mkvirtualenv -p $(which python3) aws
+  pip install aws-list-all
+  aws-list-all --region eu-west-1 --service ec2 --directory ./data/
 
-To list available operations for a given service, do::
-  
-  python -m aws_list_all introspect list-operations
-  python -m aws_list_all introspect list-operations --service ec2
+Quick Start Output::
 
-To list resources for a given service and region, do::
-
-  python -m aws_list_all query --service ec2 --region us-west-2 --directory data --verbose
-
-Example output::
-
-  +++ ec2 eu-west-1 DescribeVolumeStatus VolumeStatuses
+  ---------------8<--(snip)--8<-------------------
+  --- ec2 eu-west-1 DescribeVolumes Volumes
+  --- ec2 eu-west-1 DescribeVolumesModifications VolumesModifications
+  --- ec2 eu-west-1 DescribeVpcEndpointConnectionNotifications ConnectionNotificationSet
+  --- ec2 eu-west-1 DescribeVpcEndpointConnections VpcEndpointConnections
+  --- ec2 eu-west-1 DescribeVpcEndpointServiceConfigurations ServiceConfigurations
+  --- ec2 eu-west-1 DescribeVpcEndpoints VpcEndpoints
   --- ec2 eu-west-1 DescribeVpcPeeringConnections VpcPeeringConnections
-  --- ec2 eu-west-1 DescribeExportTasks ExportTasks
-  --- ec2 eu-west-1 DescribePlacementGroups PlacementGroups
-  --- ec2 eu-west-1 DescribeSnapshots Snapshots
-  --- ec2 eu-west-1 DescribeConversionTasks ConversionTasks
-  +++ ec2 eu-west-1 DescribeInternetGateways InternetGateways
-  --- ec2 eu-west-1 DescribeBundleTasks BundleTasks
-  +++ ec2 eu-west-1 DescribeNetworkAcls NetworkAcls
-  ....
+  --- ec2 eu-west-1 DescribeVpcs Vpcs
+  --- ec2 eu-west-1 DescribeVpnConnections VpnConnections
+  --- ec2 eu-west-1 DescribeVpnGateways VpnGateways
+  +++ ec2 eu-west-1 DescribeKeyPairs KeyPairs
+  +++ ec2 eu-west-1 DescribeSecurityGroups SecurityGroups
+  +++ ec2 eu-west-1 DescribeTags Tags
+  !!! ec2 eu-west-1 DescribeClientVpnEndpoints ClientError('An error occurred (InternalError) when calling the DescribeClientVpnEndpoints operation (reached max retries: 4): An internal error has occurred')
 
 Lines start with "``---``" if no resources of this type have been found, and
-start with "``+++``" if at least one resource has been found. Errors are prefixed with "``!!!``",
-and "``>:|``" denotes an error due to denied access.
+start with "``+++``" if at least one resource has been found.
+"``>:|``" denotes an error due to missing permissions, other errors are prefixed with "``!!!``",
 
-Currently, some default resources are still considered "user-created", this may
-change in the future.
+Currently, some default resources are still considered "user-created" and thus listed,
+this may change in the future.
 
 Details about found resources are saved in json files named after the service,
 region, and operation used to find them. They can be dumped with::
 
-  python -m aws_list_all show ec2_DescribeSecurityGroups_eu-west-1.json
-  python -m aws_list_all show --verbose ec2_DescribeSecurityGroups_eu-west-1.json
+  aws-list-all show data/ec2_*
+  aws-list-all show --verbose data/ec2_DescribeSecurityGroups_eu-west-1.json
 
-Enough of this, how do I really list everything?
+How do I really list everything?
 ------------------------------------------------
 
-Restricting the region and service is optional, a simple ``query`` lists everything.
+Warning: As AWS has over 1024 API endpoints, you may have to increase your allowed number of open files
+See https://github.com/JohannesEbke/aws_list_all/issues/6
+
+Restricting the region and service is optional, a simple ``query`` without arguments lists everything.
 It uses a thread pool to parallelize queries and randomizes the order to avoid
 hitting one endpoint in close succession. One run takes around two minutes for me.
 
-Examples
---------
 
-Query with verbose output, do::
+More Examples
+-------------
 
-  python -m aws_list_all query --service ec2 --region us-west-2 --directory data --verbose 
+Add immediate, more verbose output to a query with ``--verbose``. Use twice for even more verbosity::
 
-Show resources for all returned queries, do::
+  aws-list-all query --region eu-west-1 --service ec2 --operation DescribeVpcs --directory data --verbose
 
-  python -m aws_list_all show --verbose data/*
+Show resources for all returned queries::
 
-Show resources for all ec2 returned queries, do::
+  aws-list-all show --verbose data/*
 
-  python -m aws_list_all show --verbose data/ec2*
+Show resources for all ec2 returned queries::
+
+  aws-list-all show --verbose data/ec2*
+
+List available services to query::
+
+  aws-list-all introspect list-services
+
+List available operations for a given service, do::
+
+  aws-list-all introspect list-operations --service ec2

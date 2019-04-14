@@ -68,6 +68,8 @@ RESULT_IGNORE_ERRORS = {
         # Need to register as a seller to get this listing
         'DescribeReservedInstancesListings':
             'not authorized to use the requested product. Please complete the seller registration',
+        # This seems to be the error if no ClientVpnEndpoints are available in the region
+        'DescribeClientVpnEndpoints': 'InternalError',
     },
     'fms': {
         'ListMemberAccounts': 'not currently delegated by AWS FM',
