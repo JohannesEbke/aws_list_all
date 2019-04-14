@@ -181,17 +181,25 @@ NOT_AVAILABLE_FOR_ACCOUNT_STRINGS = [
 NOT_AVAILABLE_STRINGS = NOT_AVAILABLE_FOR_REGION_STRINGS + NOT_AVAILABLE_FOR_ACCOUNT_STRINGS
 
 
-def do_query(services, selected_regions=(), selected_operations=()):
+def do_query(services, selected_regions=(), selected_operations=(), verbose=False):
     """For the given services, execute all selected operations (default: all) in selected regions
     (default: all)"""
     to_run = []
+    print("INFO: building set of queries to execute")
     for service in services:
         for region in get_regions_for_service(service, selected_regions):
             for operation in get_listing_operations(service, region, selected_operations):
+                if verbose:
+                    print("Service: {: <28} | Region: {:<15} | Operation: {}".format(service, region, operation))
+
                 to_run.append([service, region, operation])
     shuffle(to_run)  # Distribute requests across endpoints
     results_by_type = defaultdict(list)
+    print("INFO: executing queries")
     for result in ThreadPool(32).imap_unordered(acquire_listing, to_run):
+        ## uncomment if you want to see what call is being made
+        if False:
+            print("ExecutedQueryResult: {}".format(result))
         results_by_type[result[0]].append(result)
         print(result[0][-1], end='')
         sys.stdout.flush()
