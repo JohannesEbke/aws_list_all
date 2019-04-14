@@ -40,7 +40,7 @@ def test_introspect_regions_for_service():
 
 def test_get_listing_operations():
     services_with_no_listings = set([
-        service for service in get_services() if len(get_listing_operations(service)) == 0
+        service for service in get_services() if len(get_listing_operations(service, region='us-east-1')) == 0
     ])
 
     expected_no_listings = {
