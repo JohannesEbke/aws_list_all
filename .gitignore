@@ -95,3 +95,6 @@ ENV/
 
 # listing file data dir
 data/
+
+# PyTest Cache
+.pytest_cache/
