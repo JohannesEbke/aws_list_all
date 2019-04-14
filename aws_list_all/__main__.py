@@ -41,14 +41,14 @@ def main():
         help='Restrict querying to the given operation (can be specified multiple times)'
     )
     query.add_argument('--directory', default='.', help='Directory to save result listings to')
-    query.add_argument('--verbose', action='store_true', help='print detailed info during run')
+    query.add_argument('--verbose', action='count', help='print detailed info during run')
 
     # Once you have queried, show is the next most important command. So it comes second
     show = subparsers.add_parser(
         'show', description='Show a summary or details of a saved listing', help='Display saved listings'
     )
     show.add_argument('listingfile', nargs='*', help='listing file(s) to load and print')
-    show.add_argument('--verbose', action='store_true', help='print given listing files with detailed info')
+    show.add_argument('--verbose', action='count', help='print given listing files with detailed info')
 
     # Introspection debugging is not the main function. So we put it all into a subcommand.
     introspect = subparsers.add_parser(
@@ -104,10 +104,10 @@ def main():
                 pass
             os.chdir(args.directory)
         services = args.service or get_services()
-        do_query(services, args.region, args.operation, args.verbose)
+        do_query(services, args.region, args.operation, verbose=args.verbose or 0)
     elif args.command == "show":
         if args.listingfile:
-            do_list_files(args.listingfile, verbose=args.verbose)
+            do_list_files(args.listingfile, verbose=args.verbose or 0)
         else:
             show.print_help()
             return 1
