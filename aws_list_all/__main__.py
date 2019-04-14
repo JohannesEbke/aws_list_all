@@ -85,7 +85,7 @@ def main():
     introspecters.add_parser('debug', description='Debug information', help='Debug information')
 
     # Finally, refreshing the service/region caches comes last.
-    show = subparsers.add_parser(
+    subparsers.add_parser(
         'recreate-caches',
         description=(
             'Recreate the service/region availability caches, '
