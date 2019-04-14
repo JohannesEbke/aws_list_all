@@ -30,25 +30,32 @@ def main():
     # Query is the main subcommand, so we put it first
     query = subparsers.add_parser('query', description='Query AWS for resources', help='Query AWS for resources')
     query.add_argument(
-        '--service', action='append', help='Restrict querying to the given service (can be specified multiple times)'
+        '-s',
+        '--service',
+        action='append',
+        help='Restrict querying to the given service (can be specified multiple times)'
     )
     query.add_argument(
-        '--region', action='append', help='Restrict querying to the given region (can be specified multiple times)'
+        '-r',
+        '--region',
+        action='append',
+        help='Restrict querying to the given region (can be specified multiple times)'
     )
     query.add_argument(
+        '-o',
         '--operation',
         action='append',
         help='Restrict querying to the given operation (can be specified multiple times)'
     )
-    query.add_argument('--directory', default='.', help='Directory to save result listings to')
-    query.add_argument('--verbose', action='count', help='print detailed info during run')
+    query.add_argument('-d', '--directory', default='.', help='Directory to save result listings to')
+    query.add_argument('-v', '--verbose', action='count', help='Print detailed info during run')
 
     # Once you have queried, show is the next most important command. So it comes second
     show = subparsers.add_parser(
         'show', description='Show a summary or details of a saved listing', help='Display saved listings'
     )
     show.add_argument('listingfile', nargs='*', help='listing file(s) to load and print')
-    show.add_argument('--verbose', action='count', help='print given listing files with detailed info')
+    show.add_argument('-v', '--verbose', action='count', help='print given listing files with detailed info')
 
     # Introspection debugging is not the main function. So we put it all into a subcommand.
     introspect = subparsers.add_parser(
@@ -78,6 +85,7 @@ def main():
         help='List discovered listing operations'
     )
     ops.add_argument(
+        '-s',
         '--service',
         action='append',
         help='Only list discovered operations of the given service (can be specified multiple times)'
