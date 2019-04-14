@@ -67,10 +67,10 @@ DEPRECATED_OR_DISALLOWED = {
 
 DISALLOWED_FOR_IAM_USERS = {
     'iam': [
-        "ListAccessKeys", "ListMFADevices", "ListSSHPublicKeys", "ListServiceSpecificCredentials",
-        "ListSigningCertificates"
+        'ListAccessKeys', 'ListMFADevices', 'ListSSHPublicKeys', 'ListServiceSpecificCredentials',
+        'ListSigningCertificates'
     ],
-    'importexport': ["ListJobs"],
+    'importexport': ['ListJobs'],
 }
 # DEPRECATED_OR_DISALLOWED.update(DISALLOWED_FOR_IAM_USERS)
 
@@ -249,7 +249,7 @@ def get_verbs(service):
     """Return a list of "Verbs" given a boto3 service client. A "Verb" in this context is
     the first CamelCased word in an API call"""
     client = get_client(service)
-    return set(re.sub("([A-Z])", "_\\1", x).split("_")[1] for x in client.meta.method_to_api_mapping.values())
+    return set(re.sub('([A-Z])', '_\\1', x).split('_')[1] for x in client.meta.method_to_api_mapping.values())
 
 
 def get_listing_operations(service, region=None, selected_operations=()):
@@ -306,7 +306,7 @@ def get_endpoint_hosts():
 def get_endpoint_ip(service_region_host):
     (service, region), host = service_region_host
     try:
-        result = gethostbyname(host.split("/")[2])
+        result = gethostbyname(host.split('/')[2])
         return (service, region, result)
     except Exception:
         return (service, region, None)
@@ -346,26 +346,26 @@ def get_regions_for_service(requested_service, requested_regions=()):
 
 def introspect_regions_for_service():
     """Introspect and compare guessed and boto3-defined regions"""
-    print("Comparing service/region pairs reported by boto3 and found via DNS queries")
-    print("=" * 100)
+    print('Comparing service/region pairs reported by boto3 and found via DNS queries')
+    print('=' * 100)
     guessed_regions = get_service_regions()
     m = defaultdict(set)
     for service, guessed in sorted(guessed_regions.items()):
         reported = boto3.Session().get_available_regions(service)
         if set(reported) == set(guessed):
-            print(service, "guessed.")
+            print(service, 'guessed.')
         if set(guessed) - set(reported):
-            print(service, "more than reported:", set(guessed) - set(reported))
+            print(service, 'more than reported:', set(guessed) - set(reported))
         if set(reported) - set(guessed):
-            print(service, "less than reported:", set(reported) - set(guessed))
+            print(service, 'less than reported:', set(reported) - set(guessed))
         m[frozenset(map(str, guessed))].add(service)
 
     print()
-    print("Listing service/region pairs by sets of supported regions")
-    print("=" * 100)
+    print('Listing service/region pairs by sets of supported regions')
+    print('=' * 100)
     for regions, services in sorted(m.items()):
-        print("-" * 80)
-        print("in the", len(regions), "regions", ", ".join(sorted(regions)))
-        print("...there are these", len(services), "services:")
+        print('-' * 80)
+        print('in the', len(regions), 'regions', ', '.join(sorted(regions)))
+        print('...there are these', len(services), 'services:')
         for service in sorted(services):
-            print(" -", service)
+            print(' -', service)

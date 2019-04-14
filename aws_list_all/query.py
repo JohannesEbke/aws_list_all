@@ -193,7 +193,7 @@ def do_query(services, selected_regions=(), selected_operations=(), verbose=0):
         for region in get_regions_for_service(service, selected_regions):
             for operation in get_listing_operations(service, region, selected_operations):
                 if verbose > 0:
-                    print("Service: {: <28} | Region: {:<15} | Operation: {}".format(service, region, operation))
+                    print('Service: {: <28} | Region: {:<15} | Operation: {}'.format(service, region, operation))
 
                 to_run.append([service, region, operation])
     shuffle(to_run)  # Distribute requests across endpoints
@@ -202,7 +202,7 @@ def do_query(services, selected_regions=(), selected_operations=(), verbose=0):
     for result in ThreadPool(32).imap_unordered(acquire_listing, to_run):
         results_by_type[result[0]].append(result)
         if verbose > 1:
-            print("ExecutedQueryResult: {}".format(result))
+            print('ExecutedQueryResult: {}'.format(result))
         else:
             print(result[0][-1], end='')
             sys.stdout.flush()
@@ -219,7 +219,7 @@ def acquire_listing(what):
     try:
         listing = Listing.acquire(service, region, operation)
         if listing.resource_total_count > 0:
-            with open("{}_{}_{}.json".format(service, operation, region), "w") as jsonfile:
+            with open('{}_{}_{}.json'.format(service, operation, region), 'w') as jsonfile:
                 json.dump(listing.to_json(), jsonfile, default=datetime.isoformat)
             return (RESULT_SOMETHING, service, region, operation, ', '.join(listing.resource_types))
         else:
@@ -245,30 +245,30 @@ def acquire_listing(what):
 def do_list_files(filenames, verbose=0):
     """Print out a rudimentary summary of the Listing objects contained in the given files"""
     for listing_filename in filenames:
-        listing = Listing.from_json(json.load(open(listing_filename, "rb")))
+        listing = Listing.from_json(json.load(open(listing_filename, 'rb')))
         resources = listing.resources
         truncated = False
         if 'truncated' in resources:
             truncated = resources['truncated']
             del resources['truncated']
         for resource_type, value in resources.items():
-            len_string = "> {}".format(len(value)) if truncated else str(len(value))
+            len_string = '> {}'.format(len(value)) if truncated else str(len(value))
             print(listing.service, listing.region, listing.operation, resource_type, len_string)
             if verbose > 0:
                 for item in value:
                     idkey = None
                     if isinstance(item, dict):
                         for heuristic in [
-                            lambda x: x == "id" or x.endswith("Id"),
-                            lambda x: x == "SerialNumber",
+                            lambda x: x == 'id' or x.endswith('Id'),
+                            lambda x: x == 'SerialNumber',
                         ]:
                             idkeys = [k for k in item.keys() if heuristic(k)]
                             if idkeys:
                                 idkey = idkeys[0]
                                 break
                     if idkey:
-                        print("    - ", item.get(idkey, ', '.join(item.keys())))
+                        print('    - ', item.get(idkey, ', '.join(item.keys())))
                     else:
-                        print("    - ", item)
+                        print('    - ', item)
                 if truncated:
-                    print("    - ... (more items, query truncated)")
+                    print('    - ... (more items, query truncated)')

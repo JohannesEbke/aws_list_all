@@ -44,11 +44,11 @@ PARAMETERS = {
 
 ssf = list(
     boto3.Session(
-        region_name="us-east-1"
-    ).client("cloudformation").meta.service_model.shape_for("ListStacksInput").members["StackStatusFilter"].member.enum
+        region_name='us-east-1'
+    ).client('cloudformation').meta.service_model.shape_for('ListStacksInput').members['StackStatusFilter'].member.enum
 )
-ssf.remove("DELETE_COMPLETE")
-PARAMETERS.setdefault("cloudformation", {})["ListStacks"] = {"StackStatusFilter": ssf}
+ssf.remove('DELETE_COMPLETE')
+PARAMETERS.setdefault('cloudformation', {})['ListStacks'] = {'StackStatusFilter': ssf}
 
 
 def run_raw_listing_operation(service, region, operation):
@@ -97,21 +97,21 @@ class Listing(object):
 
     def export_resources(self, filename):
         """Export the result to the given JSON file"""
-        with open(filename, "w") as outfile:
+        with open(filename, 'w') as outfile:
             outfile.write(pprint.pformat(self.resources).encode('utf-8'))
 
     def __str__(self):
         opdesc = '{} {} {}'.format(self.service, self.region, self.operation)
         if len(self.resource_types) == 0 or self.resource_total_count == 0:
-            return "{} (no resources found)".format(opdesc)
+            return '{} (no resources found)'.format(opdesc)
         return opdesc + ', '.join('#{}: {}'.format(key, len(listing)) for key, listing in self.resources.items())
 
     @classmethod
     def acquire(cls, service, region, operation):
         """Acquire the given listing by making an AWS request"""
         response = run_raw_listing_operation(service, region, operation)
-        if response["ResponseMetadata"]["HTTPStatusCode"] != 200:
-            raise Exception("Bad AWS HTTP Status Code", response)
+        if response['ResponseMetadata']['HTTPStatusCode'] != 200:
+            raise Exception('Bad AWS HTTP Status Code', response)
         return cls(service, region, operation, response)
 
     @property
@@ -120,58 +120,58 @@ class Listing(object):
         response = self.response.copy()
         complete = True
 
-        del response["ResponseMetadata"]
+        del response['ResponseMetadata']
 
         # Transmogrify strange cloudfront results into standard AWS format
-        if self.service == "cloudfront":
-            assert len(response.keys()) == 1, "Unexpected cloudfront response: {}".format(response)
-            key = list(response.keys())[0][:-len("List")]
+        if self.service == 'cloudfront':
+            assert len(response.keys()) == 1, 'Unexpected cloudfront response: {}'.format(response)
+            key = list(response.keys())[0][:-len('List')]
             response = list(response.values())[0]
-            response[key] = response.get("Items", [])
+            response[key] = response.get('Items', [])
 
         # medialive List* things sends a next token; remove if no channels/lists
-        if self.service == "medialive":
-            if self.operation == "ListChannels" and not response["Channels"]:
-                if "Channels" in response:
-                    del response["Channels"]
-                if "NextToken" in response:
-                    del response["NextToken"]
-            if self.operation == "ListInputs" and not response["Inputs"]:
-                if "Inputs" in response:
-                    del response["Inputs"]
-                if "NextToken" in response:
-                    del response["NextToken"]
+        if self.service == 'medialive':
+            if self.operation == 'ListChannels' and not response['Channels']:
+                if 'Channels' in response:
+                    del response['Channels']
+                if 'NextToken' in response:
+                    del response['NextToken']
+            if self.operation == 'ListInputs' and not response['Inputs']:
+                if 'Inputs' in response:
+                    del response['Inputs']
+                if 'NextToken' in response:
+                    del response['NextToken']
 
         # ssm ListCommands sends a next token; remove if no channels
-        if self.service == "ssm" and self.operation == "ListCommands":
-            if "NextToken" in response and not response["Commands"]:
-                del response["NextToken"]
+        if self.service == 'ssm' and self.operation == 'ListCommands':
+            if 'NextToken' in response and not response['Commands']:
+                del response['NextToken']
 
         # SNS ListSubscriptions always sends a next token...
-        if self.service == "sns" and self.operation == "ListSubscriptions":
-            del response["NextToken"]
+        if self.service == 'sns' and self.operation == 'ListSubscriptions':
+            del response['NextToken']
 
-        if "Count" in response:
-            if "MaxResults" in response:
-                if response["MaxResults"] <= response["Count"]:
+        if 'Count' in response:
+            if 'MaxResults' in response:
+                if response['MaxResults'] <= response['Count']:
                     complete = False
-                del response["MaxResults"]
-            del response["Count"]
+                del response['MaxResults']
+            del response['Count']
 
-        if "Quantity" in response:
-            if "MaxItems" in response:
-                if response["MaxItems"] <= response["Quantity"]:
+        if 'Quantity' in response:
+            if 'MaxItems' in response:
+                if response['MaxItems'] <= response['Quantity']:
                     complete = False
-                del response["MaxItems"]
-            del response["Quantity"]
+                del response['MaxItems']
+            del response['Quantity']
 
-        for neutral_thing in ("MaxItems", "MaxResults", "Quantity"):
+        for neutral_thing in ('MaxItems', 'MaxResults', 'Quantity'):
             if neutral_thing in response:
                 del response[neutral_thing]
 
         for bad_thing in (
-            "hasMoreResults", "IsTruncated", "Truncated", "HasMoreApplications", "HasMoreDeliveryStreams",
-            "HasMoreStreams", "NextToken", "NextMarker", "nextMarker", "Marker"
+            'hasMoreResults', 'IsTruncated', 'Truncated', 'HasMoreApplications', 'HasMoreDeliveryStreams',
+            'HasMoreStreams', 'NextToken', 'NextMarker', 'nextMarker', 'Marker'
         ):
             if bad_thing in response:
                 if response[bad_thing]:
@@ -179,30 +179,30 @@ class Listing(object):
                 del response[bad_thing]
 
         # Special handling for Aliases in kms, there are some reserved AWS-managed aliases.
-        if self.service == "kms" and self.operation == "ListAliases":
-            response["Aliases"] = [
-                alias for alias in response.get("Aliases", [])
-                if not alias.get("AliasName").lower().startswith("alias/aws")
+        if self.service == 'kms' and self.operation == 'ListAliases':
+            response['Aliases'] = [
+                alias for alias in response.get('Aliases', [])
+                if not alias.get('AliasName').lower().startswith('alias/aws')
             ]
 
         # Special handling for service-level kms keys; derived from alias name.
-        if self.service == "kms" and self.operation == "ListKeys":
-            list_aliases = run_raw_listing_operation(self.service, self.region, "ListAliases")
+        if self.service == 'kms' and self.operation == 'ListKeys':
+            list_aliases = run_raw_listing_operation(self.service, self.region, 'ListAliases')
             service_key_ids = [
-                k.get("TargetKeyId") for k in list_aliases.get("Aliases", [])
-                if k.get("AliasName").lower().startswith("alias/aws")
+                k.get('TargetKeyId') for k in list_aliases.get('Aliases', [])
+                if k.get('AliasName').lower().startswith('alias/aws')
             ]
-            response["Keys"] = [k for k in response.get("Keys", []) if k.get("KeyId") not in service_key_ids]
+            response['Keys'] = [k for k in response.get('Keys', []) if k.get('KeyId') not in service_key_ids]
 
         # Filter PUBLIC images from appstream
-        if self.service == "appstream" and self.operation == "DescribeImages":
-            response["Images"] = [
-                image for image in response.get("Images", []) if not image.get("Visibility", "PRIVATE") == "PUBLIC"
+        if self.service == 'appstream' and self.operation == 'DescribeImages':
+            response['Images'] = [
+                image for image in response.get('Images', []) if not image.get('Visibility', 'PRIVATE') == 'PUBLIC'
             ]
 
         # This API returns a dict instead of a list
         if self.service == 'cloudsearch' and self.operation == 'ListDomainNames':
-            response["DomainNames"] = list(response["DomainNames"].items())
+            response['DomainNames'] = list(response['DomainNames'].items())
 
         # Only list CloudTrail trails in own/Home Region
         if self.service == 'cloudtrail' and self.operation == 'DescribeTrails':
@@ -218,14 +218,14 @@ class Listing(object):
             ]
 
         # Remove AWS supplied policies
-        if self.service == "iam" and self.operation == "ListPolicies":
-            response["Policies"] = [
-                policy for policy in response["Policies"] if not policy['Arn'].startswith('arn:aws:iam::aws:')
+        if self.service == 'iam' and self.operation == 'ListPolicies':
+            response['Policies'] = [
+                policy for policy in response['Policies'] if not policy['Arn'].startswith('arn:aws:iam::aws:')
             ]
 
         # Owner Info is not necessary
-        if self.service == "s3" and self.operation == "ListBuckets":
-            del response["Owner"]
+        if self.service == 's3' and self.operation == 'ListBuckets':
+            del response['Owner']
 
         # Remove failures from ecs/DescribeClusters
         if self.service == 'ecs' and self.operation == 'DescribeClusters':
@@ -233,71 +233,71 @@ class Listing(object):
                 del response['failures']
 
         # This API returns a dict instead of a list
-        if self.service == "pinpoint" and self.operation == "GetApps":
-            response["ApplicationsResponse"] = response.get("ApplicationsResponse", {}).get("Items", [])
+        if self.service == 'pinpoint' and self.operation == 'GetApps':
+            response['ApplicationsResponse'] = response.get('ApplicationsResponse', {}).get('Items', [])
 
         # Remove default Baseline
-        if self.service == "ssm" and self.operation == "DescribePatchBaselines":
-            response["BaselineIdentities"] = [
-                line for line in response["BaselineIdentities"] if not line['DefaultBaseline']
+        if self.service == 'ssm' and self.operation == 'DescribePatchBaselines':
+            response['BaselineIdentities'] = [
+                line for line in response['BaselineIdentities'] if not line['DefaultBaseline']
             ]
 
         # Remove default DB Security Group
-        if self.service == "rds" and self.operation == "DescribeDBSecurityGroups":
-            response["DBSecurityGroups"] = [
-                group for group in response["DBSecurityGroups"] if group['DBSecurityGroupName'] != 'default'
+        if self.service == 'rds' and self.operation == 'DescribeDBSecurityGroups':
+            response['DBSecurityGroups'] = [
+                group for group in response['DBSecurityGroups'] if group['DBSecurityGroupName'] != 'default'
             ]
 
         # Filter default VPCs
-        if self.service == "ec2" and self.operation == "DescribeVpcs":
-            response["Vpcs"] = [vpc for vpc in response["Vpcs"] if not vpc["IsDefault"]]
+        if self.service == 'ec2' and self.operation == 'DescribeVpcs':
+            response['Vpcs'] = [vpc for vpc in response['Vpcs'] if not vpc['IsDefault']]
 
         # Filter default Subnets
-        if self.service == "ec2" and self.operation == "DescribeSubnets":
-            response["Subnets"] = [net for net in response["Subnets"] if not net["DefaultForAz"]]
+        if self.service == 'ec2' and self.operation == 'DescribeSubnets':
+            response['Subnets'] = [net for net in response['Subnets'] if not net['DefaultForAz']]
 
         # Filter default SGs
-        if self.service == "ec2" and self.operation == "DescribeSecurityGroups":
-            response["SecurityGroups"] = [sg for sg in response["SecurityGroups"] if sg["GroupName"] != "default"]
+        if self.service == 'ec2' and self.operation == 'DescribeSecurityGroups':
+            response['SecurityGroups'] = [sg for sg in response['SecurityGroups'] if sg['GroupName'] != 'default']
 
         # Filter main route tables
-        if self.service == "ec2" and self.operation == "DescribeRouteTables":
-            response["RouteTables"] = [
-                rt for rt in response["RouteTables"] if not any(x["Main"] for x in rt["Associations"])
+        if self.service == 'ec2' and self.operation == 'DescribeRouteTables':
+            response['RouteTables'] = [
+                rt for rt in response['RouteTables'] if not any(x['Main'] for x in rt['Associations'])
             ]
 
         # Filter default Network ACLs
-        if self.service == "ec2" and self.operation == "DescribeNetworkAcls":
-            response["NetworkAcls"] = [nacl for nacl in response["NetworkAcls"] if not nacl["IsDefault"]]
+        if self.service == 'ec2' and self.operation == 'DescribeNetworkAcls':
+            response['NetworkAcls'] = [nacl for nacl in response['NetworkAcls'] if not nacl['IsDefault']]
 
         # Filter default Internet Gateways
-        if self.service == "ec2" and self.operation == "DescribeInternetGateways":
-            describe_vpcs = run_raw_listing_operation(self.service, self.region, "DescribeVpcs")
-            vpcs = {v["VpcId"]: v for v in describe_vpcs.get("Vpcs", [])}
+        if self.service == 'ec2' and self.operation == 'DescribeInternetGateways':
+            describe_vpcs = run_raw_listing_operation(self.service, self.region, 'DescribeVpcs')
+            vpcs = {v['VpcId']: v for v in describe_vpcs.get('Vpcs', [])}
             internet_gateways = []
-            for ig in response["InternetGateways"]:
-                attachments = ig.get("Attachments", [])
+            for ig in response['InternetGateways']:
+                attachments = ig.get('Attachments', [])
                 # more than one, it cannot be default.
                 if len(attachments) != 1:
                     continue
-                vpc = attachments[0].get("VpcId")
-                if not vpcs.get(vpc).get("IsDefault", False):
+                vpc = attachments[0].get('VpcId')
+                if not vpcs.get(vpc).get('IsDefault', False):
                     internet_gateways.append(ig)
-            response["InternetGateways"] = internet_gateways
+            response['InternetGateways'] = internet_gateways
 
         # Filter Public images from ec2.fpga images
-        if self.service == "ec2" and self.operation == "DescribeFpgaImages":
-            response["FpgaImages"] = [image for image in response.get("FpgaImages", []) if not image.get("Public")]
+        if self.service == 'ec2' and self.operation == 'DescribeFpgaImages':
+            response['FpgaImages'] = [image for image in response.get('FpgaImages', []) if not image.get('Public')]
 
         # interpret nextToken in several services
-        if (self.service, self.operation) in (("inspector", "ListFindings"), ('logs', 'DescribeLogGroups')):
+        if (self.service, self.operation) in (('inspector', 'ListFindings'), ('logs', 'DescribeLogGroups')):
             if response.get('nextToken'):
                 complete = False
                 del response['nextToken']
 
         for key, value in response.items():
             if not isinstance(value, list):
-                raise Exception("No listing: {} is no list:".format(key), response)
+                raise Exception('No listing: {} is no list:'.format(key), response)
 
         if not complete:
             response['truncated'] = [True]

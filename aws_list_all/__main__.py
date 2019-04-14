@@ -14,11 +14,11 @@ from .query import do_list_files, do_query
 def main():
     """Parse CLI arguments to either list services, operations, queries or existing json files"""
     parser = ArgumentParser(
-        prog="aws_list_all",
+        prog='aws_list_all',
         description=(
-            "List AWS resources on one account across regions and services. "
-            "Saves result into json files, which can then be passed to this tool again "
-            "to list the contents."
+            'List AWS resources on one account across regions and services. '
+            'Saves result into json files, which can then be passed to this tool again '
+            'to list the contents.'
         )
     )
     subparsers = parser.add_subparsers(
@@ -104,7 +104,7 @@ def main():
 
     args = parser.parse_args()
 
-    if args.command == "query":
+    if args.command == 'query':
         if args.directory:
             try:
                 os.makedirs(args.directory)
@@ -113,36 +113,36 @@ def main():
             os.chdir(args.directory)
         services = args.service or get_services()
         do_query(services, args.region, args.operation, verbose=args.verbose or 0)
-    elif args.command == "show":
+    elif args.command == 'show':
         if args.listingfile:
             do_list_files(args.listingfile, verbose=args.verbose or 0)
         else:
             show.print_help()
             return 1
-    elif args.command == "introspect":
-        if args.introspect == "list-services":
+    elif args.command == 'introspect':
+        if args.introspect == 'list-services':
             for service in get_services():
                 print(service)
-        elif args.introspect == "list-service-regions":
+        elif args.introspect == 'list-service-regions':
             introspect_regions_for_service()
             return 0
-        elif args.introspect == "list-operations":
+        elif args.introspect == 'list-operations':
             for service in args.service or get_services():
                 for operation in get_listing_operations(service):
                     print(service, operation)
-        elif args.introspect == "debug":
+        elif args.introspect == 'debug':
             for service in get_services():
                 for verb in get_verbs(service):
                     print(service, verb)
         else:
             introspect.print_help()
             return 1
-    elif args.command == "recreate-caches":
+    elif args.command == 'recreate-caches':
         recreate_caches()
     else:
         parser.print_help()
         return 1
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     exit(main())

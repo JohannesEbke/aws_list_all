@@ -7,8 +7,8 @@ from .introspection import (
 def test_get_services():
     services = get_services()
     assert len(services) > 160
-    assert "ec2" in services
-    assert "route53" in services
+    assert 'ec2' in services
+    assert 'route53' in services
 
 
 def test_get_endpoint_hosts():
@@ -30,8 +30,8 @@ def test_get_service_regions():
 
 
 def test_get_regions_for_service():
-    requested_regions = ("us-east-2", "eu-west-1", "nonexistent")
-    assert set(get_regions_for_service("ec2", requested_regions=requested_regions)) == set(("us-east-2", "eu-west-1"))
+    requested_regions = ('us-east-2', 'eu-west-1', 'nonexistent')
+    assert set(get_regions_for_service('ec2', requested_regions=requested_regions)) == set(('us-east-2', 'eu-west-1'))
 
 
 def test_introspect_regions_for_service():
