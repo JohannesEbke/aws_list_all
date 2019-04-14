@@ -20,19 +20,20 @@ To list resources for a given service and region, do::
 
 Example output::
 
-  --> ec2 eu-west-1 DescribeVolumeStatus VolumeStatuses
+  +++ ec2 eu-west-1 DescribeVolumeStatus VolumeStatuses
   --- ec2 eu-west-1 DescribeVpcPeeringConnections VpcPeeringConnections
   --- ec2 eu-west-1 DescribeExportTasks ExportTasks
   --- ec2 eu-west-1 DescribePlacementGroups PlacementGroups
   --- ec2 eu-west-1 DescribeSnapshots Snapshots
   --- ec2 eu-west-1 DescribeConversionTasks ConversionTasks
-  --> ec2 eu-west-1 DescribeInternetGateways InternetGateways
+  +++ ec2 eu-west-1 DescribeInternetGateways InternetGateways
   --- ec2 eu-west-1 DescribeBundleTasks BundleTasks
-  --> ec2 eu-west-1 DescribeNetworkAcls NetworkAcls
+  +++ ec2 eu-west-1 DescribeNetworkAcls NetworkAcls
   ....
 
 Lines start with "``---``" if no resources of this type have been found, and
-start with "``-->``" if at least one resource has been found.
+start with "``+++``" if at least one resource has been found. Errors are prefixed with "``!!!``",
+and "``>:|``" denotes an error due to denied access.
 
 Currently, some default resources are still considered "user-created", this may
 change in the future.
