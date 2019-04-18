@@ -11,7 +11,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 setup(
     name='aws_list_all',
-    version='0.6.0',
+    version='0.6.1',
     description='List all your AWS resources, all regions, all services.',
     long_description=long_description,
     url='https://github.com/JohannesEbke/aws_list_all',
@@ -36,5 +36,8 @@ setup(
             'aws_list_all=aws_list_all.__main__:main',
             'aws-list-all=aws_list_all.__main__:main',
         ],
+    },
+    package_data={
+        'aws_list_all': 'aws_list_all/*.json',
     },
 )
