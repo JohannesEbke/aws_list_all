@@ -340,7 +340,10 @@ def get_service_regions():
 def get_regions_for_service(requested_service, requested_regions=()):
     """Given a service name, return a list of region names where this service can have resources,
     restricted by a possible set of regions."""
-    regions = set(get_service_regions()[requested_service])
+    allregions = get_service_regions()
+    if requested_service not in allregions:
+        return list()
+    regions = set(allregions[requested_service])
     return list(regions) if not requested_regions else list(sorted(set(regions) & set(requested_regions)))
 
 
