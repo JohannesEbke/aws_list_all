@@ -186,7 +186,7 @@ NOT_AVAILABLE_FOR_ACCOUNT_STRINGS = [
 NOT_AVAILABLE_STRINGS = NOT_AVAILABLE_FOR_REGION_STRINGS + NOT_AVAILABLE_FOR_ACCOUNT_STRINGS
 
 
-def do_query(services, selected_regions=(), selected_operations=(), verbose=0):
+def do_query(services, selected_regions=(), selected_operations=(), verbose=0, sequential=False):
     """For the given services, execute all selected operations (default: all) in selected regions
     (default: all)"""
     to_run = []
@@ -201,7 +201,11 @@ def do_query(services, selected_regions=(), selected_operations=(), verbose=0):
     shuffle(to_run)  # Distribute requests across endpoints
     results_by_type = defaultdict(list)
     print('...done. Executing queries...')
-    for result in ThreadPool(32).imap_unordered(partial(acquire_listing, verbose), to_run):
+    if sequential:
+        results = map(partial(acquire_listing, verbose), to_run)
+    else:
+        results = ThreadPool(32).imap_unordered(partial(acquire_listing, verbose), to_run)
+    for result in results:
         results_by_type[result[0]].append(result)
         if verbose > 1:
             print('ExecutedQueryResult: {}'.format(result))
