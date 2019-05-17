@@ -47,12 +47,7 @@ def main():
         action='append',
         help='Restrict querying to the given operation (can be specified multiple times)'
     )
-    query.add_argument(
-        '-q',
-        '--sequential',
-        action='store_true',
-        help='Run queries sequentially without threading'
-    )
+    query.add_argument('-q', '--sequential', action='store_true', help='Run queries sequentially without threading')
     query.add_argument('-d', '--directory', default='.', help='Directory to save result listings to')
     query.add_argument('-v', '--verbose', action='count', help='Print detailed info during run')
 
