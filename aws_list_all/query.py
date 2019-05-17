@@ -2,6 +2,7 @@ from __future__ import print_function
 
 import json
 import sys
+import contextlib
 from collections import defaultdict
 from datetime import datetime
 from functools import partial
@@ -201,7 +202,10 @@ def do_query(services, selected_regions=(), selected_operations=(), verbose=0):
     shuffle(to_run)  # Distribute requests across endpoints
     results_by_type = defaultdict(list)
     print('...done. Executing queries...')
-    for result in ThreadPool(32).imap_unordered(partial(acquire_listing, verbose), to_run):
+    # the `with` block is a workaround for a bug: https://bugs.python.org/issue35629
+    with contextlib.closing(ThreadPool(32)) as pool:
+        results = tuple(pool.imap_unordered(partial(acquire_listing, verbose), to_run))
+    for result in results:
         results_by_type[result[0]].append(result)
         if verbose > 1:
             print('ExecutedQueryResult: {}'.format(result))
