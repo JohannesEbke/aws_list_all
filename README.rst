@@ -17,7 +17,7 @@ Quick Start with virtualenv::
 
   mkvirtualenv -p $(which python3) aws
   pip install aws-list-all
-  aws-list-all --region eu-west-1 --service ec2 --directory ./data/
+  aws-list-all query --region eu-west-1 --service ec2 --directory ./data/
 
 Quick Start Output::
 
