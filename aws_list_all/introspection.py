@@ -23,6 +23,7 @@ SERVICE_BLACKLIST = [
     'cloudsearchdomain',  # Domain-specific endpoint required
     'mediastore-data',  # Mediastore Container-specific endpoint required
     's3control',  # TODO: Account-ID specific endpoint required
+    'managedblockchain',  # TODO: Unclear, does not have a region
 ]
 
 DEPRECATED_OR_DISALLOWED = {
