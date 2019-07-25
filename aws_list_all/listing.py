@@ -259,10 +259,10 @@ class Listing(object):
         if self.service == 'pinpoint' and self.operation == 'GetApps':
             response['ApplicationsResponse'] = response.get('ApplicationsResponse', {}).get('Items', [])
 
-        # Remove default Baseline
+        # Remove AWS-defined Baselines
         if self.service == 'ssm' and self.operation == 'DescribePatchBaselines':
             response['BaselineIdentities'] = [
-                line for line in response['BaselineIdentities'] if not line['DefaultBaseline']
+                line for line in response['BaselineIdentities'] if not line['BaselineName'].startswith('AWS-')
             ]
 
         # Remove default DB Security Group
