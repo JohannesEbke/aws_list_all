@@ -204,14 +204,13 @@ def do_query(services, selected_regions=(), selected_operations=(), verbose=0):
     print('...done. Executing queries...')
     # the `with` block is a workaround for a bug: https://bugs.python.org/issue35629
     with contextlib.closing(ThreadPool(32)) as pool:
-        results = tuple(pool.imap_unordered(partial(acquire_listing, verbose), to_run))
-    for result in results:
-        results_by_type[result[0]].append(result)
-        if verbose > 1:
-            print('ExecutedQueryResult: {}'.format(result))
-        else:
-            print(result[0][-1], end='')
-            sys.stdout.flush()
+        for result in pool.imap_unordered(partial(acquire_listing, verbose), to_run):
+            results_by_type[result[0]].append(result)
+            if verbose > 1:
+                print('ExecutedQueryResult: {}'.format(result))
+            else:
+                print(result[0][-1], end='')
+                sys.stdout.flush()
     print('...done')
     for result_type in (RESULT_NOTHING, RESULT_SOMETHING, RESULT_NO_ACCESS, RESULT_ERROR):
         for result in sorted(results_by_type[result_type]):
