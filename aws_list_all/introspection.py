@@ -81,6 +81,7 @@ AWS_RESOURCE_QUERIES = {
         'DescribeAdjustmentTypes', 'DescribeTerminationPolicyTypes', 'DescribeAutoScalingNotificationTypes',
         'DescribeScalingProcessTypes', 'DescribeMetricCollectionTypes', 'DescribeLifecycleHookTypes'
     ],
+    'backup': ['GetSupportedResourceTypes', 'ListBackupPlanTemplates'],
     'clouddirectory': ['ListManagedSchemaArns'],
     'cloudhsm': ['ListAvailableZones'],
     'cloudtrail': ['ListPublicKeys'],
@@ -91,12 +92,13 @@ AWS_RESOURCE_QUERIES = {
     'directconnect': ['DescribeLocations'],
     'dynamodb': ['DescribeEndpoints'],
     'dms': ['DescribeEndpointTypes', 'DescribeOrderableReplicationInstances', 'DescribeEventCategories'],
+    'docdb': ['DescribeDBEngineVersions', 'DescribeEventCategories'],
     'ec2': [
         'DescribePrefixLists', 'DescribeAvailabilityZones', 'DescribeVpcEndpointServices', 'DescribeSpotPriceHistory',
         'DescribeHostReservationOfferings', 'DescribeRegions', 'DescribeReservedInstancesOfferings', 'DescribeIdFormat',
         'DescribeVpcClassicLinkDnsSupport', 'DescribeAggregateIdFormat'
     ],
-    'elasticache': ['DescribeCacheParameterGroups', 'DescribeCacheEngineVersions'],
+    'elasticache': ['DescribeCacheParameterGroups', 'DescribeCacheEngineVersions', 'DescribeServiceUpdates'],
     'elasticbeanstalk': ['ListAvailableSolutionStacks', 'PlatformSummaryList'],
     'elastictranscoder': ['ListPresets'],
     'elb': ['DescribeLoadBalancerPolicyTypes', 'DescribeLoadBalancerPolicies'],
@@ -104,9 +106,12 @@ AWS_RESOURCE_QUERIES = {
     'es': ['DescribeReservedElasticsearchInstanceOfferings', 'GetCompatibleElasticsearchVersions'],
     'inspector': ['ListRulesPackages'],
     'lex-models': ['GetBuiltinIntents', 'GetBuiltinSlotTypes'],
-    'lightsail': ['GetBlueprints', 'GetBundles', 'GetRegions'],
+    'lightsail': [
+        'GetBlueprints', 'GetBundles', 'GetRegions', 'GetRelationalDatabaseBlueprints', 'GetRelationalDatabaseBundles'
+    ],
     'mediaconvert': ['DescribeEndpoints'],
     'medialive': ['ListOfferings'],
+    'mq': ['DescribeBrokerInstanceOptions', 'DescribeBrokerEngineTypes'],
     'neptune': ['DescribeDBEngineVersions', 'DescribeEventCategories'],
     'pricing': ['DescribeServices'],
     'polly': ['DescribeVoices'],
@@ -119,6 +124,7 @@ AWS_RESOURCE_QUERIES = {
         'DescribeClusterTracks',
     ],
     'route53': ['GetCheckerIpRanges', 'ListGeoLocations'],
+    'signer': ['ListSigningPlatforms'],
     'ssm': ['DescribeAvailablePatches', 'GetInventorySchema'],
     'xray': ['GetSamplingRules'],
 }
@@ -172,7 +178,7 @@ NOT_RESOURCE_DESCRIPTIONS = {
     'opsworks': ['DescribeMyUserProfile', 'DescribeUserProfiles', 'DescribeOperatingSystems'],
     'opsworkscm': ['DescribeAccountAttributes'],
     'pinpoint-email': ['GetAccount', 'GetDeliverabilityDashboardOptions'],
-    'redshift': ['DescribeStorage'],
+    'redshift': ['DescribeStorage', 'DescribeAccountAttributes'],
     'rds': ['DescribeAccountAttributes', 'DescribeDBEngineVersions', 'DescribeReservedDBInstancesOfferings'],
     'resourcegroupstaggingapi': ['GetResources', 'GetTagKeys'],
     'route53': ['GetTrafficPolicyInstanceCount', 'GetHostedZoneCount', 'GetHealthCheckCount', 'GetGeoLocation'],

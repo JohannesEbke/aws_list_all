@@ -61,7 +61,6 @@ def run_raw_listing_operation(service, region, operation):
 
 class Listing(object):
     """Represents a listing operation on an AWS service and its result"""
-
     def __init__(self, service, region, operation, response):
         self.service = service
         self.region = region
@@ -150,6 +149,24 @@ class Listing(object):
         # SNS ListSubscriptions always sends a next token...
         if self.service == 'sns' and self.operation == 'ListSubscriptions':
             del response['NextToken']
+
+        # Athena has a "primary" work group that is always present
+        if self.service == 'athena' and self.operation == 'ListWorkGroups':
+            response['WorkGroups'] = [wg for wg in response.get('WorkGroups', []) if wg['Name'] != 'primary']
+
+        # Remove default event buses
+        if self.service == 'events' and self.operation == 'ListEventBuses':
+            response['EventBuses'] = [wg for wg in response.get('EventBuses', []) if wg['Name'] != 'default']
+
+        # XRay has a "Default"  group that is always present
+        if self.service == 'xray' and self.operation == 'GetGroups':
+            response['Groups'] = [wg for wg in response.get('Groups', []) if wg['GroupName'] != 'Default']
+
+        if self.service == 'route53resolver' and self.operation == 'ListResolverRules':
+            response['ResolverRules'] = [
+                rule for rule in response.get('ResolverRules', [])
+                if rule['Id'] != 'rslvr-autodefined-rr-internet-resolver'
+            ]
 
         if 'Count' in response:
             if 'MaxResults' in response:
@@ -243,9 +260,22 @@ class Listing(object):
             ]
 
         # Remove default DB Security Group
-        if self.service == 'rds' and self.operation == 'DescribeDBSecurityGroups':
+        if self.service in 'rds' and self.operation == 'DescribeDBSecurityGroups':
             response['DBSecurityGroups'] = [
                 group for group in response['DBSecurityGroups'] if group['DBSecurityGroupName'] != 'default'
+            ]
+
+        # Remove default DB Parameter Groups
+        if self.service == ('rds', 'neptune') and self.operation == 'DescribeDBParameterGroups':
+            response['DBParameterGroups'] = [
+                group for group in response['DBParameterGroups']
+                if not group['DBParameterGroupName'].startswith('default.')
+            ]
+
+        # Remove default DB Option Groups
+        if self.service == 'rds' and self.operation == 'DescribeOptionGroups':
+            response['OptionGroupsList'] = [
+                group for group in response['OptionGroupsList'] if not group['OptionGroupName'].startswith('default:')
             ]
 
         # Filter default VPCs
