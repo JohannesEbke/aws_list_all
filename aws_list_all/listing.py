@@ -162,11 +162,17 @@ class Listing(object):
         if self.service == 'xray' and self.operation == 'GetGroups':
             response['Groups'] = [wg for wg in response.get('Groups', []) if wg['GroupName'] != 'Default']
 
-        if self.service == 'route53resolver' and self.operation == 'ListResolverRules':
-            response['ResolverRules'] = [
-                rule for rule in response.get('ResolverRules', [])
-                if rule['Id'] != 'rslvr-autodefined-rr-internet-resolver'
-            ]
+        if self.service == 'route53resolver':
+            if self.operation == 'ListResolverRules':
+                response['ResolverRules'] = [
+                    rule for rule in response.get('ResolverRules', [])
+                    if rule['Id'] != 'rslvr-autodefined-rr-internet-resolver'
+                ]
+            if self.operation == 'ListResolverRuleAssociations':
+                response['ResolverRuleAssociations'] = [
+                    rule for rule in response.get('ResolverRuleAssociations', [])
+                    if rule['ResolverRuleId'] != 'rslvr-autodefined-rr-internet-resolver'
+                ]
 
         if 'Count' in response:
             if 'MaxResults' in response:
@@ -266,7 +272,7 @@ class Listing(object):
             ]
 
         # Remove default DB Parameter Groups
-        if self.service == ('rds', 'neptune') and self.operation == 'DescribeDBParameterGroups':
+        if self.service in ('rds', 'neptune') and self.operation == 'DescribeDBParameterGroups':
             response['DBParameterGroups'] = [
                 group for group in response['DBParameterGroups']
                 if not group['DBParameterGroupName'].startswith('default.')
