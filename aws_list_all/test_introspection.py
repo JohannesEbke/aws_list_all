@@ -47,8 +47,6 @@ def test_get_listing_operations():
         'application-autoscaling',
         'budgets',
         'ce',
-        'cognito-identity',
-        'cognito-idp',
         'comprehendmedical',
         'connect',
         'ec2-instance-connect',

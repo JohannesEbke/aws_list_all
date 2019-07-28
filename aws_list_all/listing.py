@@ -27,6 +27,11 @@ PARAMETERS = {
             }]
         }
     },
+    'emr': {
+        'ListClusters': {
+            'ClusterStates': ['STARTING', 'BOOTSTRAPPING', 'RUNNING', 'WAITING', 'TERMINATING'],
+        }
+    },
     'iam': {
         'ListPolicies': {
             'Scope': 'Local'
@@ -61,6 +66,11 @@ def run_raw_listing_operation(service, region, operation):
     client = get_client(service, region)
     api_to_method_mapping = dict((v, k) for k, v in client.meta.method_to_api_mapping.items())
     parameters = PARAMETERS.get(service, {}).get(operation, {})
+    op_model = client.meta.service_model.operation_model(operation)
+    required_members = op_model.input_shape.required_members if op_model.input_shape else []
+    if "MaxResults" in required_members:
+        # Current limit for cognito identity pools is 60
+        parameters["MaxResults"] = 10
     return getattr(client, api_to_method_mapping[operation])(**parameters)
 
 
@@ -277,10 +287,17 @@ class Listing(object):
             ]
 
         # Remove default DB Parameter Groups
-        if self.service in ('rds', 'neptune') and self.operation == 'DescribeDBParameterGroups':
+        if self.service in ('rds', 'neptune', 'docdb') and self.operation in 'DescribeDBParameterGroups':
             response['DBParameterGroups'] = [
                 group for group in response['DBParameterGroups']
                 if not group['DBParameterGroupName'].startswith('default.')
+            ]
+
+        # Remove default DB Cluster Parameter Groups
+        if self.service in ('rds', 'neptune', 'docdb') and self.operation in 'DescribeDBClusterParameterGroups':
+            response['DBClusterParameterGroups'] = [
+                group for group in response['DBClusterParameterGroups']
+                if not group['DBClusterParameterGroupName'].startswith('default.')
             ]
 
         # Remove default DB Option Groups
@@ -334,6 +351,11 @@ class Listing(object):
         if self.service == 'workmail' and self.operation == 'ListOrganizations':
             response['OrganizationSummaries'] = [
                 s for s in response.get('OrganizationSummaries', []) if not s.get('State') == 'Deleted'
+            ]
+
+        if self.service == 'elasticache' and self.operation == 'DescribeCacheSubnetGroups':
+            response['CacheSubnetGroups'] = [
+                g for g in response.get('CacheSubnetGroups', []) if g.get('CacheSubnetGroupName') != 'default'
             ]
 
         # interpret nextToken in several services

@@ -139,6 +139,7 @@ NOT_RESOURCE_DESCRIPTIONS = {
     'apigateway': ['GetAccount'],
     'autoscaling': ['DescribeAccountLimits'],
     'alexaforbusiness': ['GetInvitationConfiguration'],
+    'athena': ['ListQueryExecutions'],
     'chime': ['GetGlobalSettings'],
     'cloudformation': ['DescribeAccountLimits'],
     'cloudwatch': ['DescribeAlarmHistory'],
@@ -151,6 +152,7 @@ NOT_RESOURCE_DESCRIPTIONS = {
     'devicefarm': ['GetAccountSettings', 'GetOfferingStatus'],
     'discovery': ['GetDiscoverySummary'],
     'dms': ['DescribeAccountAttributes', 'DescribeEventCategories'],
+    'docdb': ['DescribeEvents'],
     'ds': ['GetDirectoryLimits'],
     'dynamodb': ['DescribeLimits'],
     'ec2': [
@@ -159,6 +161,7 @@ NOT_RESOURCE_DESCRIPTIONS = {
         'GetEbsEncryptionByDefault'
     ],
     'ecr': ['GetAuthorizationToken'],
+    'ecs': ['DescribeClusters'],  # This gives duplicates from ListClusters, and also includes deleted clusters
     'elasticache': ['DescribeReservedCacheNodesOfferings'],
     'elasticbeanstalk': ['DescribeAccountAttributes', 'DescribeEvents'],
     'elb': ['DescribeAccountLimits'],
@@ -184,14 +187,21 @@ NOT_RESOURCE_DESCRIPTIONS = {
     'iotthingsgraph': ['DescribeNamespace', 'GetNamespaceDeletionStatus'],
     'kinesis': ['DescribeLimits'],
     'lambda': ['GetAccountSettings'],
+    'neptune': ['DescribeEvents'],
     'opsworks': ['DescribeMyUserProfile', 'DescribeUserProfiles', 'DescribeOperatingSystems'],
     'opsworkscm': ['DescribeAccountAttributes'],
     'pinpoint-email': ['GetAccount', 'GetDeliverabilityDashboardOptions'],
     'redshift': ['DescribeStorage', 'DescribeAccountAttributes'],
-    'rds': ['DescribeAccountAttributes', 'DescribeDBEngineVersions', 'DescribeReservedDBInstancesOfferings'],
+    'rds': [
+        'DescribeAccountAttributes', 'DescribeDBEngineVersions', 'DescribeReservedDBInstancesOfferings',
+        'DescribeEvents'
+    ],
     'resourcegroupstaggingapi': ['GetResources', 'GetTagKeys'],
     'route53': ['GetTrafficPolicyInstanceCount', 'GetHostedZoneCount', 'GetHealthCheckCount', 'GetGeoLocation'],
+    'route53domains': ['ListOperations'],
+    'sagemaker': ['ListTrainingJobs'],
     'securityhub': ['GetInvitationsCount'],
+    'servicediscovery': ['ListOperations'],
     'ses': ['GetSendQuota', 'GetAccountSendingEnabled'],
     'shield': ['GetSubscriptionState'],
     'sms': ['GetServers'],
@@ -277,7 +287,9 @@ def get_listing_operations(service, region=None, selected_operations=()):
         if not any(operation.startswith(prefix) for prefix in VERBS_LISTINGS):
             continue
         op_model = client.meta.service_model.operation_model(operation)
-        if op_model.input_shape and op_model.input_shape.required_members:
+        required_members = op_model.input_shape.required_members if op_model.input_shape else []
+        required_members = [m for m in required_members if m != "MaxResults"]
+        if required_members:
             continue
         if operation in PARAMETERS_REQUIRED.get(service, []):
             continue
