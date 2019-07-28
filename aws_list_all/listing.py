@@ -325,6 +325,10 @@ class Listing(object):
         if self.service == 'ec2' and self.operation == 'DescribeFpgaImages':
             response['FpgaImages'] = [image for image in response.get('FpgaImages', []) if not image.get('Public')]
 
+        # Remove deleted Organizations
+        if self.service == 'workmail' and self.operation == 'ListOrganizations':
+            response['OrganizationSummaries'] = [s for s in response.get('OrganizationSummaries', []) if not s.get('State') == 'Deleted']
+
         # interpret nextToken in several services
         if (self.service, self.operation) in (('inspector', 'ListFindings'), ('logs', 'DescribeLogGroups')):
             if response.get('nextToken'):

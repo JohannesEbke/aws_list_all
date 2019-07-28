@@ -180,6 +180,7 @@ NOT_RESOURCE_DESCRIPTIONS = {
         'ListV2LoggingLevels',
     ],
     'iotevents': ['DescribeLoggingOptions'],
+    'iotthingsgraph': ['DescribeNamespace', 'GetNamespaceDeletionStatus'],
     'kinesis': ['DescribeLimits'],
     'lambda': ['GetAccountSettings'],
     'opsworks': ['DescribeMyUserProfile', 'DescribeUserProfiles', 'DescribeOperatingSystems'],
