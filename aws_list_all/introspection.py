@@ -106,6 +106,7 @@ AWS_RESOURCE_QUERIES = {
     'elb': ['DescribeLoadBalancerPolicyTypes', 'DescribeLoadBalancerPolicies'],
     'elbv2': ['DescribeSSLPolicies'],
     'es': ['DescribeReservedElasticsearchInstanceOfferings', 'GetCompatibleElasticsearchVersions'],
+    'groundstation': ['ListGroundStations'],
     'inspector': ['ListRulesPackages'],
     'lex-models': ['GetBuiltinIntents', 'GetBuiltinSlotTypes'],
     'lightsail': [

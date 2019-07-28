@@ -13,6 +13,11 @@ PARAMETERS = {
             'Owners': ['self']
         },
     },
+    'ecs': {
+        'ListTaskDefinitionFamilies': {
+            'status': 'ACTIVE',
+        }
+    },
     'elasticbeanstalk': {
         'ListPlatformVersions': {
             'Filters': [{
