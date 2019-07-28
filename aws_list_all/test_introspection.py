@@ -57,6 +57,7 @@ def test_get_listing_operations():
         'iot-data',
         'iot-jobs-data',
         'iotevents-data',
+        'iotthingsgraph',
         'lex-runtime',
         'marketplace-entitlement',
         'marketplacecommerceanalytics',
