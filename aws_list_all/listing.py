@@ -317,7 +317,7 @@ class Listing(object):
                 if len(attachments) != 1:
                     continue
                 vpc = attachments[0].get('VpcId')
-                if not vpcs.get(vpc).get('IsDefault', False):
+                if not vpcs.get(vpc, {}).get('IsDefault', False):
                     internet_gateways.append(ig)
             response['InternetGateways'] = internet_gateways
 
