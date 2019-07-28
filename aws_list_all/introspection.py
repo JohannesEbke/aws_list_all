@@ -152,7 +152,8 @@ NOT_RESOURCE_DESCRIPTIONS = {
     'dynamodb': ['DescribeLimits'],
     'ec2': [
         'DescribeAccountAttributes', 'DescribeDhcpOptions', 'DescribeVpcClassicLink',
-        'DescribeVpcClassicLinkDnsSupport', 'DescribePrincipalIdFormat', 'GetEbsDefaultKmsKeyId', 'GetEbsEncryptionByDefault'
+        'DescribeVpcClassicLinkDnsSupport', 'DescribePrincipalIdFormat', 'GetEbsDefaultKmsKeyId',
+        'GetEbsEncryptionByDefault'
     ],
     'ecr': ['GetAuthorizationToken'],
     'elasticache': ['DescribeReservedCacheNodesOfferings'],
