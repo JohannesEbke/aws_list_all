@@ -351,6 +351,8 @@ def get_service_regions():
 def get_regions_for_service(requested_service, requested_regions=()):
     """Given a service name, return a list of region names where this service can have resources,
     restricted by a possible set of regions."""
+    if requested_service in ('iam', 'cloudfront', 's3', 'route53'):
+        return [None]
     regions = set(get_service_regions().get(requested_service, []))
     return list(regions) if not requested_regions else list(sorted(set(regions) & set(requested_regions)))
 
