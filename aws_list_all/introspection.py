@@ -21,9 +21,11 @@ SERVICE_BLACKLIST = [
     'alexaforbusiness',  # TODO: Mostly organization-specific calls and would need to be queried differently
     'apigatewaymanagementapi',  # This API allows management of deployed APIs, and requires an endpoint per API.
     'cloudsearchdomain',  # Domain-specific endpoint required
+    'kinesis-video-archived-media',  # API operating on stream-specific endpoints
+    'kinesis-video-media',  # API operating on stream-specific endpoints
+    'managedblockchain',  # TODO: Unclear, does not have a region
     'mediastore-data',  # Mediastore Container-specific endpoint required
     's3control',  # TODO: Account-ID specific endpoint required
-    'managedblockchain',  # TODO: Unclear, does not have a region
 ]
 
 DEPRECATED_OR_DISALLOWED = {
