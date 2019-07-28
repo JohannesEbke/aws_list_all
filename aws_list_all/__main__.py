@@ -47,6 +47,7 @@ def main():
         action='append',
         help='Restrict querying to the given operation (can be specified multiple times)'
     )
+    query.add_argument('-p', '--parallel', default=32, help='Number of request to do in parallel')
     query.add_argument('-d', '--directory', default='.', help='Directory to save result listings to')
     query.add_argument('-v', '--verbose', action='count', help='Print detailed info during run')
 
@@ -112,7 +113,7 @@ def main():
                 pass
             os.chdir(args.directory)
         services = args.service or get_services()
-        do_query(services, args.region, args.operation, verbose=args.verbose or 0)
+        do_query(services, args.region, args.operation, verbose=args.verbose or 0, parallel=args.parallel)
     elif args.command == 'show':
         if args.listingfile:
             do_list_files(args.listingfile, verbose=args.verbose or 0)

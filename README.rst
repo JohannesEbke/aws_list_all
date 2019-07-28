@@ -83,3 +83,7 @@ List available services to query::
 List available operations for a given service, do::
 
   aws-list-all introspect list-operations --service ec2
+
+List all resources in sequence to avoid throttling::
+
+  aws-list-all query --parallel 1

@@ -187,7 +187,7 @@ NOT_AVAILABLE_FOR_ACCOUNT_STRINGS = [
 NOT_AVAILABLE_STRINGS = NOT_AVAILABLE_FOR_REGION_STRINGS + NOT_AVAILABLE_FOR_ACCOUNT_STRINGS
 
 
-def do_query(services, selected_regions=(), selected_operations=(), verbose=0):
+def do_query(services, selected_regions=(), selected_operations=(), verbose=0, parallel=32):
     """For the given services, execute all selected operations (default: all) in selected regions
     (default: all)"""
     to_run = []
@@ -203,7 +203,7 @@ def do_query(services, selected_regions=(), selected_operations=(), verbose=0):
     results_by_type = defaultdict(list)
     print('...done. Executing queries...')
     # the `with` block is a workaround for a bug: https://bugs.python.org/issue35629
-    with contextlib.closing(ThreadPool(32)) as pool:
+    with contextlib.closing(ThreadPool(parallel)) as pool:
         for result in pool.imap_unordered(partial(acquire_listing, verbose), to_run):
             results_by_type[result[0]].append(result)
             if verbose > 1:
