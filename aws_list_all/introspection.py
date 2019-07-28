@@ -111,8 +111,10 @@ AWS_RESOURCE_QUERIES = {
     ],
     'mediaconvert': ['DescribeEndpoints'],
     'medialive': ['ListOfferings'],
+    'mobile': ['ListBundles'],
     'mq': ['DescribeBrokerInstanceOptions', 'DescribeBrokerEngineTypes'],
     'neptune': ['DescribeDBEngineVersions', 'DescribeEventCategories'],
+    'personalize': ['ListRecipes'],
     'pricing': ['DescribeServices'],
     'polly': ['DescribeVoices'],
     'rds': ['DescribeDBEngineVersions', 'DescribeSourceRegions', 'DescribeCertificates', 'DescribeEventCategories'],
@@ -124,6 +126,7 @@ AWS_RESOURCE_QUERIES = {
         'DescribeClusterTracks',
     ],
     'route53': ['GetCheckerIpRanges', 'ListGeoLocations'],
+    'service-quotas': ['ListServices'],
     'signer': ['ListSigningPlatforms'],
     'ssm': ['DescribeAvailablePatches', 'GetInventorySchema'],
     'xray': ['GetSamplingRules'],
@@ -149,7 +152,7 @@ NOT_RESOURCE_DESCRIPTIONS = {
     'dynamodb': ['DescribeLimits'],
     'ec2': [
         'DescribeAccountAttributes', 'DescribeDhcpOptions', 'DescribeVpcClassicLink',
-        'DescribeVpcClassicLinkDnsSupport', 'DescribePrincipalIdFormat'
+        'DescribeVpcClassicLinkDnsSupport', 'DescribePrincipalIdFormat', 'GetEbsDefaultKmsKeyId', 'GetEbsEncryptionByDefault'
     ],
     'ecr': ['GetAuthorizationToken'],
     'elasticache': ['DescribeReservedCacheNodesOfferings'],
@@ -173,6 +176,7 @@ NOT_RESOURCE_DESCRIPTIONS = {
         'GetV2LoggingOptions',
         'ListV2LoggingLevels',
     ],
+    'iotevents': ['DescribeLoggingOptions'],
     'kinesis': ['DescribeLimits'],
     'lambda': ['GetAccountSettings'],
     'opsworks': ['DescribeMyUserProfile', 'DescribeUserProfiles', 'DescribeOperatingSystems'],
