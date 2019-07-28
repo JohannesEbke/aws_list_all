@@ -327,7 +327,9 @@ class Listing(object):
 
         # Remove deleted Organizations
         if self.service == 'workmail' and self.operation == 'ListOrganizations':
-            response['OrganizationSummaries'] = [s for s in response.get('OrganizationSummaries', []) if not s.get('State') == 'Deleted']
+            response['OrganizationSummaries'] = [
+                s for s in response.get('OrganizationSummaries', []) if not s.get('State') == 'Deleted'
+            ]
 
         # interpret nextToken in several services
         if (self.service, self.operation) in (('inspector', 'ListFindings'), ('logs', 'DescribeLogGroups')):
