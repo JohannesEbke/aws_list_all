@@ -47,7 +47,7 @@ def main():
         action='append',
         help='Restrict querying to the given operation (can be specified multiple times)'
     )
-    query.add_argument('-p', '--parallel', default=32, help='Number of request to do in parallel')
+    query.add_argument('-p', '--parallel', default=32, type=int, help='Number of request to do in parallel')
     query.add_argument('-d', '--directory', default='.', help='Directory to save result listings to')
     query.add_argument('-v', '--verbose', action='count', help='Print detailed info during run')
 
