@@ -2,13 +2,38 @@
 from __future__ import print_function
 
 import os
+from resource import getrlimit, setrlimit, RLIMIT_NOFILE
 from argparse import ArgumentParser
-from sys import exit
+from sys import exit, stderr
 
 from .introspection import (
     get_listing_operations, get_services, get_verbs, introspect_regions_for_service, recreate_caches
 )
 from .query import do_list_files, do_query
+
+
+def increase_limit_nofiles():
+    soft_limit, hard_limit = getrlimit(RLIMIT_NOFILE)
+    desired_limit = 6000  # This should be comfortably larger than the product of services and regions
+    if hard_limit < desired_limit:
+        print("-" * 80, file=stderr)
+        print(
+            "WARNING!\n"
+            "Your system limits the number of open files and network connections to {}.\n"
+            "This may lead to failures during querying.\n"
+            "Please increase the hard limit of open files to at least {}.\n"
+            "The configuration for hard limits is often found in /etc/security/limits.conf".format(
+                hard_limit, desired_limit
+            ),
+            file=stderr
+        )
+        print("-" * 80, file=stderr)
+        print(file=stderr)
+    target_soft_limit = min(desired_limit, hard_limit)
+    if target_soft_limit > soft_limit:
+        print("Increasing the open connection limit \"nofile\" from {} to {}.".format(soft_limit, target_soft_limit))
+        setrlimit(RLIMIT_NOFILE, (target_soft_limit, hard_limit))
+    print("")
 
 
 def main():
@@ -112,10 +137,12 @@ def main():
             except OSError:
                 pass
             os.chdir(args.directory)
+        increase_limit_nofiles()
         services = args.service or get_services()
         do_query(services, args.region, args.operation, verbose=args.verbose or 0, parallel=args.parallel)
     elif args.command == 'show':
         if args.listingfile:
+            increase_limit_nofiles()
             do_list_files(args.listingfile, verbose=args.verbose or 0)
         else:
             show.print_help()
@@ -139,6 +166,7 @@ def main():
             introspect.print_help()
             return 1
     elif args.command == 'recreate-caches':
+        increase_limit_nofiles()
         recreate_caches()
     else:
         parser.print_help()
