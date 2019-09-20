@@ -144,6 +144,10 @@ RESULT_IGNORE_ERRORS = {
         'ListSimulationApplications': 'ForbiddenException',
         'ListSimulationJobs': 'ForbiddenException',
     },
+    'service-quotas': {
+        'GetAssociationForServiceQuotaTemplate': 'TemplatesNotAvailableInRegionException',
+        'ListServiceQuotaIncreaseRequestsInTemplate': 'TemplatesNotAvailableInRegionException',
+    },
     'servicecatalog': {
         'GetAWSOrganizationsAccessStatus': 'AccessDeniedException',
     },
