@@ -5,7 +5,8 @@ List all resources in an AWS account, all regions, all services(*). Writes JSON 
 
 (*) No guarantees for completeness. Use billing alerts if you are worried about costs.
 
-.. image:: https://img.shields.io/pypi/v/aws-list-all   :alt: PyPI
+.. image:: https://img.shields.io/pypi/v/aws-list-all
+   :alt: PyPI
 
 .. image:: https://travis-ci.org/JohannesEbke/aws_list_all.svg?branch=master
    :target: https://travis-ci.org/JohannesEbke/aws_list_all
