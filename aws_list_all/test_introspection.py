@@ -50,7 +50,6 @@ def test_get_listing_operations():
         'comprehendmedical',
         'connect',
         'ec2-instance-connect',
-        'forecastquery',
         'glacier',
         'health',
         'iot-data',
@@ -67,7 +66,6 @@ def test_get_listing_operations():
         'pi',
         'pinpoint-sms-voice',
         'pricing',
-        'qldb-session',
         'quicksight',
         'rds-data',
         'resourcegroupstaggingapi',
@@ -77,7 +75,6 @@ def test_get_listing_operations():
         'textract',
         'workdocs',
         'worklink',
-        'workmailmessageflow',
     }
 
     assert expected_no_listings - services_with_no_listings == set(), 'Extra services gained listings, please check!'

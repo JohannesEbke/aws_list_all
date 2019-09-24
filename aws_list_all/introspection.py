@@ -43,11 +43,11 @@ DEPRECATED_OR_DISALLOWED = {
         'DescribePendingAggregationRequests',
     ],
     # service need opt-in
-    # 'cloudhsm': [
-    # 'ListHapgs',
-    # 'ListHsms',
-    # 'ListLunaClients',
-    # ],
+    'cloudhsm': [
+        'ListHapgs',
+        'ListHsms',
+        'ListLunaClients',
+    ],
     # 'directconnect': ['DescribeInterconnects'],  # needs opt-in
     'dms': [
         # migration service needs to be created
@@ -278,10 +278,10 @@ def get_verbs(service):
     return set(re.sub('([A-Z])', '_\\1', x).split('_')[1] for x in client.meta.method_to_api_mapping.values())
 
 
-def get_listing_operations(service, region=None, selected_operations=()):
+def get_listing_operations(service, region=None, arn = None, arn_name = None, selected_operations=()):
     """Return a list of API calls which (probably) list resources created by the user
     in the given service (in contrast to AWS-managed or default resources)"""
-    client = get_client(service, region)
+    client = get_client(service, region, arn, arn_name)
     operations = []
     for operation in client.meta.service_model.operation_names:
         if not any(operation.startswith(prefix) for prefix in VERBS_LISTINGS):
@@ -335,7 +335,7 @@ def get_endpoint_ip(service_region_host):
     (service, region), host = service_region_host
     try:
         result = gethostbyname(host.split('/')[2])
-        return (service, region, result)
+        return service, region, result
     except Exception:
         return (service, region, None)
 
@@ -369,7 +369,7 @@ def get_regions_for_service(requested_service, requested_regions=()):
     """Given a service name, return a list of region names where this service can have resources,
     restricted by a possible set of regions."""
     if requested_service in ('iam', 'cloudfront', 's3', 'route53'):
-        return [None]
+        return ['us-west-2']
     regions = set(get_service_regions().get(requested_service, []))
     return list(regions) if not requested_regions else list(sorted(set(regions) & set(requested_regions)))
 

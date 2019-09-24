@@ -9,9 +9,15 @@ from functools import partial
 from multiprocessing.pool import ThreadPool
 from random import shuffle
 from traceback import print_exc
+import os.path
+from pyexcel.cookbook import merge_all_to_a_book
+import glob
 
 from .introspection import get_listing_operations, get_regions_for_service
 from .listing import Listing
+from .csv_convert import convert_file
+
+import boto3
 
 RESULT_NOTHING = '---'
 RESULT_SOMETHING = '+++'
@@ -81,7 +87,8 @@ RESULT_IGNORE_ERRORS = {
     },
     'iot': {
         # full iot service not available in all advertised regions
-        'DescribeAccountAuditConfiguration': ['An error occurred', 'No listing'],
+        'DescribeAccountAuditConfiguration': ['An error occurred',
+                                              'No listing'],
         'ListActiveViolations': 'An error occurred',
         'ListIndices': 'An error occurred',
         'ListJobs': 'An error occurred',
@@ -144,10 +151,6 @@ RESULT_IGNORE_ERRORS = {
         'ListSimulationApplications': 'ForbiddenException',
         'ListSimulationJobs': 'ForbiddenException',
     },
-    'service-quotas': {
-        'GetAssociationForServiceQuotaTemplate': 'TemplatesNotAvailableInRegionException',
-        'ListServiceQuotaIncreaseRequestsInTemplate': 'TemplatesNotAvailableInRegionException',
-    },
     'servicecatalog': {
         'GetAWSOrganizationsAccessStatus': 'AccessDeniedException',
     },
@@ -194,39 +197,70 @@ NOT_AVAILABLE_FOR_ACCOUNT_STRINGS = [
 NOT_AVAILABLE_STRINGS = NOT_AVAILABLE_FOR_REGION_STRINGS + NOT_AVAILABLE_FOR_ACCOUNT_STRINGS
 
 
-def do_query(services, selected_regions=(), selected_operations=(), verbose=0, parallel=32):
+def do_query(services, args, selected_regions=(), selected_operations=(), verbose=0,
+             parallel=32):
     """For the given services, execute all selected operations (default: all) in selected regions
     (default: all)"""
     to_run = []
+    if (args.arn is None and args.name is not None) or (args.name is None and args.arn is not None):
+        print("Err: session name is given but no ARN has been set")
+        exit(1)
     print('Building set of queries to execute...')
     for service in services:
         for region in get_regions_for_service(service, selected_regions):
-            for operation in get_listing_operations(service, region, selected_operations):
+            for operation in get_listing_operations(service, region, args.arn, args.name, selected_operations):
+                if region is None:
+                    print("{} has a none region".format(service))
+                    continue
                 if verbose > 0:
-                    print('Service: {: <28} | Region: {:<15} | Operation: {}'.format(service, region, operation))
-
+                    print(
+                        'Service: {: <28} | Region: {:<15} | Operation: {}'.format(
+                            service, region, operation))
                 to_run.append([service, region, operation])
     shuffle(to_run)  # Distribute requests across endpoints
     results_by_type = defaultdict(list)
     print('...done. Executing queries...')
     # the `with` block is a workaround for a bug: https://bugs.python.org/issue35629
     with contextlib.closing(ThreadPool(parallel)) as pool:
-        for result in pool.imap_unordered(partial(acquire_listing, verbose), to_run):
+        for result in pool.imap_unordered(partial(acquire_listing, verbose, args.name),
+                                          to_run):
             results_by_type[result[0]].append(result)
+            # print(result[3])
             if verbose > 1:
                 print('ExecutedQueryResult: {}'.format(result))
             else:
                 print(result[0][-1], end='')
                 sys.stdout.flush()
-    print('...done')
+    print('...done\nGenerating a master spreadsheet...')
+    merge_all_to_a_book(glob.glob("*/*.csv"), "Listing_{}.xlsx".format(args.name) if args.name is not None else "Listing.xlsx")
+    print("Results:")
     for result_type in (RESULT_NOTHING, RESULT_SOMETHING, RESULT_NO_ACCESS, RESULT_ERROR):
         for result in sorted(results_by_type[result_type]):
             print(*result)
 
 
-def acquire_listing(verbose, what):
+def extract_identifier(data):
+    false_identifier = {"ResponseMetadata",
+                        "Owner"}
+    for data_key in data:
+        if data_key not in false_identifier:
+            return data_key
+    return ""
+
+
+def format_file_name(service, operation, session_name):
+    known_prefix = {"Describe", "List"}
+    for prefix in known_prefix:
+        if prefix in operation:
+            return "{}/{}_{}.json".format(service, session_name,
+                                       str(operation).replace(prefix, ""))
+    return "{}/{}_{}.json".format(service, session_name, operation)
+
+
+def acquire_listing(verbose, session_name, what):
     """Given a service, region and operation execute the operation, serialize and save the result and
     return a tuple of strings describing the result."""
+    # print("what?", what)
     service, region, operation = what
     try:
         if verbose > 1:
@@ -235,17 +269,27 @@ def acquire_listing(verbose, what):
         if verbose > 1:
             print(what, '...request successful.')
         if listing.resource_total_count > 0:
-            with open('{}_{}_{}.json'.format(service, operation, region), 'w') as jsonfile:
-                json.dump(listing.to_json(), jsonfile, default=datetime.isoformat)
-            return (RESULT_SOMETHING, service, region, operation, ', '.join(listing.resource_types))
+            file_name = format_file_name(service, operation, session_name)
+            file_content = listing.to_json()["response"][
+                extract_identifier(listing.to_json()["response"])]
+            if not os.path.isdir(service):
+                os.mkdir(service)
+            with open(file_name, 'w') as jsonfile:
+                json.dump(file_content, jsonfile, default=datetime.isoformat,
+                          indent=4)
+            convert_file(file_content, str(file_name).replace(".json", ".csv"))
+            return RESULT_SOMETHING, service, region, operation, ', '.join(
+                listing.resource_types)
         else:
-            return (RESULT_NOTHING, service, region, operation, ', '.join(listing.resource_types))
+            return RESULT_NOTHING, service, region, operation, ', '.join(
+                listing.resource_types)
     except Exception as exc:  # pylint:disable=broad-except
         if verbose > 1:
             print(what, '...exception:', exc)
         if verbose > 2:
             print_exc()
-        result_type = RESULT_NO_ACCESS if 'AccessDeniedException' in str(exc) else RESULT_ERROR
+        result_type = RESULT_NO_ACCESS if 'AccessDeniedException' in str(
+            exc) else RESULT_ERROR
 
         ignored_err = RESULT_IGNORE_ERRORS.get(service, {}).get(operation)
         if ignored_err is not None:
@@ -259,7 +303,7 @@ def acquire_listing(verbose, what):
             if not_available_string in str(exc):
                 result_type = RESULT_NOTHING
 
-        return (result_type, service, region, operation, repr(exc))
+        return result_type, service, region, operation, repr(exc)
 
 
 def do_list_files(filenames, verbose=0):
@@ -272,18 +316,25 @@ def do_list_files(filenames, verbose=0):
             truncated = resources['truncated']
             del resources['truncated']
         for resource_type, value in resources.items():
-            len_string = '> {}'.format(len(value)) if truncated else str(len(value))
-            print(listing.service, listing.region, listing.operation, resource_type, len_string)
+            len_string = '> {}'.format(len(value)) if truncated else str(
+                len(value))
+            print(listing.service, listing.region, listing.operation,
+                  resource_type, len_string)
             if verbose > 0:
                 for item in value:
                     idkey = None
                     if isinstance(item, dict):
-                        guesses = [resource_type[:-1] + "Id", "id", "SerialNumber"]
+                        guesses = [resource_type[:-1] + "Id", "id",
+                                   "SerialNumber"]
                         # Find the last uppercase word in the resource_type and construct some guesses from that
-                        uppercase_indices = [i for (i, c) in enumerate(resource_type) if c.isupper()]
+                        uppercase_indices = [i for (i, c) in
+                                             enumerate(resource_type) if
+                                             c.isupper()]
                         if uppercase_indices:
-                            last_word_in_resource_type = resource_type[uppercase_indices[-1]:]
-                            guesses.append(last_word_in_resource_type[:-1] + "Id")
+                            last_word_in_resource_type = resource_type[
+                                                         uppercase_indices[-1]:]
+                            guesses.append(
+                                last_word_in_resource_type[:-1] + "Id")
                             guesses.append(last_word_in_resource_type + "Id")
                         for guess in guesses:
                             if guess in item:
@@ -294,7 +345,8 @@ def do_list_files(filenames, verbose=0):
                                 lambda x: x.endswith('Id'),
                                 lambda x: x.endswith('Name'),
                             ]:
-                                idkeys = [k for k in item.keys() if heuristic(k)]
+                                idkeys = [k for k in item.keys() if
+                                          heuristic(k)]
                                 if idkeys:
                                     # Heuristic: Shortest ID is probably the Resource ID
                                     idkeys.sort(key=len)
