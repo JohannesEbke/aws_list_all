@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 from __future__ import print_function
 
+import glob
 import os
 from argparse import ArgumentParser
 from resource import setrlimit, RLIMIT_NOFILE, getrlimit
 from sys import exit, stderr
+from pyexcel.cookbook import merge_all_to_a_book
 
 from aws_list_all.introspection import (
     get_listing_operations, get_services, get_verbs,
@@ -54,6 +56,14 @@ def main():
         dest='command',
         metavar='COMMAND'
     )
+    generate = subparsers.add_parser("generate",
+                                     description="Generate a master spreadsheet for a specific session name",
+                                     help="You must enter the session name. You should have already generated .csv files")
+    generate.add_argument("-s",
+                          "--session-name",
+                          help="The session's name that the program have to look for")
+    generate.add_argument('-d', '--directory', default='.',
+                       help='Directory to save the spreadsheet')
 
     # Query is the main subcommand, so we put it first
     query = subparsers.add_parser('query',
@@ -86,7 +96,7 @@ def main():
                        help='Print detailed info during run')
     query.add_argument('-a', '--arn', default=None,
                        help='Pass an ARN and get temporary credentials from it')
-    query.add_argument('-n', '--name', default=None,
+    query.add_argument('-sn', '--session-name', default=None,
                        help='Name the session for the temporary credentials')
 
     # Once you have queried, show is the next most important command. So it comes second
@@ -148,7 +158,22 @@ def main():
 
     args = parser.parse_args()
 
-    if args.command == 'query':
+    if args.command == "generate":
+        if args.session_name is None:
+            print("You must enter a session name", file=stderr)
+            exit(1)
+        if args.directory:
+            try:
+                os.makedirs(args.directory)
+            except OSError:
+                pass
+            os.chdir(args.directory)
+        all_files = glob.glob("*/{}/*.csv".format(args.session_name))
+        for i in range(len(all_files)):
+            all_files[i] = all_files[i].replace(args.session_name + "_", "")
+        merge_all_to_a_book(all_files, "Listing_{}.xlsx".format(args.session_name))
+        print("Generation ended")
+    elif args.command == 'query':
         if args.directory:
             try:
                 os.makedirs(args.directory)
@@ -157,8 +182,7 @@ def main():
             os.chdir(args.directory)
         increase_limit_nofiles()
         services = args.service or get_services()
-        do_query(services, args, args.region, args.operation,
-                 verbose=args.verbose or 0, parallel=args.parallel)
+        do_query(services, args, args.verbose or 0, args.parallel)
     elif args.command == 'show':
         if args.listingfile:
             increase_limit_nofiles()

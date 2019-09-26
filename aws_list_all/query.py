@@ -197,18 +197,22 @@ NOT_AVAILABLE_FOR_ACCOUNT_STRINGS = [
 NOT_AVAILABLE_STRINGS = NOT_AVAILABLE_FOR_REGION_STRINGS + NOT_AVAILABLE_FOR_ACCOUNT_STRINGS
 
 
-def do_query(services, args, selected_regions=(), selected_operations=(), verbose=0,
-             parallel=32):
+def do_query(services, args, verbose=0, parallel=32):
     """For the given services, execute all selected operations (default: all) in selected regions
     (default: all)"""
     to_run = []
-    if (args.arn is None and args.name is not None) or (args.name is None and args.arn is not None):
+    selected_regions = args.region
+    selected_operations = args.operation
+    if (args.arn is None and args.session_name is not None) or (
+            args.session_name is None and args.arn is not None):
         print("Err: session name is given but no ARN has been set")
         exit(1)
     print('Building set of queries to execute...')
     for service in services:
         for region in get_regions_for_service(service, selected_regions):
-            for operation in get_listing_operations(service, region, args.arn, args.name, selected_operations):
+            for operation in get_listing_operations(service, region, args.arn,
+                                                    args.session_name,
+                                                    selected_operations):
                 if region is None:
                     print("{} has a none region".format(service))
                     continue
@@ -222,8 +226,9 @@ def do_query(services, args, selected_regions=(), selected_operations=(), verbos
     print('...done. Executing queries...')
     # the `with` block is a workaround for a bug: https://bugs.python.org/issue35629
     with contextlib.closing(ThreadPool(parallel)) as pool:
-        for result in pool.imap_unordered(partial(acquire_listing, verbose, args.name),
-                                          to_run):
+        for result in pool.imap_unordered(
+                partial(acquire_listing, verbose, args),
+                to_run):
             results_by_type[result[0]].append(result)
             # print(result[3])
             if verbose > 1:
@@ -232,9 +237,17 @@ def do_query(services, args, selected_regions=(), selected_operations=(), verbos
                 print(result[0][-1], end='')
                 sys.stdout.flush()
     print('...done\nGenerating a master spreadsheet...')
-    merge_all_to_a_book(glob.glob("*/*.csv"), "Listing_{}.xlsx".format(args.name) if args.name is not None else "Listing.xlsx")
-    print("Results:")
-    for result_type in (RESULT_NOTHING, RESULT_SOMETHING, RESULT_NO_ACCESS, RESULT_ERROR):
+    if args.session_name is None:
+        merge_all_to_a_book(glob.glob("*/*.csv"), "Listing_resources.xlsx")
+    else:
+        # We remove the prefix from the name of every csv files to embellish the name of every sheets
+        all_files = glob.glob("*/{}/*.csv".format(args.session_name))
+        for i in range(len(all_files)):
+            all_files[i] = all_files[i].replace(args.session_name + "_", "")
+        merge_all_to_a_book(all_files,
+                            "Listing_{}.xlsx".format(args.session_name))
+    for result_type in (
+    RESULT_NOTHING, RESULT_SOMETHING, RESULT_NO_ACCESS, RESULT_ERROR):
         for result in sorted(results_by_type[result_type]):
             print(*result)
 
@@ -250,14 +263,23 @@ def extract_identifier(data):
 
 def format_file_name(service, operation, session_name):
     known_prefix = {"Describe", "List"}
+    if session_name is None:
+        for prefix in known_prefix:
+            if prefix in operation:
+                return "{}/{}.json".format(service, str(operation).replace(prefix, ""))
+        return "{}/{}.json".format(service, operation)
+    try:
+        os.makedirs("{}/{}".format(service, session_name))
+    except OSError:
+        pass
     for prefix in known_prefix:
         if prefix in operation:
-            return "{}/{}_{}.json".format(service, session_name,
-                                       str(operation).replace(prefix, ""))
-    return "{}/{}_{}.json".format(service, session_name, operation)
+            return "{}/{}/{}.json".format(service, session_name,
+                                          str(operation).replace(prefix, ""))
+    return "{}/{}/{}.json".format(service, session_name, operation)
 
 
-def acquire_listing(verbose, session_name, what):
+def acquire_listing(verbose, args, what):
     """Given a service, region and operation execute the operation, serialize and save the result and
     return a tuple of strings describing the result."""
     # print("what?", what)
@@ -265,11 +287,11 @@ def acquire_listing(verbose, session_name, what):
     try:
         if verbose > 1:
             print(what, 'starting request...')
-        listing = Listing.acquire(service, region, operation)
+        listing = Listing.acquire(service, region, operation, args.arn)
         if verbose > 1:
             print(what, '...request successful.')
         if listing.resource_total_count > 0:
-            file_name = format_file_name(service, operation, session_name)
+            file_name = format_file_name(service, operation, args.session_name)
             file_content = listing.to_json()["response"][
                 extract_identifier(listing.to_json()["response"])]
             if not os.path.isdir(service):
