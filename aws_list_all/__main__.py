@@ -7,7 +7,7 @@ from argparse import ArgumentParser
 from resource import setrlimit, RLIMIT_NOFILE, getrlimit
 from sys import exit, stderr
 from pyexcel.cookbook import merge_all_to_a_book
-from aws_list_all.unique import make_unique_json
+from aws_list_all.merge import make_merge_json
 
 from aws_list_all.introspection import (
     get_listing_operations, get_services, get_verbs,
@@ -64,12 +64,16 @@ def main():
                           "--session-name",
                           help="The session's name that the program have to look for")
     generate.add_argument('-d', '--directory', default='.',
-                       help='Directory to save the spreadsheet')
+                          help='Directory to save the spreadsheet')
 
+    merge = subparsers.add_parser("merge",
+                          description="From all resources, remove the duplicate",
+                          help="You should have already generated .json files")
 
-    unique = subparsers.add_parser("unique",
-                                     description="From all resources, remove the duplicate",
-                                     help="You should have already generated .json files")
+    merge.add_argument("-d", "--directory", default=".", help="Directory where the data come from")
+    merge.add_argument("-o", "--output", default="../output/", help="Directory where the generated general csv files")
+    merge.add_argument('-v', '--verbose', action='count', default=0,
+                       help='Print detailed info during run')
     # Query is the main subcommand, so we put it first
     query = subparsers.add_parser('query',
                                   description='Query AWS for resources',
@@ -163,8 +167,8 @@ def main():
 
     args = parser.parse_args()
 
-    if args.command == "unique":
-        make_unique_json()
+    if args.command == "merge":
+        make_merge_json(args)
     elif args.command == "generate":
         if args.session_name is None:
             print("You must enter a session name", file=stderr)
@@ -178,7 +182,8 @@ def main():
         all_files = glob.glob("*/{}/*.csv".format(args.session_name))
         for i in range(len(all_files)):
             all_files[i] = all_files[i].replace(args.session_name + "_", "")
-        merge_all_to_a_book(all_files, "Listing_{}.xlsx".format(args.session_name))
+        merge_all_to_a_book(all_files,
+                            "Listing_{}.xlsx".format(args.session_name))
         print("Generation ended")
     elif args.command == 'query':
         if args.directory:
