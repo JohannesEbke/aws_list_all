@@ -244,10 +244,16 @@ def do_query(services, args, verbose=0, parallel=32):
         all_files = glob.glob("*/{}/*.csv".format(args.session_name))
         for i in range(len(all_files)):
             all_files[i] = all_files[i].replace(args.session_name + "_", "")
-        merge_all_to_a_book(all_files,
-                            "Listing_{}.xlsx".format(args.session_name))
+            split_name = all_files[i].split("/")
+            print("file_name", all_files[i])
+            if len(split_name[2]) > 31:
+                all_files[i] = all_files[i].replace(split_name[2], split_name[2][len(split_name[2]) - 31:])
+            print("new file_name", all_files[i])
+
+        # merge_all_to_a_book(all_files,
+        #                     "Listing_{}.xlsx".format(args.session_name))
     for result_type in (
-    RESULT_NOTHING, RESULT_SOMETHING, RESULT_NO_ACCESS, RESULT_ERROR):
+            RESULT_NOTHING, RESULT_SOMETHING, RESULT_NO_ACCESS, RESULT_ERROR):
         for result in sorted(results_by_type[result_type]):
             print(*result)
 
@@ -266,7 +272,8 @@ def format_file_name(service, operation, session_name):
     if session_name is None:
         for prefix in known_prefix:
             if prefix in operation:
-                return "{}/{}.json".format(service, str(operation).replace(prefix, ""))
+                return "{}/{}.json".format(service,
+                                           str(operation).replace(prefix, ""))
         return "{}/{}.json".format(service, operation)
     try:
         os.makedirs("{}/{}".format(service, session_name))

@@ -7,6 +7,7 @@ from argparse import ArgumentParser
 from resource import setrlimit, RLIMIT_NOFILE, getrlimit
 from sys import exit, stderr
 from pyexcel.cookbook import merge_all_to_a_book
+from aws_list_all.unique import make_unique_json
 
 from aws_list_all.introspection import (
     get_listing_operations, get_services, get_verbs,
@@ -65,6 +66,10 @@ def main():
     generate.add_argument('-d', '--directory', default='.',
                        help='Directory to save the spreadsheet')
 
+
+    unique = subparsers.add_parser("unique",
+                                     description="From all resources, remove the duplicate",
+                                     help="You should have already generated .json files")
     # Query is the main subcommand, so we put it first
     query = subparsers.add_parser('query',
                                   description='Query AWS for resources',
@@ -158,7 +163,9 @@ def main():
 
     args = parser.parse_args()
 
-    if args.command == "generate":
+    if args.command == "unique":
+        make_unique_json()
+    elif args.command == "generate":
         if args.session_name is None:
             print("You must enter a session name", file=stderr)
             exit(1)
