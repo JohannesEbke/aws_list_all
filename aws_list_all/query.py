@@ -236,22 +236,7 @@ def do_query(services, args, verbose=0, parallel=32):
             else:
                 print(result[0][-1], end='')
                 sys.stdout.flush()
-    print('...done\nGenerating a master spreadsheet...')
-    if args.session_name is None:
-        merge_all_to_a_book(glob.glob("*/*.csv"), "Listing_resources.xlsx")
-    else:
-        # We remove the prefix from the name of every csv files to embellish the name of every sheets
-        all_files = glob.glob("*/{}/*.csv".format(args.session_name))
-        for i in range(len(all_files)):
-            all_files[i] = all_files[i].replace(args.session_name + "_", "")
-            split_name = all_files[i].split("/")
-            print("file_name", all_files[i])
-            if len(split_name[2]) > 31:
-                all_files[i] = all_files[i].replace(split_name[2], split_name[2][len(split_name[2]) - 31:])
-            print("new file_name", all_files[i])
-
-        # merge_all_to_a_book(all_files,
-        #                     "Listing_{}.xlsx".format(args.session_name))
+    print('...done\nHere are the results...')
     for result_type in (
             RESULT_NOTHING, RESULT_SOMETHING, RESULT_NO_ACCESS, RESULT_ERROR):
         for result in sorted(results_by_type[result_type]):
@@ -267,23 +252,21 @@ def extract_identifier(data):
     return ""
 
 
-def format_file_name(service, operation, session_name):
+def format_file_name(service, operation, session_name, region):
     known_prefix = {"Describe", "List"}
     if session_name is None:
         for prefix in known_prefix:
             if prefix in operation:
-                return "{}/{}.json".format(service,
-                                           str(operation).replace(prefix, ""))
-        return "{}/{}.json".format(service, operation)
+                return "{}/{}_{}.json".format(service, str(operation).replace(prefix, ""), region)
+        return "{}/{}_{}.json".format(service, operation, region)
     try:
         os.makedirs("{}/{}".format(service, session_name))
     except OSError:
         pass
     for prefix in known_prefix:
         if prefix in operation:
-            return "{}/{}/{}.json".format(service, session_name,
-                                          str(operation).replace(prefix, ""))
-    return "{}/{}/{}.json".format(service, session_name, operation)
+            return "{}/{}/{}_{}.json".format(service, session_name, str(operation).replace(prefix, ""), region)
+    return "{}/{}/{}_{}.json".format(service, session_name, operation, region)
 
 
 def acquire_listing(verbose, args, what):
@@ -297,8 +280,11 @@ def acquire_listing(verbose, args, what):
         listing = Listing.acquire(service, region, operation, args.arn)
         if verbose > 1:
             print(what, '...request successful.')
+        if operation == "DescribeReservedInstances":
+            print("Content for reserved instance on {}: {}'".format(region, listing.resource_total_count))
+
         if listing.resource_total_count > 0:
-            file_name = format_file_name(service, operation, args.session_name)
+            file_name = format_file_name(service, operation, args.session_name, region)
             file_content = listing.to_json()["response"][
                 extract_identifier(listing.to_json()["response"])]
             if not os.path.isdir(service):
@@ -306,7 +292,7 @@ def acquire_listing(verbose, args, what):
             with open(file_name, 'w') as jsonfile:
                 json.dump(file_content, jsonfile, default=datetime.isoformat,
                           indent=4)
-            convert_file(file_content, str(file_name).replace(".json", ".csv"))
+            # convert_file(file_content, str(file_name).replace(".json", ".csv"))
             return RESULT_SOMETHING, service, region, operation, ', '.join(
                 listing.resource_types)
         else:

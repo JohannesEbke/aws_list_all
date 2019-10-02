@@ -95,6 +95,7 @@ ENV/
 
 # listing file data dir
 data/
+merged_csv/
 
 # PyTest Cache
 .pytest_cache/

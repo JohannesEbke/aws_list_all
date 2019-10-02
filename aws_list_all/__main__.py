@@ -71,7 +71,8 @@ def main():
                           help="You should have already generated .json files")
 
     merge.add_argument("-d", "--directory", default=".", help="Directory where the data come from")
-    merge.add_argument("-o", "--output", default="../output/", help="Directory where the generated general csv files")
+    merge.add_argument("-o", "--output", default="../merged_csv/", help="Directory where the generated general csv files")
+    merge.add_argument("-s", "--session-name", help="The session name from where .json files will be found")
     merge.add_argument('-v', '--verbose', action='count', default=0,
                        help='Print detailed info during run')
     # Query is the main subcommand, so we put it first

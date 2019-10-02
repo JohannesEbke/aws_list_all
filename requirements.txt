@@ -1,0 +1,3 @@
+pandas>=0.25.1
+pyexcel>=0.5.15
+pyexcel-xls>=0.5.8
