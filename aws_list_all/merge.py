@@ -12,9 +12,12 @@ def make_merge_json(args):
     except OSError:
         pass
     if args.session_name is not None:
-        files_list = glob.glob("{}/{}/*/*.json".format(args.directory, args.session_name))
+        files_list = glob.glob("{}/*/{}/*.json".format(args.directory, args.session_name))
     else:
         files_list = glob.glob("{}/*/*.json".format(args.directory, args.session_name))
+    if len(files_list) == 0:
+        print("No file loaded, make sure you have entered correct parameters")
+        exit(0)
     all_dic = dict()
     for file_path in files_list:
         service_name = file_path.split("/")[-1].replace(".json", "")
@@ -41,10 +44,6 @@ def make_merge_json(args):
         except TypeError as err:
             print("Passing double entries for {} (err: {}) ...".format(service, str(err)),
                   file=stderr)
-            try:
-                all_dic[service] = [i for n, i in enumerate(tuple(all_dic[service])) if i not in all_dic[service][n + 1:]]
-            except TypeError as new_err:
-                print("Fatal error bro:", str(new_err))
         if len(service + ".csv") > 31:
             if args.verbose > 0:
                 print("Service", service, "is", len(service + ".csv"), "length ; changing the name to:", service[len(service + ".csv") - 31:])

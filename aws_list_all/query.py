@@ -10,14 +10,9 @@ from multiprocessing.pool import ThreadPool
 from random import shuffle
 from traceback import print_exc
 import os.path
-from pyexcel.cookbook import merge_all_to_a_book
-import glob
 
 from .introspection import get_listing_operations, get_regions_for_service
 from .listing import Listing
-from .csv_convert import convert_file
-
-import boto3
 
 RESULT_NOTHING = '---'
 RESULT_SOMETHING = '+++'
@@ -280,9 +275,6 @@ def acquire_listing(verbose, args, what):
         listing = Listing.acquire(service, region, operation, args.arn)
         if verbose > 1:
             print(what, '...request successful.')
-        if operation == "DescribeReservedInstances":
-            print("Content for reserved instance on {}: {}'".format(region, listing.resource_total_count))
-
         if listing.resource_total_count > 0:
             file_name = format_file_name(service, operation, args.session_name, region)
             file_content = listing.to_json()["response"][

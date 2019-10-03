@@ -42,8 +42,18 @@ def increase_limit_nofiles():
     print("")
 
 
+import boto3
+
+
 def main():
     """Parse CLI arguments to either list services, operations, queries or existing json files"""
+    cost_explorer = boto3.Session(region_name='us-west-2').client('ce')
+    cost = cost_explorer.get_cost_and_usage(
+        TimePeriod={'Start': '2019-01-01', 'End': '2019-02-01'},
+        Granularity='DAILY',
+        Metrics=["AmortizedCost", "BlendedCost", "NetAmortizedCost",
+                 "NetUnblendedCost", "NormalizedUsageAmount", "UnblendedCost"])
+    print("Cost ==>", cost)
     parser = ArgumentParser(
         prog='aws_list_all',
         description=(
@@ -57,24 +67,6 @@ def main():
         dest='command',
         metavar='COMMAND'
     )
-    generate = subparsers.add_parser("generate",
-                                     description="Generate a master spreadsheet for a specific session name",
-                                     help="You must enter the session name. You should have already generated .csv files")
-    generate.add_argument("-s",
-                          "--session-name",
-                          help="The session's name that the program have to look for")
-    generate.add_argument('-d', '--directory', default='.',
-                          help='Directory to save the spreadsheet')
-
-    merge = subparsers.add_parser("merge",
-                          description="From all resources, remove the duplicate",
-                          help="You should have already generated .json files")
-
-    merge.add_argument("-d", "--directory", default=".", help="Directory where the data come from")
-    merge.add_argument("-o", "--output", default="../merged_csv/", help="Directory where the generated general csv files")
-    merge.add_argument("-s", "--session-name", help="The session name from where .json files will be found")
-    merge.add_argument('-v', '--verbose', action='count', default=0,
-                       help='Print detailed info during run')
     # Query is the main subcommand, so we put it first
     query = subparsers.add_parser('query',
                                   description='Query AWS for resources',
@@ -108,6 +100,27 @@ def main():
                        help='Pass an ARN and get temporary credentials from it')
     query.add_argument('-sn', '--session-name', default=None,
                        help='Name the session for the temporary credentials')
+    merge = subparsers.add_parser("merge",
+                                  description="From all resources, remove the duplicate",
+                                  help="Remove duplicate information from json files.\nYou should have already generated .json files")
+
+    merge.add_argument("-d", "--directory", default=".",
+                       help="Directory where the data come from")
+    merge.add_argument("-o", "--output", default="../merged_csv/",
+                       help="Directory where the generated general csv files")
+    merge.add_argument("-s", "--session-name",
+                       help="The session name from where .json files will be found")
+    merge.add_argument('-v', '--verbose', action='count', default=0,
+                       help='Print detailed info during run')
+    generate = subparsers.add_parser("generate",
+                                     description="Generate a master spreadsheet for a specific session name",
+                                     help="Generate a master spreadsheet for a specific session name.\n"
+                                          "You must enter the session name and you should have already generated .csv files")
+    generate.add_argument("-s",
+                          "--session-name",
+                          help="The session's name that the program have to look for")
+    generate.add_argument('-d', '--directory', default='.',
+                          help='Directory to save the spreadsheet')
 
     # Once you have queried, show is the next most important command. So it comes second
     show = subparsers.add_parser(
