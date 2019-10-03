@@ -42,18 +42,10 @@ def increase_limit_nofiles():
     print("")
 
 
-import boto3
 
 
 def main():
     """Parse CLI arguments to either list services, operations, queries or existing json files"""
-    cost_explorer = boto3.Session(region_name='us-west-2').client('ce')
-    cost = cost_explorer.get_cost_and_usage(
-        TimePeriod={'Start': '2019-01-01', 'End': '2019-02-01'},
-        Granularity='DAILY',
-        Metrics=["AmortizedCost", "BlendedCost", "NetAmortizedCost",
-                 "NetUnblendedCost", "NormalizedUsageAmount", "UnblendedCost"])
-    print("Cost ==>", cost)
     parser = ArgumentParser(
         prog='aws_list_all',
         description=(
