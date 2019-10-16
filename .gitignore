@@ -33,6 +33,7 @@ var/
 *.spec
 
 # Installer logs
+Pipfile.lock
 pip-log.txt
 pip-delete-this-directory.txt
 
@@ -96,6 +97,7 @@ ENV/
 # listing file data dir
 data/
 merged_csv/
+cost_explorer/
 
 # PyTest Cache
 .pytest_cache/

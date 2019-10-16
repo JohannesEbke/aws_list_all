@@ -50,4 +50,4 @@ def make_merge_json(args):
             convert_file(all_dic[service], "{}/{}.csv".format(args.output, service[len(service + ".csv") - 31:]))
         else:
             convert_file(all_dic[service], "{}/{}.csv".format(args.output, service))
-    merge_all_to_a_book(glob.glob("{}/*.csv".format(args.output)), "../Listing_resources.xlsx")
+    merge_all_to_a_book(glob.glob("{}/*.csv".format(args.output)), "Listing_resources.xlsx")

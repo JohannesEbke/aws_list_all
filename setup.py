@@ -30,14 +30,12 @@ setup(
     ],
     keywords='aws boto3 listings resources region services',
     packages=['aws_list_all'],
-    install_requires=['boto3>=1.9.197', 'app_json_file_cache>=0.2.2', 'pyexcel', 'pandas'],
+    install_requires=['boto3>=1.9.197', 'app_json_file_cache>=0.2.2', 'pyexcel', 'pyexcel-xls', 'pandas',
+                      'botocore'],
     entry_points={
         'console_scripts': [
             'aws_list_all=aws_list_all.__main__:main',
             'aws-list-all=aws_list_all.__main__:main',
         ],
-    },
-    package_data={
-        'aws_list_all': 'aws_list_all/*.json',
-    },
+    }
 )

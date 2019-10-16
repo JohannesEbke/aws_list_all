@@ -10,6 +10,7 @@ from multiprocessing.pool import ThreadPool
 from random import shuffle
 from traceback import print_exc
 import os.path
+from sys import stderr
 
 from .introspection import get_listing_operations, get_regions_for_service
 from .listing import Listing
@@ -200,7 +201,7 @@ def do_query(services, args, verbose=0, parallel=32):
     selected_operations = args.operation
     if (args.arn is None and args.session_name is not None) or (
             args.session_name is None and args.arn is not None):
-        print("Err: session name is given but no ARN has been set")
+        print("ARN and session name must be both given when one of them is passed.", file=stderr)
         exit(1)
     print('Building set of queries to execute...')
     for service in services:
@@ -284,7 +285,6 @@ def acquire_listing(verbose, args, what):
             with open(file_name, 'w') as jsonfile:
                 json.dump(file_content, jsonfile, default=datetime.isoformat,
                           indent=4)
-            # convert_file(file_content, str(file_name).replace(".json", ".csv"))
             return RESULT_SOMETHING, service, region, operation, ', '.join(
                 listing.resource_types)
         else:

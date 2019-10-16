@@ -32,7 +32,7 @@ if __name__ == '__main__':
 
     if (args.arn is None and args.session_name is not None) or (
             args.session_name is None and args.arn is not None):
-        print("Session name is given but no ARN has been set", file=stderr)
+        print("ARN and session name must be both given when one of them is passed.", file=stderr)
         exit(1)
     if args.arn is not None and args.session_name is not None:
         sts = boto3.Session(region_name=args.region).client('sts')
@@ -44,19 +44,11 @@ if __name__ == '__main__':
                              aws_session_token=credentials["Credentials"]["SessionToken"]).client('ce')
     else:
         session = boto3.Session(region_name=args.region).client('ce')
-    cost = session.get_cost_and_usage(
+    costs_explorer = session.get_cost_and_usage(
         TimePeriod={'Start': args.date_start, 'End': args.date_end},
         Granularity='DAILY',
         Metrics=["AmortizedCost", "BlendedCost", "NetAmortizedCost",
-                 "NetUnblendedCost", "NormalizedUsageAmount", "UnblendedCost"])
-    # print(cost["ResultsByTime"][0]["Total"])
-    # cost_decoded = json.loads(cost["ResultsByTime"][0])
-    # for key in cost["ResultsByTime"][0]["Total"]:
-    #     total = 0
-    #     for value in cost["ResultsByTime"][0]["Total"][key]:
-    #         print("value=>", value[0])
-    #         total += value
-    #     print("Average cost for {} is {}$.".format(key, total / len(cost["ResultsByTime"][key])))
+                 "NetUnblendedCost", "UnblendedCost"])
     print("Creating dir '{}' if it doesn't exists...".format(args.output_directory))
     if not os.path.isdir(args.output_directory):
         os.mkdir(args.output_directory)
@@ -66,4 +58,14 @@ if __name__ == '__main__':
     else:
         file_name = "{}/cost_explorer.json".format(args.output_directory)
     with open(file_name, 'w') as jsonfile:
-        json.dump(cost["ResultsByTime"], jsonfile, default=datetime.isoformat, indent=4)
+        json.dump(costs_explorer["ResultsByTime"], jsonfile, default=datetime.isoformat, indent=4)
+
+    total = {"AmortizedCost" : 0, "BlendedCost" : 0, "NetAmortizedCost" : 0,
+            "NetUnblendedCost" : 0, "UnblendedCost" : 0}
+    for result_idx in range(len(costs_explorer["ResultsByTime"])):
+        for cost_type in costs_explorer["ResultsByTime"][result_idx]["Total"]:
+            if costs_explorer["ResultsByTime"][result_idx]["Total"][cost_type]["Unit"] != "USD":
+                continue
+            total[cost_type] += float(costs_explorer["ResultsByTime"][result_idx]["Total"][cost_type]["Amount"])
+    for each_total in total:
+        print("~> Average cost for '%s': %.2f$." % (each_total, total[each_total] / len(costs_explorer["ResultsByTime"])))
