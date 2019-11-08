@@ -140,7 +140,14 @@ def main():
             os.chdir(args.directory)
         increase_limit_nofiles()
         services = args.service or get_services()
-        do_query(services, args.region, args.operation, verbose=args.verbose or 0, parallel=args.parallel, selected_profile=args.profile)
+        do_query(
+            services,
+            args.region,
+            args.operation,
+            verbose=args.verbose or 0,
+            parallel=args.parallel,
+            selected_profile=args.profile
+        )
     elif args.command == 'show':
         if args.listingfile:
             increase_limit_nofiles()
