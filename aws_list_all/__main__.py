@@ -75,6 +75,7 @@ def main():
     query.add_argument('-p', '--parallel', default=32, type=int, help='Number of request to do in parallel')
     query.add_argument('-d', '--directory', default='.', help='Directory to save result listings to')
     query.add_argument('-v', '--verbose', action='count', help='Print detailed info during run')
+    query.add_argument('-c', '--profile', default="default", help='Pick a specific .aws/credentials profile to use')
 
     # Once you have queried, show is the next most important command. So it comes second
     show = subparsers.add_parser(
@@ -139,7 +140,7 @@ def main():
             os.chdir(args.directory)
         increase_limit_nofiles()
         services = args.service or get_services()
-        do_query(services, args.region, args.operation, verbose=args.verbose or 0, parallel=args.parallel)
+        do_query(services, args.region, args.operation, verbose=args.verbose or 0, parallel=args.parallel, selected_profile=args.profile)
     elif args.command == 'show':
         if args.listingfile:
             increase_limit_nofiles()

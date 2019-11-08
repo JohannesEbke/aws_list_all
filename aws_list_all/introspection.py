@@ -278,10 +278,10 @@ def get_verbs(service):
     return set(re.sub('([A-Z])', '_\\1', x).split('_')[1] for x in client.meta.method_to_api_mapping.values())
 
 
-def get_listing_operations(service, region=None, selected_operations=()):
+def get_listing_operations(service, region=None, selected_operations=(), profile=None):
     """Return a list of API calls which (probably) list resources created by the user
     in the given service (in contrast to AWS-managed or default resources)"""
-    client = get_client(service, region)
+    client = get_client(service, region, profile)
     operations = []
     for operation in client.meta.service_model.operation_names:
         if not any(operation.startswith(prefix) for prefix in VERBS_LISTINGS):

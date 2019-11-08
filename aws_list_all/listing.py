@@ -61,9 +61,9 @@ ssf.remove('DELETE_COMPLETE')
 PARAMETERS.setdefault('cloudformation', {})['ListStacks'] = {'StackStatusFilter': ssf}
 
 
-def run_raw_listing_operation(service, region, operation):
+def run_raw_listing_operation(service, region, operation, profile):
     """Execute a given operation and return its raw result"""
-    client = get_client(service, region)
+    client = get_client(service, region, profile)
     api_to_method_mapping = dict((v, k) for k, v in client.meta.method_to_api_mapping.items())
     parameters = PARAMETERS.get(service, {}).get(operation, {})
     op_model = client.meta.service_model.operation_model(operation)
@@ -76,16 +76,18 @@ def run_raw_listing_operation(service, region, operation):
 
 class Listing(object):
     """Represents a listing operation on an AWS service and its result"""
-    def __init__(self, service, region, operation, response):
+    def __init__(self, service, region, operation, response, profile):
         self.service = service
         self.region = region
         self.operation = operation
         self.response = response
+        self.profile = profile
 
     def to_json(self):
         return {
             'service': self.service,
             'region': self.region,
+            'profile': self.profile,
             'operation': self.operation,
             'response': self.response,
         }
@@ -95,6 +97,7 @@ class Listing(object):
         return cls(
             service=data.get('service'),
             region=data.get('region'),
+            profile=data.get('profile'),
             operation=data.get('operation'),
             response=data.get('response')
         )
@@ -115,18 +118,18 @@ class Listing(object):
             outfile.write(pprint.pformat(self.resources).encode('utf-8'))
 
     def __str__(self):
-        opdesc = '{} {} {}'.format(self.service, self.region, self.operation)
+        opdesc = '{} {} {} {}'.format(self.service, self.region, self.operation, self.profile)
         if len(self.resource_types) == 0 or self.resource_total_count == 0:
             return '{} (no resources found)'.format(opdesc)
         return opdesc + ', '.join('#{}: {}'.format(key, len(listing)) for key, listing in self.resources.items())
 
     @classmethod
-    def acquire(cls, service, region, operation):
+    def acquire(cls, service, region, operation, profile):
         """Acquire the given listing by making an AWS request"""
-        response = run_raw_listing_operation(service, region, operation)
+        response = run_raw_listing_operation(service, region, operation, profile)
         if response['ResponseMetadata']['HTTPStatusCode'] != 200:
             raise Exception('Bad AWS HTTP Status Code', response)
-        return cls(service, region, operation, response)
+        return cls(service, region, operation, response, profile)
 
     @property
     def resources(self):  # pylint:disable=too-many-branches
@@ -225,7 +228,7 @@ class Listing(object):
 
         # Special handling for service-level kms keys; derived from alias name.
         if self.service == 'kms' and self.operation == 'ListKeys':
-            list_aliases = run_raw_listing_operation(self.service, self.region, 'ListAliases')
+            list_aliases = run_raw_listing_operation(self.service, self.region, 'ListAliases', self.profile)
             service_key_ids = [
                 k.get('TargetKeyId') for k in list_aliases.get('Aliases', [])
                 if k.get('AliasName').lower().startswith('alias/aws')
@@ -330,7 +333,7 @@ class Listing(object):
 
         # Filter default Internet Gateways
         if self.service == 'ec2' and self.operation == 'DescribeInternetGateways':
-            describe_vpcs = run_raw_listing_operation(self.service, self.region, 'DescribeVpcs')
+            describe_vpcs = run_raw_listing_operation(self.service, self.region, 'DescribeVpcs', self.profile)
             vpcs = {v['VpcId']: v for v in describe_vpcs.get('Vpcs', [])}
             internet_gateways = []
             for ig in response['InternetGateways']:

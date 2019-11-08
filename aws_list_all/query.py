@@ -194,18 +194,18 @@ NOT_AVAILABLE_FOR_ACCOUNT_STRINGS = [
 NOT_AVAILABLE_STRINGS = NOT_AVAILABLE_FOR_REGION_STRINGS + NOT_AVAILABLE_FOR_ACCOUNT_STRINGS
 
 
-def do_query(services, selected_regions=(), selected_operations=(), verbose=0, parallel=32):
+def do_query(services, selected_regions=(), selected_operations=(), verbose=0, parallel=32, selected_profile=None):
     """For the given services, execute all selected operations (default: all) in selected regions
     (default: all)"""
     to_run = []
     print('Building set of queries to execute...')
     for service in services:
         for region in get_regions_for_service(service, selected_regions):
-            for operation in get_listing_operations(service, region, selected_operations):
+            for operation in get_listing_operations(service, region, selected_operations, selected_profile):
                 if verbose > 0:
                     print('Service: {: <28} | Region: {:<15} | Operation: {}'.format(service, region, operation))
 
-                to_run.append([service, region, operation])
+                to_run.append([service, region, operation, selected_profile])
     shuffle(to_run)  # Distribute requests across endpoints
     results_by_type = defaultdict(list)
     print('...done. Executing queries...')
@@ -227,19 +227,19 @@ def do_query(services, selected_regions=(), selected_operations=(), verbose=0, p
 def acquire_listing(verbose, what):
     """Given a service, region and operation execute the operation, serialize and save the result and
     return a tuple of strings describing the result."""
-    service, region, operation = what
+    service, region, operation, profile = what
     try:
         if verbose > 1:
             print(what, 'starting request...')
-        listing = Listing.acquire(service, region, operation)
+        listing = Listing.acquire(service, region, operation, profile)
         if verbose > 1:
             print(what, '...request successful.')
         if listing.resource_total_count > 0:
-            with open('{}_{}_{}.json'.format(service, operation, region), 'w') as jsonfile:
+            with open('{}_{}_{}_{}.json'.format(service, operation, region, profile), 'w') as jsonfile:
                 json.dump(listing.to_json(), jsonfile, default=datetime.isoformat)
-            return (RESULT_SOMETHING, service, region, operation, ', '.join(listing.resource_types))
+            return (RESULT_SOMETHING, service, region, operation, profile, ', '.join(listing.resource_types))
         else:
-            return (RESULT_NOTHING, service, region, operation, ', '.join(listing.resource_types))
+            return (RESULT_NOTHING, service, region, operation, profile, ', '.join(listing.resource_types))
     except Exception as exc:  # pylint:disable=broad-except
         if verbose > 1:
             print(what, '...exception:', exc)
@@ -259,7 +259,7 @@ def acquire_listing(verbose, what):
             if not_available_string in str(exc):
                 result_type = RESULT_NOTHING
 
-        return (result_type, service, region, operation, repr(exc))
+        return (result_type, service, region, operation, profile, repr(exc))
 
 
 def do_list_files(filenames, verbose=0):
