@@ -1,6 +1,8 @@
+#!/usr/bin/python3.7
+
 from datetime import datetime
 from argparse import ArgumentParser
-from sys import stderr
+import sys
 import os
 import json
 import boto3
@@ -32,7 +34,7 @@ if __name__ == '__main__':
 
     if (args.arn is None and args.session_name is not None) or (
             args.session_name is None and args.arn is not None):
-        print("ARN and session name must be both given when one of them is passed.", file=stderr)
+        print("ARN and session name must be both given when one of them is passed.", file=sys.stderr)
         exit(1)
     if args.arn is not None and args.session_name is not None:
         sts = boto3.Session(region_name=args.region).client('sts')

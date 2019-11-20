@@ -1,19 +1,16 @@
-aws\_list\_all
-==============
+# aws\_list\_all ![BuildTravis](https://travis-ci.org/JohannesEbke/aws_list_all.svg?branch=master "https://travis-ci.org/JohannesEbke/aws_list_all")
 
 List all resources in an AWS account, all regions, all services(*). Writes JSON files for further processing.
+Those JSON files can be converted to CSV files and merged in one XLSX (Excel workbook) file.
 
 (*) No guarantees for completeness. Use billing alerts if you are worried about costs.
 
-.. image: https://travis-ci.org/JohannesEbke/aws_list_all.svg?branch=master
-   :target: https://travis-ci.org/JohannesEbke/aws_list_all
+## Installation
 
-Usage
------
-
+### Basic mode
 You need to have python (both 2 or 3 work) as well as AWS credentials set up as usual.
 
-Quick Start with virtualenv:
+Quick Start with virtualenv (if you don't use python 3, change `python3` by your python version):
 
 ```shell script
 $ mkvirtualenv -p $(which python3) aws
@@ -23,7 +20,10 @@ $ aws-list-all query --region eu-west-1 --service ec2 --directory ./data/
 
 Quick Start Output:
 ```
----------------8<--(snip)--8<-------------------
+Building set of queries to execute...
+...done. Executing queries...
+---------------------------------------------------------------...done
+Here are the results...
 --- ec2 eu-west-1 DescribeVolumes Volumes
 --- ec2 eu-west-1 DescribeVolumesModifications VolumesModifications
 --- ec2 eu-west-1 DescribeVpcEndpointConnectionNotifications ConnectionNotificationSet
@@ -43,6 +43,17 @@ Lines start with "``---``" if no resources of this type have been found, and
 start with "``+++``" if at least one resource has been found.
 "``>:|``" denotes an error due to missing permissions, other errors are prefixed with "``!!!``",
 
+### Development mode
+
+You may create a virtual environment and install dependencies:
+```shell script
+$ pipenv install -r requirements.txt
+$ pipenv shell
+```
+To use it, replace `aws-list-all` by `./main.py` in the examples below.
+
+### Information
+
 Currently, some default resources are still considered "user-created" and thus listed,
 this may change in the future.
 
@@ -54,11 +65,10 @@ $ aws-list-all show data/ec2/*.json
 ```
 or 
 ```shell script
-$ aws-list-all show --verbose data/ec2_DescribeSecurityGroups_eu-west-1.json
+$ aws-list-all show --verbose data/ec2/Addresses_eu-west-3.json
 ```
 
-How do I really list everything?
-------------------------------------------------
+## How do I really list everything?
 
 Warning: As AWS has over 1024 API endpoints, you may have to increase your allowed number of open files
 See https://github.com/JohannesEbke/aws_list_all/issues/6
@@ -68,8 +78,7 @@ It uses a thread pool to parallelize queries and randomizes the order to avoid
 hitting one endpoint in close succession. One run takes around two minutes for me.
 
 
-More Examples
--------------
+## Examples
 
 Add immediate, more verbose output to a query with ``--verbose``. Use twice for even more verbosity:
 
@@ -107,7 +116,19 @@ List all resources in sequence to avoid throttling:
 $ aws-list-all query --parallel 1
 ```
 
-Convert JSON files to `.csv` files and merge them into a .xlsx file:
+Convert JSON files to `.csv` files and merge them into a `.xlsx` file:
 ```shell script
-$ aws-list-all merge --verbose -d ./data
+$ aws-list-all merge --verbose --directory ./data
+```
+Convert JSON files, from a specific session name, to `.csv` files and merge them into a `.xlsx`
+file:
+```shell script
+$ aws-list-all generate --session-name SomeSession
+```
+
+### Cost explorer
+There is a small script to retrieve some costs from a date to an another date. The costs aren't
+detailed. The date format is: `YYYY-MM-DD`.
+```shell script
+$ ./cost_explorer.py --date-start 2018-01-01 --date-end 2019-01-10 --output-directory cost_explorer
 ```

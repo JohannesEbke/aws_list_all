@@ -188,6 +188,7 @@ def main():
         merge_all_to_a_book(all_files,
                             "Listing_{}.xlsx".format(args.session_name))
         print("Generation ended")
+        return 0
     elif args.command == 'query':
         if args.directory:
             try:
@@ -201,7 +202,10 @@ def main():
     elif args.command == 'show':
         if args.listingfile:
             increase_limit_nofiles()
-            do_list_files(args.listingfile, verbose=args.verbose or 0)
+            if len(args.listingfile) == 1:
+                do_list_files(glob.glob(args.listingfile[0]), verbose=args.verbose or 0)
+            else:
+                do_list_files(args.listingfile, verbose=args.verbose or 0)
         else:
             show.print_help()
             return 1
