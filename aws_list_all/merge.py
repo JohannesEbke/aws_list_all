@@ -2,11 +2,11 @@ import json
 import glob
 import os
 from sys import stderr
-from aws_list_all.csv_convert import convert_file
 from pyexcel.cookbook import merge_all_to_a_book
+from aws_list_all import csv_convert
 
 
-def make_merge_json(args):
+def merge_json_files(args):
     try:
         os.makedirs(args.output)
     except OSError:
@@ -30,13 +30,13 @@ def make_merge_json(args):
             try:
                 if service_name in all_dic:
                     if args.verbose > 1:
-                        print("=> Service {} (from '{}') is already in the resume, adding the additional content...".format(service_name, file_path))
+                        print("=> Service {} (from '{}') is already in the summary, adding the additional content...".format(service_name, file_path))
                     all_dic.update(
                         {service_name: all_dic[service_name] + file_content})
                 else:
                     all_dic.update({service_name: file_content})
             except TypeError:
-                print("Passing service {} (from '{}') because of a TypeError and cannot be added the all resources...".format(service_name, file_path), file=stderr)
+                print("Passing service {} (from '{}') because of a TypeError and cannot be added to the all resources...".format(service_name, file_path), file=stderr)
     for service in all_dic:
         try:
             all_dic[service] = [i for n, i in enumerate(all_dic[service]) if
@@ -47,7 +47,7 @@ def make_merge_json(args):
         if len(service + ".csv") > 31:
             if args.verbose > 0:
                 print("Service", service, "is", len(service + ".csv"), "length ; changing the name to:", service[len(service + ".csv") - 31:])
-            convert_file(all_dic[service], "{}/{}.csv".format(args.output, service[len(service + ".csv") - 31:]))
+            csv_convert.convert_file(all_dic[service], "{}/{}.csv".format(args.output, service[len(service + ".csv") - 31:]))
         else:
-            convert_file(all_dic[service], "{}/{}.csv".format(args.output, service))
-    merge_all_to_a_book(glob.glob("{}/*.csv".format(args.output)), "Listing_resources.xlsx")
+            csv_convert.convert_file(all_dic[service], "{}/{}.csv".format(args.output, service))
+    merge_all_to_a_book(glob.glob("{}/*.csv".format(args.output)), "{}/Listing_resources.xlsx".format(args.output))

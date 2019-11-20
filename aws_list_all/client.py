@@ -19,9 +19,6 @@ def get_client(service, region=None, arn=None, session_name=None):
             return _CLIENTS[(service, region)]
         except botocore.exceptions.ClientError as err:
             print(err, file=stderr)
-            if (service, region) not in _CLIENTS:
-                _CLIENTS[(service, region)] = boto3.Session(region_name=region).client(service)
-            return _CLIENTS[(service, region)]
     if (service, region) not in _CLIENTS:
         _CLIENTS[(service, region)] = boto3.Session(region_name=region).client(service)
     return _CLIENTS[(service, region)]

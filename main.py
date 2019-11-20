@@ -7,8 +7,7 @@ from argparse import ArgumentParser
 from resource import setrlimit, RLIMIT_NOFILE, getrlimit
 from sys import exit, stderr
 from pyexcel.cookbook import merge_all_to_a_book
-from aws_list_all.merge import make_merge_json
-
+from aws_list_all import merge
 from aws_list_all.introspection import (
     get_listing_operations, get_services, get_verbs,
     introspect_regions_for_service, recreate_caches
@@ -40,8 +39,6 @@ def increase_limit_nofiles():
                 soft_limit, target_soft_limit))
         setrlimit(RLIMIT_NOFILE, (target_soft_limit, hard_limit))
     print("")
-
-
 
 
 def main():
@@ -92,17 +89,17 @@ def main():
                        help='Pass an ARN and get temporary credentials from it')
     query.add_argument('-sn', '--session-name', default=None,
                        help='Name the session for the temporary credentials')
-    merge = subparsers.add_parser("merge",
+    merge_arg = subparsers.add_parser("merge",
                                   description="From all resources, remove the duplicate",
                                   help="Remove duplicate information from json files.\nYou should have already generated .json files")
 
-    merge.add_argument("-d", "--directory", default=".",
+    merge_arg.add_argument("-d", "--directory", default=".",
                        help="Directory where the data come from")
-    merge.add_argument("-o", "--output", default="../merged_csv/",
+    merge_arg.add_argument("-o", "--output", default="./merged_csv/",
                        help="Directory where the generated general csv files")
-    merge.add_argument("-s", "--session-name",
+    merge_arg.add_argument("-s", "--session-name",
                        help="The session name from where .json files will be found")
-    merge.add_argument('-v', '--verbose', action='count', default=0,
+    merge_arg.add_argument('-v', '--verbose', action='count', default=0,
                        help='Print detailed info during run')
     generate = subparsers.add_parser("generate",
                                      description="Generate a master spreadsheet for a specific session name",
@@ -174,7 +171,7 @@ def main():
     args = parser.parse_args()
 
     if args.command == "merge":
-        make_merge_json(args)
+        merge.merge_json_files(args)
     elif args.command == "generate":
         if args.session_name is None:
             print("You must enter a session name", file=stderr)

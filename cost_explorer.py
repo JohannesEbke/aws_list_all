@@ -7,7 +7,7 @@ import boto3
 
 if __name__ == '__main__':
     parser = ArgumentParser(
-        prog='aws_list_all',
+        prog='cost_explorer',
         description=(
             'List AWS resources on one account across regions and services. '
             'Saves result into json files, which can then be passed to this tool again '
@@ -60,8 +60,8 @@ if __name__ == '__main__':
     with open(file_name, 'w') as jsonfile:
         json.dump(costs_explorer["ResultsByTime"], jsonfile, default=datetime.isoformat, indent=4)
 
-    total = {"AmortizedCost" : 0, "BlendedCost" : 0, "NetAmortizedCost" : 0,
-            "NetUnblendedCost" : 0, "UnblendedCost" : 0}
+    total = {"AmortizedCost": 0, "BlendedCost": 0, "NetAmortizedCost": 0,
+             "NetUnblendedCost": 0, "UnblendedCost": 0}
     for result_idx in range(len(costs_explorer["ResultsByTime"])):
         for cost_type in costs_explorer["ResultsByTime"][result_idx]["Total"]:
             if costs_explorer["ResultsByTime"][result_idx]["Total"][cost_type]["Unit"] != "USD":
