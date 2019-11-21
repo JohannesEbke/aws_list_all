@@ -1,5 +1,4 @@
 import pprint
-
 import boto3
 
 from .client import get_client
@@ -142,6 +141,8 @@ class Listing(object):
         complete = True
 
         del response['ResponseMetadata']
+        if self.operation is None:
+            return response
 
         # Transmogrify strange cloudfront results into standard AWS format
         if self.service == 'cloudfront':

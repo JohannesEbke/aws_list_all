@@ -239,15 +239,6 @@ def do_query(services, args, verbose=0, parallel=32):
             print(*result)
 
 
-def extract_identifier(data):
-    false_identifier = {"ResponseMetadata",
-                        "Owner"}
-    for data_key in data:
-        if data_key not in false_identifier:
-            return data_key
-    return ""
-
-
 def format_file_name(service, operation, session_name, region):
     known_prefix = {"Describe", "List"}
     if session_name is None:
@@ -278,12 +269,10 @@ def acquire_listing(verbose, args, what):
             print(what, '...request successful.')
         if listing.resource_total_count > 0:
             file_name = format_file_name(service, operation, args.session_name, region)
-            file_content = listing.to_json()["response"][
-                extract_identifier(listing.to_json()["response"])]
             if not os.path.isdir(service):
                 os.mkdir(service)
             with open(file_name, 'w') as jsonfile:
-                json.dump(file_content, jsonfile, default=datetime.isoformat,
+                json.dump(listing.to_json(), jsonfile, default=datetime.isoformat,
                           indent=4)
             return RESULT_SOMETHING, service, region, operation, ', '.join(
                 listing.resource_types)
@@ -319,6 +308,8 @@ def do_list_files(filenames, verbose=0):
         listing = Listing.from_json(json.load(open(listing_filename, 'rb')))
         resources = listing.resources
         truncated = False
+        if listing is None:
+            continue
         if 'truncated' in resources:
             truncated = resources['truncated']
             del resources['truncated']

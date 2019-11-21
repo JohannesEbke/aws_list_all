@@ -3,7 +3,16 @@ import glob
 import os
 from sys import stderr
 from pyexcel.cookbook import merge_all_to_a_book
-from aws_list_all import csv_convert
+from aws_list_all import csv_convert, listing
+
+
+def extract_identifier(data):
+    false_identifier = {"ResponseMetadata",
+                        "Owner"}
+    for data_key in data:
+        if data_key not in false_identifier:
+            return data_key
+    return ""
 
 
 def merge_json_files(args):
@@ -14,7 +23,7 @@ def merge_json_files(args):
     if args.session_name is not None:
         files_list = glob.glob("{}/*/{}/*.json".format(args.directory, args.session_name))
     else:
-        files_list = glob.glob("{}/*/*.json".format(args.directory, args.session_name))
+        files_list = glob.glob("{}/*/*.json".format(args.directory))
     if len(files_list) == 0:
         print("No file loaded, make sure you have entered correct parameters")
         exit(0)
@@ -26,7 +35,12 @@ def merge_json_files(args):
         if args.verbose != 0:
             print("Adding service {} from '{}'".format(service_name, file_path))
         with open(file_path) as file:
-            file_content = json.load(file)
+            full_content = json.load(file)
+            identifier = extract_identifier(full_content["response"])
+            if identifier != "":
+                file_content = full_content["response"][extract_identifier(full_content["response"])]
+            else:
+                file_content = full_content["response"]
             try:
                 if service_name in all_dic:
                     if args.verbose > 1:
