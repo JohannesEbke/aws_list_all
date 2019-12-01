@@ -1,9 +1,10 @@
 import json
+import platform
 import glob
 import os
 from sys import stderr
 from pyexcel.cookbook import merge_all_to_a_book
-from aws_list_all import csv_convert, listing
+from aws_list_all import csv_convert
 
 
 def extract_identifier(data):
@@ -15,21 +16,13 @@ def extract_identifier(data):
     return ""
 
 
-def merge_json_files(args):
-    try:
-        os.makedirs(args.output)
-    except OSError:
-        pass
-    if args.session_name is not None:
-        files_list = glob.glob("{}/*/{}/*.json".format(args.directory, args.session_name))
-    else:
-        files_list = glob.glob("{}/*/*.json".format(args.directory))
-    if len(files_list) == 0:
-        print("No file loaded, make sure you have entered correct parameters")
-        exit(0)
-    all_dic = dict()
+def get_all_services(files_list, args):
+    registered_services = dict()
     for file_path in files_list:
-        service_name = file_path.split("\\")[-1]
+        if platform.system() == "Windows":
+            service_name = file_path.split("\\")[-1]
+        else:
+            service_name = file_path.split("/")[-1]
         service_name.replace(".json", "")
         region_idx = service_name.find("_")
         service_name = service_name[:region_idx]
@@ -47,31 +40,45 @@ def merge_json_files(args):
             else:
                 file_content = full_content["response"]
             try:
-                if service_name in all_dic:
-                    if args.verbose > 1:
+                if service_name in registered_services:
+                    if args.verbose > 0:
                         print("=> Service {} (from '{}') is already in the summary, "
                               "adding the additional content...".format(service_name, file_path))
-                    all_dic.update(
-                        {
-                            service_name: all_dic[service_name] + file_content
-                        }
-                    )
+                    registered_services.update({
+                            service_name: registered_services[service_name] + file_content
+                        })
                 else:
-                    all_dic.update({service_name: file_content})
+                    registered_services.update({service_name: file_content})
             except TypeError:
                 print("Passing service {} (from '{}') because of a TypeError and "
                       "cannot be added to the all resources...".format(service_name, file_path), file=stderr)
-    for service in all_dic:
+    return registered_services
+
+
+def merge_json_files(args):
+    try:
+        os.makedirs(args.output)
+    except OSError:
+        pass
+    if args.session_name is not None:
+        files_list = glob.glob("{}/*/{}/*.json".format(args.directory, args.session_name))
+    else:
+        files_list = glob.glob("{}/*/*.json".format(args.directory))
+    if len(files_list) == 0:
+        print("No file loaded, make sure you have entered correct parameters")
+        exit(0)
+    registered_services = get_all_services(files_list, args)
+    for service in registered_services:
         try:
-            all_dic[service] = [i for n, i in enumerate(all_dic[service]) if
-                                i not in all_dic[service][n + 1:]]
+            registered_services[service] = [i for n, i in enumerate(registered_services[service]) if
+                                i not in registered_services[service][n + 1:]]
         except TypeError as err:
             print("Passing double entries for {} (err: {}) ...".format(service, str(err)),
                   file=stderr)
         if len(service + ".csv") > 31:
             if args.verbose > 0:
                 print("Service", service, "is", len(service + ".csv"), "length ; changing the name to:", service[len(service + ".csv") - 31:])
-            csv_convert.convert_file(all_dic[service], "{}/{}.csv".format(args.output, service[len(service + ".csv") - 31:]))
+            csv_convert.convert_file(registered_services[service], "{}/{}.csv".format(args.output, service[len(service + ".csv") - 31:]))
         else:
-            csv_convert.convert_file(all_dic[service], "{}/{}.csv".format(args.output, service))
+            csv_convert.convert_file(registered_services[service], "{}/{}.csv".format(args.output, service))
     merge_all_to_a_book(glob.glob("{}/*.csv".format(args.output)), "{}/Listing_resources.xlsx".format(args.output))
