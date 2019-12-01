@@ -6,7 +6,6 @@ import os
 from argparse import ArgumentParser
 from resource import setrlimit, RLIMIT_NOFILE, getrlimit
 from sys import exit, stderr
-from pyexcel.cookbook import merge_all_to_a_book
 from aws_list_all import merge
 from aws_list_all.introspection import (
     get_listing_operations, get_services, get_verbs,
@@ -96,20 +95,11 @@ def main():
     merge_arg.add_argument("-d", "--directory", default=".",
                        help="Directory where the data come from")
     merge_arg.add_argument("-o", "--output", default="./merged_csv/",
-                       help="Directory where the generated general csv files")
+                       help="Directory where the generated csv files goes")
     merge_arg.add_argument("-s", "--session-name",
-                       help="The session name from where .json files will be found")
+                       help="The session name from where json files will be found")
     merge_arg.add_argument('-v', '--verbose', action='count', default=0,
                        help='Print detailed info during run')
-    generate = subparsers.add_parser("generate",
-                                     description="Generate a master spreadsheet for a specific session name",
-                                     help="Generate a master spreadsheet for a specific session name.\n"
-                                          "You must enter the session name and you should have already generated .csv files")
-    generate.add_argument("-s",
-                          "--session-name",
-                          help="The session's name that the program have to look for")
-    generate.add_argument('-d', '--directory', default='.',
-                          help='Directory to save the spreadsheet')
 
     # Once you have queried, show is the next most important command. So it comes second
     show = subparsers.add_parser(
@@ -172,23 +162,6 @@ def main():
 
     if args.command == "merge":
         merge.merge_json_files(args)
-    elif args.command == "generate":
-        if args.session_name is None:
-            print("You must enter a session name", file=stderr)
-            exit(1)
-        if args.directory:
-            try:
-                os.makedirs(args.directory)
-            except OSError:
-                pass
-            os.chdir(args.directory)
-        all_files = glob.glob("*/{}/*.csv".format(args.session_name))
-        for i in range(len(all_files)):
-            all_files[i] = all_files[i].replace(args.session_name + "_", "")
-        merge_all_to_a_book(all_files,
-                            "Listing_{}.xlsx".format(args.session_name))
-        print("Generation ended")
-        return 0
     elif args.command == 'query':
         if args.directory:
             try:

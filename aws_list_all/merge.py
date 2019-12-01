@@ -29,13 +29,18 @@ def merge_json_files(args):
         exit(0)
     all_dic = dict()
     for file_path in files_list:
-        service_name = file_path.split("/")[-1].replace(".json", "")
+        service_name = file_path.split("\\")[-1]
+        service_name.replace(".json", "")
         region_idx = service_name.find("_")
         service_name = service_name[:region_idx]
         if args.verbose != 0:
             print("Adding service {} from '{}'".format(service_name, file_path))
         with open(file_path) as file:
             full_content = json.load(file)
+            if full_content.get("response") is None:
+                print("File '{}' doesn't seems to be a valid file. "
+                      "Are you in the right folder?".format(file_path), file=stderr)
+                break
             identifier = extract_identifier(full_content["response"])
             if identifier != "":
                 file_content = full_content["response"][extract_identifier(full_content["response"])]
@@ -44,13 +49,18 @@ def merge_json_files(args):
             try:
                 if service_name in all_dic:
                     if args.verbose > 1:
-                        print("=> Service {} (from '{}') is already in the summary, adding the additional content...".format(service_name, file_path))
+                        print("=> Service {} (from '{}') is already in the summary, "
+                              "adding the additional content...".format(service_name, file_path))
                     all_dic.update(
-                        {service_name: all_dic[service_name] + file_content})
+                        {
+                            service_name: all_dic[service_name] + file_content
+                        }
+                    )
                 else:
                     all_dic.update({service_name: file_content})
             except TypeError:
-                print("Passing service {} (from '{}') because of a TypeError and cannot be added to the all resources...".format(service_name, file_path), file=stderr)
+                print("Passing service {} (from '{}') because of a TypeError and "
+                      "cannot be added to the all resources...".format(service_name, file_path), file=stderr)
     for service in all_dic:
         try:
             all_dic[service] = [i for n, i in enumerate(all_dic[service]) if

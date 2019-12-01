@@ -68,6 +68,8 @@ or
 $ aws-list-all show --verbose data/ec2/Addresses_eu-west-3.json
 ```
 
+**NOTE:** If you want a brief description about a command, use the `-h` or `--help` flag.
+
 ## How do I really list everything?
 
 Warning: As AWS has over 1024 API endpoints, you may have to increase your allowed number of open files
@@ -80,51 +82,47 @@ hitting one endpoint in close succession. One run takes around two minutes for m
 
 ## Examples
 
-Add immediate, more verbose output to a query with ``--verbose``. Use twice for even more verbosity:
+* Add immediate, more verbose output to a query with ``--verbose``. Use twice for even more verbosity:
 
 ```shell script
 $ aws-list-all query --region eu-west-1 --service ec2 --operation DescribeVpcs --directory data --verbose
 ```
 
-Show resources for all returned queries:
+* Show resources for all returned queries:
 
 ```shell script
 $ aws-list-all show --verbose data/*/*
 ```
 
-Show resources for all ec2 returned queries:
+* Show resources for all ec2 returned queries:
 
 ```shell script
 $ aws-list-all show --verbose data/ec2/*.json
 ```
 
-List available services to query:
+* List available services to query:
 
 ```shell script
 $ aws-list-all introspect list-services
 ```
 
-List available operations for a given service, do:
+* List available operations for a given service, do:
 
 ```shell script
 $ aws-list-all introspect list-operations --service ec2
 ```
 
-List all resources in sequence to avoid throttling:
+* List all resources in sequence to avoid throttling:
 
 ```shell script
 $ aws-list-all query --parallel 1
 ```
 
-Convert JSON files to `.csv` files and merge them into a `.xlsx` file:
+* Convert JSON files to `.csv` files and merge them into a `.xlsx` file:
 ```shell script
 $ aws-list-all merge --verbose --directory ./data
 ```
-Convert JSON files, from a specific session name, to `.csv` files and merge them into a `.xlsx`
-file:
-```shell script
-$ aws-list-all generate --session-name SomeSession
-```
+**Note:** You an specify a session-name if you want to convert `.json` files only for a session.
 
 ### Cost explorer
 There is a small script to retrieve some costs from a date to an another date. The costs aren't
