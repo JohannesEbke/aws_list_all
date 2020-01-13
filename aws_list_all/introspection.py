@@ -320,6 +320,7 @@ def recreate_caches(update_packaged_values):
         print(' *', service_regions_packaged_json)
         dump(get_service_regions(), open(service_regions_packaged_json, 'w'))
 
+
 def packaged_endpoint_hosts():
     return load(resource_stream(__package__, 'endpoint_hosts.json'))
 
