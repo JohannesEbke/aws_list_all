@@ -119,13 +119,23 @@ def main():
     introspecters.add_parser('debug', description='Debug information', help='Debug information')
 
     # Finally, refreshing the service/region caches comes last.
-    subparsers.add_parser(
+    caches = subparsers.add_parser(
         'recreate-caches',
         description=(
-            'Recreate the service/region availability caches, '
-            'in case service availability changed since the last release'
+            'The list of AWS services and endpoints can change over time. '
+            'This command (re-)creates the caches for this data to allow you to'
+            'list services in regions where they have not been available previously.'
+            'The cache lives in your OS-dependent cache directory, e.g. ~/.cache/aws_list_all/'
         ),
-        help='Recreate service caches'
+        help='Recreate service and region caches'
+    )
+    caches.add_argument(
+        '--update-packaged-values',
+        action='store_true',
+        help=(
+            'Instead of writing to the cache, update files packaged with aws-list-all. '
+            'Use this only if you run a copy from git.'
+        )
     )
 
     args = parser.parse_args()
@@ -167,7 +177,7 @@ def main():
             return 1
     elif args.command == 'recreate-caches':
         increase_limit_nofiles()
-        recreate_caches()
+        recreate_caches(args.update_packaged_values)
     else:
         parser.print_help()
         return 1
