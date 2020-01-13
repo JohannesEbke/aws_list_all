@@ -2,7 +2,7 @@ from __future__ import print_function
 
 import re
 from collections import defaultdict
-from json import load
+from json import load, dump
 from multiprocessing.pool import ThreadPool
 from socket import gethostbyname
 
@@ -306,18 +306,22 @@ def get_listing_operations(service, region=None, selected_operations=()):
 
 
 def recreate_caches(update_packaged_values):
-    if update_packaged_values:
-        get_endpoint_hosts._filename = lambda _ : resource_filename(__package__, 'endpoint_hosts.json')
-        get_service_regions._filename = lambda _ : resource_filename(__package__, 'service_regions.json')
-        print('Updating packaged values at:')
-        print(' *', get_endpoint_hosts._filename(''))
-        print(' *', get_service_regions._filename(''))
     get_endpoint_hosts.recalculate()
     get_service_regions.recalculate()
 
+    if update_packaged_values:
+        print('Updating packaged values at:')
+
+        endpoint_hosts_packaged_json = resource_filename(__package__, 'endpoint_hosts.json')
+        print(' *', endpoint_hosts_packaged_json)
+        dump(get_endpoint_hosts(), open(endpoint_hosts_packaged_json, 'w'))
+
+        service_regions_packaged_json = resource_filename(__package__, 'service_regions.json')
+        print(' *', service_regions_packaged_json)
+        dump(get_service_regions(), open(service_regions_packaged_json, 'w'))
 
 def packaged_endpoint_hosts():
-    return load(resource_stream(__package__, 'endpoint_hosts.json'))['data']
+    return load(resource_stream(__package__, 'endpoint_hosts.json'))
 
 
 @cache('endpoint_hosts', vary={'boto3_version': boto3.__version__}, cheap_default_func=packaged_endpoint_hosts)
@@ -361,7 +365,7 @@ def get_service_region_ip_in_dns():
 
 
 def packaged_service_regions():
-    return load(resource_stream(__package__, 'service_regions.json'))['data']
+    return load(resource_stream(__package__, 'service_regions.json'))
 
 
 @cache('service_regions', vary={'boto3_version': boto3.__version__}, cheap_default_func=packaged_service_regions)
