@@ -39,17 +39,14 @@ def test_introspect_regions_for_service():
 
 
 def test_get_listing_operations():
-    services_with_no_listings = set([
-        service for service in get_services() if len(get_listing_operations(service, region='us-east-1')) == 0
-    ])
-
     expected_no_listings = {
         'application-autoscaling',
         'budgets',
-        'ce',
-        'comprehendmedical',
         'connect',
+        'connectparticipant',
+        'ebs',
         'ec2-instance-connect',
+        'elastic-inference',
         'forecastquery',
         'glacier',
         'health',
@@ -57,7 +54,9 @@ def test_get_listing_operations():
         'iot-jobs-data',
         'iotevents-data',
         'iotthingsgraph',
+        'kinesis-video-signaling',
         'lex-runtime',
+        'marketplace-catalog',
         'marketplace-entitlement',
         'marketplacecommerceanalytics',
         'mediaconvert',
@@ -72,6 +71,8 @@ def test_get_listing_operations():
         'rds-data',
         'resourcegroupstaggingapi',
         'sagemaker-runtime',
+        'sso',
+        'sso-oidc',
         'sts',
         'swf',
         'textract',
@@ -80,5 +81,14 @@ def test_get_listing_operations():
         'workmailmessageflow',
     }
 
-    assert expected_no_listings - services_with_no_listings == set(), 'Extra services gained listings, please check!'
+    services_with_no_listings = set()
+    for service in get_services():
+        print('Testing', service)
+        if len(get_listing_operations(service, region='us-east-1')) == 0:
+            services_with_no_listings.add(service)
+
+    assert expected_no_listings - services_with_no_listings == set(), (
+        'Extra services gained listings, please check if they are valid '
+        'using "aws-list-all introspect list-operations --service X"'
+    )
     assert services_with_no_listings - expected_no_listings == set(), 'Some services have no listings, please check!'

@@ -196,7 +196,7 @@ NOT_RESOURCE_DESCRIPTIONS = {
         'DescribeAccountAttributes', 'DescribeDBEngineVersions', 'DescribeReservedDBInstancesOfferings',
         'DescribeEvents'
     ],
-    'resourcegroupstaggingapi': ['GetResources', 'GetTagKeys'],
+    'resourcegroupstaggingapi': ['GetResources', 'GetTagKeys', 'DescribeReportCreation', 'GetComplianceSummary'],
     'route53': ['GetTrafficPolicyInstanceCount', 'GetHostedZoneCount', 'GetHealthCheckCount', 'GetGeoLocation'],
     'route53domains': ['ListOperations'],
     'sagemaker': ['ListTrainingJobs'],
@@ -238,7 +238,10 @@ PARAMETERS_REQUIRED = {
     'gamelift': ['DescribeGameSessionDetails', 'DescribeGameSessions', 'DescribePlayerSessions'],
     'globalaccelerator': ['DescribeAcceleratorAttributes'],
     'glue': ['GetDataflowGraph', 'GetResourcePolicy'],
-    'health': ['DescribeEventTypes', 'DescribeEntityAggregates', 'DescribeEvents'],
+    'health': [
+        'DescribeEventTypes', 'DescribeEntityAggregates', 'DescribeEvents', 'DescribeEventsForOrganization',
+        'DescribeHealthServiceStatusForOrganization'
+    ],
     'iot': ['GetLoggingOptions', 'GetEffectivePolicies', 'ListAuditFindings'],
     'kinesis': ['DescribeStreamConsumer', 'ListShards'],
     'kinesisvideo': ['DescribeStream', 'ListTagsForStream'],
