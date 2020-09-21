@@ -8,6 +8,7 @@ from datetime import datetime
 from functools import partial
 from multiprocessing.pool import ThreadPool
 from random import shuffle
+from time import time
 from traceback import print_exc
 
 from .introspection import get_listing_operations, get_regions_for_service
@@ -230,12 +231,15 @@ def acquire_listing(verbose, what):
     """Given a service, region and operation execute the operation, serialize and save the result and
     return a tuple of strings describing the result."""
     service, region, operation = what
+    start_time = time()
     try:
         if verbose > 1:
             print(what, 'starting request...')
         listing = Listing.acquire(service, region, operation)
+        duration = time() - start_time
         if verbose > 1:
-            print(what, '...request successful.')
+            print(what, '...request successful')
+            print("timing [success]:", duration, what)
         if listing.resource_total_count > 0:
             with open('{}_{}_{}.json'.format(service, operation, region), 'w') as jsonfile:
                 json.dump(listing.to_json(), jsonfile, default=datetime.isoformat)
@@ -243,8 +247,10 @@ def acquire_listing(verbose, what):
         else:
             return (RESULT_NOTHING, service, region, operation, ', '.join(listing.resource_types))
     except Exception as exc:  # pylint:disable=broad-except
+        duration = time() - start_time
         if verbose > 1:
             print(what, '...exception:', exc)
+            print("timing [failure]:", duration, what)
         if verbose > 2:
             print_exc()
         result_type = RESULT_NO_ACCESS if 'AccessDeniedException' in str(exc) else RESULT_ERROR
