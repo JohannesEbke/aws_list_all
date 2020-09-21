@@ -14,7 +14,7 @@ def test_get_services():
 def test_get_endpoint_hosts():
     services = get_services()
     endpoint_hosts = get_endpoint_hosts()
-    assert set(endpoint_hosts) >= set(services)
+    assert set(services) - set(endpoint_hosts) == set()
     services_with_no_endpoint = [service for service in services if len(endpoint_hosts[service]) == 0]
     # Services with no endpoint means they should probably go to the SERVICE_BLACKLIST
     assert not services_with_no_endpoint
@@ -23,7 +23,7 @@ def test_get_endpoint_hosts():
 def test_get_service_regions():
     services = get_services()
     regions = get_service_regions()
-    assert set(regions) >= set(services)
+    assert set(services) - set(regions) == set()
     services_with_no_region = [service for service in services if len(regions[service]) == 0]
     # Services with no region means they should probably go to the SERVICE_BLACKLIST
     assert not services_with_no_region
@@ -46,7 +46,6 @@ def test_get_listing_operations():
         'connectparticipant',
         'ebs',
         'ec2-instance-connect',
-        'elastic-inference',
         'forecastquery',
         'glacier',
         'health',

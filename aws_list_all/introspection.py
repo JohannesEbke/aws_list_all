@@ -162,6 +162,7 @@ NOT_RESOURCE_DESCRIPTIONS = {
     ],
     'ecr': ['GetAuthorizationToken'],
     'ecs': ['DescribeClusters'],  # This gives duplicates from ListClusters, and also includes deleted clusters
+    'elastic-inference': ['DescribeAcceleratorTypes'],
     'elasticache': ['DescribeReservedCacheNodesOfferings'],
     'elasticbeanstalk': ['DescribeAccountAttributes', 'DescribeEvents'],
     'elb': ['DescribeAccountLimits'],
