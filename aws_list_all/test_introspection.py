@@ -71,6 +71,7 @@ def test_get_listing_operations():
         'rds-data',
         'resourcegroupstaggingapi',
         'sagemaker-runtime',
+        'sagemaker-a2i-runtime',
         'sso',
         'sso-oidc',
         'sts',
