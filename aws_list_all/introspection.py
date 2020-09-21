@@ -77,6 +77,7 @@ DISALLOWED_FOR_IAM_USERS = {
 }
 # DEPRECATED_OR_DISALLOWED.update(DISALLOWED_FOR_IAM_USERS)
 
+# This lists API calls that do return a list of resource-like objects which cannot be influenced by the user
 AWS_RESOURCE_QUERIES = {
     'apigateway': ['GetSdkTypes'],
     'autoscaling': [
@@ -90,27 +91,45 @@ AWS_RESOURCE_QUERIES = {
     'codebuild': ['ListCuratedEnvironmentImages'],
     'codedeploy': ['ListDeploymentConfigs'],
     'codepipeline': ['ListActionTypes'],
+    'codestar-notifications': ['ListEventTypes'],
     'devicefarm': ['ListDevices', 'ListOfferings', 'ListOfferingTransactions'],
     'directconnect': ['DescribeLocations'],
     'dynamodb': ['DescribeEndpoints'],
     'dms': ['DescribeEndpointTypes', 'DescribeOrderableReplicationInstances', 'DescribeEventCategories'],
-    'docdb': ['DescribeDBEngineVersions', 'DescribeEventCategories'],
+    'docdb': ['DescribeCertificates', 'DescribeDBEngineVersions', 'DescribeEventCategories'],
     'ec2': [
-        'DescribePrefixLists', 'DescribeAvailabilityZones', 'DescribeVpcEndpointServices', 'DescribeSpotPriceHistory',
-        'DescribeHostReservationOfferings', 'DescribeRegions', 'DescribeReservedInstancesOfferings', 'DescribeIdFormat',
-        'DescribeVpcClassicLinkDnsSupport', 'DescribeAggregateIdFormat'
+        'DescribeAggregateIdFormat',
+        'DescribeCapacityProviders',
+        'DescribeAvailabilityZones',
+        'DescribeHostReservationOfferings',
+        'DescribeIdFormat',
+        'DescribeInstanceTypeOfferings',
+        'DescribeInstanceTypes',
+        'DescribeManagedPrefixLists',
+        'DescribePrefixLists',
+        'DescribeRegions',
+        'DescribeReservedInstancesOfferings',
+        'DescribeSpotPriceHistory',
+        'DescribeVpcClassicLinkDnsSupport',
+        'DescribeVpcEndpointServices',
     ],
     'elasticache': ['DescribeCacheParameterGroups', 'DescribeCacheEngineVersions', 'DescribeServiceUpdates'],
-    'elasticbeanstalk': ['ListAvailableSolutionStacks', 'PlatformSummaryList'],
+    'elasticbeanstalk': [
+        'ListAvailableSolutionStacks',
+        'ListPlatformBranches',
+        'PlatformSummaryList',
+    ],
     'elastictranscoder': ['ListPresets'],
     'elb': ['DescribeLoadBalancerPolicyTypes', 'DescribeLoadBalancerPolicies'],
     'elbv2': ['DescribeSSLPolicies'],
     'es': ['DescribeReservedElasticsearchInstanceOfferings', 'GetCompatibleElasticsearchVersions'],
     'groundstation': ['ListGroundStations'],
     'inspector': ['ListRulesPackages'],
+    'kafka': ['GetCompatibleKafkaVersions', 'ListKafkaVersions'],
     'lex-models': ['GetBuiltinIntents', 'GetBuiltinSlotTypes'],
     'lightsail': [
-        'GetBlueprints', 'GetBundles', 'GetRegions', 'GetRelationalDatabaseBlueprints', 'GetRelationalDatabaseBundles'
+        'GetBlueprints', 'GetBundles', 'GetDistributionBundles', 'GetRegions', 'GetRelationalDatabaseBlueprints',
+        'GetRelationalDatabaseBundles'
     ],
     'mediaconvert': ['DescribeEndpoints'],
     'medialive': ['ListOfferings'],
@@ -120,6 +139,7 @@ AWS_RESOURCE_QUERIES = {
     'personalize': ['ListRecipes'],
     'pricing': ['DescribeServices'],
     'polly': ['DescribeVoices'],
+    'ram': ['ListPermissions', 'ListResourceTypes'],  # TODO: ListPermissions may possibly also return user-created ones
     'rds': ['DescribeDBEngineVersions', 'DescribeSourceRegions', 'DescribeCertificates', 'DescribeEventCategories'],
     'redshift': [
         'DescribeClusterVersions',
@@ -129,12 +149,20 @@ AWS_RESOURCE_QUERIES = {
         'DescribeClusterTracks',
     ],
     'route53': ['GetCheckerIpRanges', 'ListGeoLocations'],
+    'savingsplans': ['DescribeSavingsPlansOfferingRates', 'DescribeSavingsPlansOfferings'],
+    'securityhub': ['DescribeStandards'],
     'service-quotas': ['ListServices'],
     'signer': ['ListSigningPlatforms'],
     'ssm': ['DescribeAvailablePatches', 'GetInventorySchema'],
+    'synthetics': ['DescribeRuntimeVersions'],
+    'transfer': ['ListSecurityPolicies'],
     'xray': ['GetSamplingRules'],
 }
 
+# This lists API calls that do not return resources or resource-like objects.
+#
+# It has become a bit mixed up with the AWS_RESOURCE_QUERIES list, yet the idea here is that these calls may
+# still be used later for change tracking, e.g. tracking account limits over time with DescribeAccountLimits.
 NOT_RESOURCE_DESCRIPTIONS = {
     'apigateway': ['GetAccount'],
     'autoscaling': ['DescribeAccountLimits'],
@@ -151,7 +179,7 @@ NOT_RESOURCE_DESCRIPTIONS = {
     'dax': ['DescribeDefaultParameters', 'DescribeParameterGroups'],
     'devicefarm': ['GetAccountSettings', 'GetOfferingStatus'],
     'discovery': ['GetDiscoverySummary'],
-    'dms': ['DescribeAccountAttributes', 'DescribeEventCategories'],
+    'dms': ['DescribeAccountAttributes', 'DescribeApplicableIndividualAssessments', 'DescribeEventCategories'],
     'docdb': ['DescribeEvents'],
     'ds': ['GetDirectoryLimits'],
     'dynamodb': ['DescribeLimits'],
@@ -191,6 +219,7 @@ NOT_RESOURCE_DESCRIPTIONS = {
     'neptune': ['DescribeEvents'],
     'opsworks': ['DescribeMyUserProfile', 'DescribeUserProfiles', 'DescribeOperatingSystems'],
     'opsworkscm': ['DescribeAccountAttributes'],
+    'organizations': ['DescribeOrganization'],
     'pinpoint-email': ['GetAccount', 'GetDeliverabilityDashboardOptions'],
     'redshift': ['DescribeStorage', 'DescribeAccountAttributes'],
     'rds': [
@@ -204,6 +233,7 @@ NOT_RESOURCE_DESCRIPTIONS = {
     'securityhub': ['GetInvitationsCount'],
     'servicediscovery': ['ListOperations'],
     'ses': ['GetSendQuota', 'GetAccountSendingEnabled'],
+    'sesv2': ['GetAccount', 'GetDeliverabilityDashboardOptions'],
     'shield': ['GetSubscriptionState'],
     'sms': ['GetServers'],
     'snowball': ['GetSnowballUsage'],
@@ -256,7 +286,15 @@ PARAMETERS_REQUIRED = {
     'pricing': ['GetProducts'],
     'redshift': ['DescribeTableRestoreStatus', 'DescribeClusterSecurityGroups'],
     'route53domains': ['GetContactReachabilityStatus'],
+    'schemas': ['GetResourcePolicy'],
     'secretsmanager': ['GetRandomPassword'],
+    'servicecatalog': [
+        'DescribeProduct',
+        'DescribeProductAsAdmin',
+        'DescribeProvisionedProduct',
+        'DescribeProvisioningArtifact',
+        'DescribeProvisioningParameters',
+    ],
     'shield': ['DescribeSubscription', 'DescribeProtection'],
     'sms': ['GetApp', 'GetAppLaunchConfiguration', 'GetAppReplicationConfiguration'],
     'ssm': ['DescribeAssociation', 'DescribeMaintenanceWindowSchedule', 'ListComplianceItems'],
