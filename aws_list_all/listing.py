@@ -5,6 +5,11 @@ import boto3
 from .client import get_client
 
 PARAMETERS = {
+    'cloudfront': {
+        'ListCachePolicies': {
+            'Type': 'custom'
+        },
+    },
     'ec2': {
         'DescribeSnapshots': {
             'OwnerIds': ['self']
