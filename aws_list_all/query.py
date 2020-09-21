@@ -204,9 +204,8 @@ def do_query(services, selected_regions=(), selected_operations=(), verbose=0, p
         for region in get_regions_for_service(service, selected_regions):
             for operation in get_listing_operations(service, region, selected_operations):
                 if verbose > 0:
-                    if not region:
-                        region = 'n/a'
-                    print('Service: {: <28} | Region: {:<15} | Operation: {}'.format(service, region, operation))
+                    region_name = region or 'n/a'
+                    print('Service: {: <28} | Region: {:<15} | Operation: {}'.format(service, region_name, operation))
 
                 to_run.append([service, region, operation])
     shuffle(to_run)  # Distribute requests across endpoints
