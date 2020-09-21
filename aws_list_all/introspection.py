@@ -272,7 +272,7 @@ PARAMETERS_REQUIRED = {
 
 def get_services():
     """Return a list of all service names where listable resources can be present"""
-    return [service for service in boto3.Session().get_available_services() if service not in SERVICE_BLACKLIST]
+    return [service for service in sorted(boto3.Session().get_available_services()) if service not in SERVICE_BLACKLIST]
 
 
 def get_verbs(service):
@@ -287,7 +287,7 @@ def get_listing_operations(service, region=None, selected_operations=()):
     in the given service (in contrast to AWS-managed or default resources)"""
     client = get_client(service, region)
     operations = []
-    for operation in client.meta.service_model.operation_names:
+    for operation in sorted(client.meta.service_model.operation_names):
         if not any(operation.startswith(prefix) for prefix in VERBS_LISTINGS):
             continue
         op_model = client.meta.service_model.operation_model(operation)
@@ -318,11 +318,11 @@ def recreate_caches(update_packaged_values):
 
         endpoint_hosts_packaged_json = resource_filename(__package__, 'endpoint_hosts.json')
         print(' *', endpoint_hosts_packaged_json)
-        dump(get_endpoint_hosts(), open(endpoint_hosts_packaged_json, 'w'))
+        dump(get_endpoint_hosts(), open(endpoint_hosts_packaged_json, 'w'), sort_keys=True, indent=4)
 
         service_regions_packaged_json = resource_filename(__package__, 'service_regions.json')
         print(' *', service_regions_packaged_json)
-        dump(get_service_regions(), open(service_regions_packaged_json, 'w'))
+        dump(get_service_regions(), open(service_regions_packaged_json, 'w'), sort_keys=True, indent=4)
 
 
 def packaged_endpoint_hosts():
@@ -380,7 +380,7 @@ def get_service_regions():
         service_regions.setdefault(service, set())
         if ip is not None:
             service_regions[service].add(region)
-    return {service: list(regions) for service, regions in service_regions.items()}
+    return {service: sorted(list(regions)) for service, regions in service_regions.items()}
 
 
 def get_regions_for_service(requested_service, requested_regions=()):
