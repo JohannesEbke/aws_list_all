@@ -53,6 +53,14 @@ region, and operation used to find them. They can be dumped with::
   aws-list-all show data/ec2_*
   aws-list-all show --verbose data/ec2_DescribeSecurityGroups_eu-west-1.json
 
+Docker
+-----
+.. code-block:: bash
+    git clone https://github.com/JohannesEbke/aws_list_all
+    cd aws_list_all/
+    docker build -t aws_list_all:latest .
+    docker run --rm -v $HOME/.aws:/root/.aws -t aws_list_all:latest --profile myprofile
+
 How do I really list everything?
 ------------------------------------------------
 
