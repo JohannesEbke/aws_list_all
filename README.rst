@@ -53,6 +53,18 @@ region, and operation used to find them. They can be dumped with::
   aws-list-all show data/ec2_*
   aws-list-all show --verbose data/ec2_DescribeSecurityGroups_eu-west-1.json
 
+Docker Usage
+--------------------
+
+Additionally you nned to create an env. file containing your AWS access key ID and secret access key.
+
+Quick Start with docker-compose::
+
+  git clone https://github.com/JohannesEbke/aws_list_all
+  cd aws_list_all/
+  docker-compose build
+  docker-compose up
+
 How do I really list everything?
 ------------------------------------------------
 
