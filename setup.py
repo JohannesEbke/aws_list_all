@@ -30,7 +30,7 @@ setup(
     ],
     keywords='aws boto3 listings resources region services',
     packages=['aws_list_all'],
-    install_requires=['boto3>=1.15.1', 'app_json_file_cache>=0.2.2'],
+    install_requires=['boto3>=1.16.24', 'app_json_file_cache>=0.2.2'],
     entry_points={
         'console_scripts': [
             'aws_list_all=aws_list_all.__main__:main',
