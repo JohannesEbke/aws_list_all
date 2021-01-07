@@ -12,7 +12,7 @@ from time import time
 from traceback import print_exc
 
 from .introspection import get_listing_operations, get_regions_for_service
-from .listing import Listing
+from .listing import Listing, ListingFile
 
 RESULT_NOTHING = '---'
 RESULT_SOMETHING = '+++'
@@ -239,9 +239,9 @@ def acquire_listing(verbose, what):
         if verbose > 1:
             print(what, '...request successful')
             print("timing [success]:", duration, what)
-        if listing.resource_total_count > 0:
-            with open('{}_{}_{}_{}.json'.format(service, operation, region, profile), 'w') as jsonfile:
+        with open('{}_{}_{}_{}.json'.format(service, operation, region, profile), 'w') as jsonfile:
                 json.dump(listing.to_json(), jsonfile, default=datetime.isoformat)
+        if listing.resource_total_count > 0:
             return (RESULT_SOMETHING, service, region, operation, profile, ', '.join(listing.resource_types))
         else:
             return (RESULT_NOTHING, service, region, operation, profile, ', '.join(listing.resource_types))
@@ -266,19 +266,39 @@ def acquire_listing(verbose, what):
             if not_available_string in str(exc):
                 result_type = RESULT_NOTHING
 
+        listing = Listing(service, region, operation, {}, profile, result_type)
+        with open('{}_{}_{}_{}.json'.format(service, operation, region, profile), 'w') as jsonfile:
+                json.dump(listing.to_json(), jsonfile, default=datetime.isoformat)
         return (result_type, service, region, operation, profile, repr(exc))
 
 
-def do_list_files(filenames, verbose=0):
+def do_list_files(filenames, verbose=0, not_found=False, errors=False, denied=False):
     """Print out a rudimentary summary of the Listing objects contained in the given files"""
+    dir = filenames[0][:filenames[0].rfind('/') + 1]
     for listing_filename in filenames:
         listing = Listing.from_json(json.load(open(listing_filename, 'rb')))
-        resources = listing.resources
+        listing_entry = ListingFile(listing, dir)
+        resources = listing_entry.resources
+
         truncated = False
+        was_denied = False
         if 'truncated' in resources:
             truncated = resources['truncated']
             del resources['truncated']
+        if listing.error == RESULT_NO_ACCESS:
+            was_denied = True
+            if not resources:
+                print(listing.service, listing.region, listing.operation, 'MISSING PERMISSION', '0')
+        if listing.error == RESULT_ERROR and errors:
+            print(listing.service, listing.region, listing.operation, 'ERROR', '0')
+        
         for resource_type, value in resources.items():
+            if not not_found and len(value) == 0 and not was_denied:
+                continue
+            if not denied and was_denied:
+                continue
+            if was_denied:
+                resource_type = 'MISSING PERMISSION'
             len_string = '> {}'.format(len(value)) if truncated else str(len(value))
             print(listing.service, listing.region, listing.operation, resource_type, len_string)
             if verbose > 0:
