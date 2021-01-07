@@ -4,6 +4,7 @@ import pprint
 import boto3
 
 from .client import get_client
+from .resource_filter import *
 
 PARAMETERS = {
     'cloudfront': {
@@ -193,188 +194,67 @@ class Listing(object):
 
         del response['ResponseMetadata']
 
-        # Transmogrify strange cloudfront results into standard AWS format
-        if self.service == 'cloudfront':
-            assert len(response.keys()) == 1, 'Unexpected cloudfront response: {}'.format(response)
-            key = list(response.keys())[0][:-len('List')]
-            response = list(response.values())[0]
-            response[key] = response.get('Items', [])
+        cloudfront_filter = CloudfrontFilter()
+        medialive_filter = MedialiveFilter()
+        ssmListCommands_filter = SSMListCommandsFilter()
+        snsListSubscriptions_filter = SNSListSubscriptionsFilter()
+        athenaWorkGroups_filter = AthenaWorkGroupsFilter()
+        listEventBuses_filter = ListEventBusesFilter()
+        xRayGroups_filter = XRayGroupsFilter()
+        kmsListAliases_filter = KMSListAliasesFilter()
+        appstreamImages_filter = AppstreamImagesFilter()
+        cloudsearch_filter = CloudsearchFilter()
+        cloudTrail_filter = CloudTrailFilter()
+        cloudWatch_filter = CloudWatchFilter()
+        iamPolicies_filter = IAMPoliciesFilter()
+        s3Owner_filter = S3OwnerFilter()
+        ecsClustersFailure_filter = ECSClustersFailureFilter()
+        pinpointGetApps_filter = PinpointGetAppsFilter()
+        ssmBaselines_filter = SSMBaselinesFilter()
+        dbSecurityGroups_filter = DBSecurityGroupsFilter()
+        dbParameterGroups_filter = DBParameterGroupsFilter()
+        dbClusterParameterGroups_filter = DBClusterParameterGroupsFilter()
+        dbOptionGroups_filter = DBOptionGroupsFilter()
+        ec2VPC_filter = EC2VPCFilter()
+        ec2Subnets_filter = EC2SubnetsFilter()
+        ec2SecurityGroups_filter = EC2SecurityGroupsFilter()
+        ec2RouteTables_filter = EC2RouteTablesFilter()
+        ec2NetworkAcls_filter = EC2NetworkAclsFilter()
+        ec2FpgaImgaes_filter = EC2FpgaImgaesFilter()
+        workmailDeletedOrganizations_filter = WorkmailDeletedOrganizationsFilter()
+        elasticacheSubnetGroups_filter = ElasticacheSubnetGroupsFilter()
+        nextToken_filter = NextTokenFilter()
 
-        # medialive List* things sends a next token; remove if no channels/lists
-        if self.service == 'medialive':
-            if self.operation == 'ListChannels' and not response['Channels']:
-                if 'Channels' in response:
-                    del response['Channels']
-                if 'NextToken' in response:
-                    del response['NextToken']
-            if self.operation == 'ListInputs' and not response['Inputs']:
-                if 'Inputs' in response:
-                    del response['Inputs']
-                if 'NextToken' in response:
-                    del response['NextToken']
-
-        # ssm ListCommands sends a next token; remove if no channels
-        if self.service == 'ssm' and self.operation == 'ListCommands':
-            if 'NextToken' in response and not response['Commands']:
-                del response['NextToken']
-
-        # SNS ListSubscriptions always sends a next token...
-        if self.service == 'sns' and self.operation == 'ListSubscriptions':
-            del response['NextToken']
-
-        # Athena has a "primary" work group that is always present
-        if self.service == 'athena' and self.operation == 'ListWorkGroups':
-            response['WorkGroups'] = [wg for wg in response.get('WorkGroups', []) if wg['Name'] != 'primary']
-
-        # Remove default event buses
-        if self.service == 'events' and self.operation == 'ListEventBuses':
-            response['EventBuses'] = [wg for wg in response.get('EventBuses', []) if wg['Name'] != 'default']
-
-        # XRay has a "Default"  group that is always present
-        if self.service == 'xray' and self.operation == 'GetGroups':
-            response['Groups'] = [wg for wg in response.get('Groups', []) if wg['GroupName'] != 'Default']
-
-        if self.service == 'route53resolver':
-            if self.operation == 'ListResolverRules':
-                response['ResolverRules'] = [
-                    rule for rule in response.get('ResolverRules', [])
-                    if rule['Id'] != 'rslvr-autodefined-rr-internet-resolver'
-                ]
-            if self.operation == 'ListResolverRuleAssociations':
-                response['ResolverRuleAssociations'] = [
-                    rule for rule in response.get('ResolverRuleAssociations', [])
-                    if rule['ResolverRuleId'] != 'rslvr-autodefined-rr-internet-resolver'
-                ]
-
-        if 'Count' in response:
-            if 'MaxResults' in response:
-                if response['MaxResults'] <= response['Count']:
-                    complete = False
-                del response['MaxResults']
-            del response['Count']
-
-        if 'Quantity' in response:
-            if 'MaxItems' in response:
-                if response['MaxItems'] <= response['Quantity']:
-                    complete = False
-                del response['MaxItems']
-            del response['Quantity']
-
-        for neutral_thing in ('MaxItems', 'MaxResults', 'Quantity'):
-            if neutral_thing in response:
-                del response[neutral_thing]
-
-        for bad_thing in (
-            'hasMoreResults', 'IsTruncated', 'Truncated', 'HasMoreApplications', 'HasMoreDeliveryStreams',
-            'HasMoreStreams', 'NextToken', 'NextMarker', 'nextMarker', 'Marker'
-        ):
-            if bad_thing in response:
-                if response[bad_thing]:
-                    complete = False
-                del response[bad_thing]
-
-        # Special handling for Aliases in kms, there are some reserved AWS-managed aliases.
-        if self.service == 'kms' and self.operation == 'ListAliases':
-            response['Aliases'] = [
-                alias for alias in response.get('Aliases', [])
-                if not alias.get('AliasName').lower().startswith('alias/aws')
-            ]
-
-        # Filter PUBLIC images from appstream
-        if self.service == 'appstream' and self.operation == 'DescribeImages':
-            response['Images'] = [
-                image for image in response.get('Images', []) if not image.get('Visibility', 'PRIVATE') == 'PUBLIC'
-            ]
-
-        # This API returns a dict instead of a list
-        if self.service == 'cloudsearch' and self.operation == 'ListDomainNames':
-            response['DomainNames'] = list(response['DomainNames'].items())
-
-        # Only list CloudTrail trails in own/Home Region
-        if self.service == 'cloudtrail' and self.operation == 'DescribeTrails':
-            response['trailList'] = [
-                trail for trail in response['trailList']
-                if trail.get('HomeRegion') == self.region or not trail.get('IsMultiRegionTrail')
-            ]
-
-        # Remove AWS-default cloudwatch metrics
-        if self.service == 'cloudwatch' and self.operation == 'ListMetrics':
-            response['Metrics'] = [
-                metric for metric in response['Metrics'] if not metric.get('Namespace').startswith('AWS/')
-            ]
-
-        # Remove AWS supplied policies
-        if self.service == 'iam' and self.operation == 'ListPolicies':
-            response['Policies'] = [
-                policy for policy in response['Policies'] if not policy['Arn'].startswith('arn:aws:iam::aws:')
-            ]
-
-        # Owner Info is not necessary
-        if self.service == 's3' and self.operation == 'ListBuckets':
-            del response['Owner']
-
-        # Remove failures from ecs/DescribeClusters
-        if self.service == 'ecs' and self.operation == 'DescribeClusters':
-            if 'failures' in response:
-                del response['failures']
-
-        # This API returns a dict instead of a list
-        if self.service == 'pinpoint' and self.operation == 'GetApps':
-            response['ApplicationsResponse'] = response.get('ApplicationsResponse', {}).get('Items', [])
-
-        # Remove AWS-defined Baselines
-        if self.service == 'ssm' and self.operation == 'DescribePatchBaselines':
-            response['BaselineIdentities'] = [
-                line for line in response['BaselineIdentities'] if not line['BaselineName'].startswith('AWS-')
-            ]
-
-        # Remove default DB Security Group
-        if self.service in 'rds' and self.operation == 'DescribeDBSecurityGroups':
-            response['DBSecurityGroups'] = [
-                group for group in response['DBSecurityGroups'] if group['DBSecurityGroupName'] != 'default'
-            ]
-
-        # Remove default DB Parameter Groups
-        if self.service in ('rds', 'neptune', 'docdb') and self.operation in 'DescribeDBParameterGroups':
-            response['DBParameterGroups'] = [
-                group for group in response['DBParameterGroups']
-                if not group['DBParameterGroupName'].startswith('default.')
-            ]
-
-        # Remove default DB Cluster Parameter Groups
-        if self.service in ('rds', 'neptune', 'docdb') and self.operation in 'DescribeDBClusterParameterGroups':
-            response['DBClusterParameterGroups'] = [
-                group for group in response['DBClusterParameterGroups']
-                if not group['DBClusterParameterGroupName'].startswith('default.')
-            ]
-
-        # Remove default DB Option Groups
-        if self.service == 'rds' and self.operation == 'DescribeOptionGroups':
-            response['OptionGroupsList'] = [
-                group for group in response['OptionGroupsList'] if not group['OptionGroupName'].startswith('default:')
-            ]
-
-        # Filter default VPCs
-        if self.service == 'ec2' and self.operation == 'DescribeVpcs':
-            response['Vpcs'] = [vpc for vpc in response['Vpcs'] if not vpc['IsDefault']]
-
-        # Filter default Subnets
-        if self.service == 'ec2' and self.operation == 'DescribeSubnets':
-            response['Subnets'] = [net for net in response['Subnets'] if not net['DefaultForAz']]
-
-        # Filter default SGs
-        if self.service == 'ec2' and self.operation == 'DescribeSecurityGroups':
-            response['SecurityGroups'] = [sg for sg in response['SecurityGroups'] if sg['GroupName'] != 'default']
-
-        # Filter main route tables
-        if self.service == 'ec2' and self.operation == 'DescribeRouteTables':
-            response['RouteTables'] = [
-                rt for rt in response['RouteTables'] if not any(x['Main'] for x in rt['Associations'])
-            ]
-
-        # Filter default Network ACLs
-        if self.service == 'ec2' and self.operation == 'DescribeNetworkAcls':
-            response['NetworkAcls'] = [nacl for nacl in response['NetworkAcls'] if not nacl['IsDefault']]
+        cloudfront_filter.execute(self, response)
+        medialive_filter.execute(self, response)
+        ssmListCommands_filter.execute(self, response)
+        snsListSubscriptions_filter.execute(self, response)
+        athenaWorkGroups_filter.execute(self, response)
+        listEventBuses_filter.execute(self, response)
+        xRayGroups_filter.execute(self, response)
+        kmsListAliases_filter.execute(self, response)
+        appstreamImages_filter.execute(self, response)
+        cloudsearch_filter.execute(self, response)
+        cloudTrail_filter.execute(self, response)
+        cloudWatch_filter.execute(self, response)
+        iamPolicies_filter.execute(self, response)
+        s3Owner_filter.execute(self, response)
+        ecsClustersFailure_filter.execute(self, response)
+        pinpointGetApps_filter.execute(self, response)
+        ssmBaselines_filter.execute(self, response)
+        dbSecurityGroups_filter.execute(self, response)
+        dbParameterGroups_filter.execute(self, response)
+        dbClusterParameterGroups_filter.execute(self, response)
+        dbOptionGroups_filter.execute(self, response)
+        ec2VPC_filter.execute(self, response)
+        ec2Subnets_filter.execute(self, response)
+        ec2SecurityGroups_filter.execute(self, response)
+        ec2RouteTables_filter.execute(self, response)
+        ec2NetworkAcls_filter.execute(self, response)
+        ec2FpgaImgaes_filter.execute(self, response)
+        workmailDeletedOrganizations_filter.execute(self, response)
+        elasticacheSubnetGroups_filter.execute(self, response)
+        nextToken_filter.execute(self, response)
 
         # # Filter default Internet Gateways
         # if self.service == 'ec2' and self.operation == 'DescribeInternetGateways':
@@ -390,27 +270,6 @@ class Listing(object):
         #         if not vpcs.get(vpc, {}).get('IsDefault', False):
         #             internet_gateways.append(ig)
         #     response['InternetGateways'] = internet_gateways
-
-        # Filter Public images from ec2.fpga images
-        if self.service == 'ec2' and self.operation == 'DescribeFpgaImages':
-            response['FpgaImages'] = [image for image in response.get('FpgaImages', []) if not image.get('Public')]
-
-        # Remove deleted Organizations
-        if self.service == 'workmail' and self.operation == 'ListOrganizations':
-            response['OrganizationSummaries'] = [
-                s for s in response.get('OrganizationSummaries', []) if not s.get('State') == 'Deleted'
-            ]
-
-        if self.service == 'elasticache' and self.operation == 'DescribeCacheSubnetGroups':
-            response['CacheSubnetGroups'] = [
-                g for g in response.get('CacheSubnetGroups', []) if g.get('CacheSubnetGroupName') != 'default'
-            ]
-
-        # interpret nextToken in several services
-        if (self.service, self.operation) in (('inspector', 'ListFindings'), ('logs', 'DescribeLogGroups')):
-            if response.get('nextToken'):
-                complete = False
-                del response['nextToken']
 
         for key, value in response.items():
             if not isinstance(value, list):
