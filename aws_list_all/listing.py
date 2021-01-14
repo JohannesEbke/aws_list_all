@@ -3,7 +3,7 @@ import pprint
 
 import boto3
 
-from .apply_filter import apply_filters
+from .apply_filter import apply_filters, convert_unfilterList
 from .client import get_client
 from .resource_filter import *
 
@@ -120,14 +120,10 @@ class ListingFile(object):
         del response['ResponseMetadata']
 
         complete = apply_filters(self.input, self.unfilter, response, complete)
-        #response = self.input.resources
-        kmsListKeys_filter = KMSListKeysFilter(self.directory)
-        ec2InternetGateways_filter = EC2InternetGatewaysFilter(self.directory)
-        kmsListKeys_filter.execute(self.input, response)
-        ec2InternetGateways_filter.execute(self.input, response)
+        unfilterList = convert_unfilterList(self.unfilter)
 
         # Special handling for service-level kms keys; derived from alias name.
-        if self.input.service == 'kms' and self.input.operation == 'ListKeys':
+        if 'kmsListKeys' not in unfilterList and self.input.service == 'kms' and self.input.operation == 'ListKeys':
             aliases_file = '{}_{}_{}_{}.json'.format(self.input.service, 'ListAliases', self.input.region, self.input.profile)
             aliases_file = self.directory + aliases_file
             aliases_listing = Listing.from_json(json.load(open(aliases_file, 'rb')))
@@ -139,7 +135,7 @@ class ListingFile(object):
             response['Keys'] = [k for k in response.get('Keys', []) if k.get('KeyId') not in service_key_ids]
 
         # Filter default Internet Gateways
-        if self.input.service == 'ec2' and self.input.operation == 'DescribeInternetGateways':
+        if 'ec2InternetGateways' not in unfilterList and self.input.service == 'ec2' and self.input.operation == 'DescribeInternetGateways':
             vpcs_file = '{}_{}_{}_{}.json'.format(self.input.service, 'DescribeVpcs', self.input.region, self.input.profile)
             vpcs_file = self.directory + vpcs_file
             vpcs_listing = Listing.from_json(json.load(open(vpcs_file, 'rb')))

@@ -5,12 +5,7 @@ import sys
 from .resource_filter import *
 
 def apply_filters(listing, unfilter, response, complete):
-    unfilterList = []
-    if unfilter is not None:
-        if isinstance(unfilter, list):
-            unfilterList = unfilter
-        else:
-            unfilterList.append(unfilter)
+    unfilterList = convert_unfilterList(unfilter)
     apply_complete = complete
 
     if not('cloudfront' in unfilterList):
@@ -158,6 +153,16 @@ def apply_filters(listing, unfilter, response, complete):
         apply_complete = getattr(filter, 'complete')
 
     return apply_complete
+
+def convert_unfilterList(unfilter):
+    unfilterList = []
+    if unfilter is not None:
+        if isinstance(unfilter, list):
+            unfilterList = unfilter
+        else:
+            unfilterList.append(unfilter)
+
+    return unfilterList
 
 
 
