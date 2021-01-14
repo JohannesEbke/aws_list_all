@@ -1,6 +1,8 @@
 from __future__ import print_function
 
+import codecs
 import json
+import os
 import sys
 import contextlib
 from collections import defaultdict
@@ -195,7 +197,7 @@ NOT_AVAILABLE_FOR_ACCOUNT_STRINGS = [
 NOT_AVAILABLE_STRINGS = NOT_AVAILABLE_FOR_REGION_STRINGS + NOT_AVAILABLE_FOR_ACCOUNT_STRINGS
 
 
-def do_query(services, selected_regions=(), selected_operations=(), verbose=0, parallel=32, selected_profile=None):
+def do_query(services, selected_regions=(), selected_operations=(), verbose=0, parallel=32, selected_profile=None, unfilter=()):
     """For the given services, execute all selected operations (default: all) in selected regions
     (default: all)"""
     to_run = []
@@ -207,7 +209,7 @@ def do_query(services, selected_regions=(), selected_operations=(), verbose=0, p
                     region_name = region or 'n/a'
                     print('Service: {: <28} | Region: {:<15} | Operation: {}'.format(service, region_name, operation))
 
-                to_run.append([service, region, operation, selected_profile])
+                to_run.append([service, region, operation, selected_profile, unfilter])
     shuffle(to_run)  # Distribute requests across endpoints
     results_by_type = defaultdict(list)
     print('...done. Executing queries...')
@@ -229,22 +231,23 @@ def do_query(services, selected_regions=(), selected_operations=(), verbose=0, p
 def acquire_listing(verbose, what):
     """Given a service, region and operation execute the operation, serialize and save the result and
     return a tuple of strings describing the result."""
-    service, region, operation, profile = what
+    service, region, operation, profile, unfilter = what
     start_time = time()
     try:
         if verbose > 1:
             print(what, 'starting request...')
         listing = Listing.acquire(service, region, operation, profile)
+        listingFile = ListingFile(listing, './', unfilter) #os.getcwd() + '/'
         duration = time() - start_time
         if verbose > 1:
             print(what, '...request successful')
             print("timing [success]:", duration, what)
         with open('{}_{}_{}_{}.json'.format(service, operation, region, profile), 'w') as jsonfile:
                 json.dump(listing.to_json(), jsonfile, default=datetime.isoformat)
-        if listing.resource_total_count > 0:
-            return (RESULT_SOMETHING, service, region, operation, profile, ', '.join(listing.resource_types))
+        if listingFile.resource_total_count > 0:
+            return (RESULT_SOMETHING, service, region, operation, profile, ', '.join(listingFile.resource_types))
         else:
-            return (RESULT_NOTHING, service, region, operation, profile, ', '.join(listing.resource_types))
+            return (RESULT_NOTHING, service, region, operation, profile, ', '.join(listingFile.resource_types))
     except Exception as exc:  # pylint:disable=broad-except
         duration = time() - start_time
         if verbose > 1:
@@ -272,12 +275,12 @@ def acquire_listing(verbose, what):
         return (result_type, service, region, operation, profile, repr(exc))
 
 
-def do_list_files(filenames, verbose=0, not_found=False, errors=False, denied=False):
+def do_list_files(filenames, verbose=0, not_found=False, errors=False, denied=False, unfilter=()):
     """Print out a rudimentary summary of the Listing objects contained in the given files"""
     dir = filenames[0][:filenames[0].rfind('/') + 1]
     for listing_filename in filenames:
         listing = Listing.from_json(json.load(open(listing_filename, 'rb')))
-        listing_entry = ListingFile(listing, dir)
+        listing_entry = ListingFile(listing, dir, unfilter)
         resources = listing_entry.resources
 
         truncated = False
@@ -287,7 +290,7 @@ def do_list_files(filenames, verbose=0, not_found=False, errors=False, denied=Fa
             del resources['truncated']
         if listing.error == RESULT_NO_ACCESS:
             was_denied = True
-            if not resources:
+            if not resources and denied:
                 print(listing.service, listing.region, listing.operation, 'MISSING PERMISSION', '0')
         if listing.error == RESULT_ERROR and errors:
             print(listing.service, listing.region, listing.operation, 'ERROR', '0')
@@ -333,3 +336,4 @@ def do_list_files(filenames, verbose=0, not_found=False, errors=False, denied=Fa
                         print('    - ', item)
                 if truncated:
                     print('    - ... (more items, query truncated)')
+                    

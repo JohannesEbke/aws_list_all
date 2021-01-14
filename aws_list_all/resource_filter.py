@@ -64,6 +64,8 @@ class XRayGroupsFilter:
         if listing.service == 'xray' and listing.operation == 'GetGroups':
             response['Groups'] = [wg for wg in response.get('Groups', []) if wg['GroupName'] != 'Default']
 
+class Route53ResolverFilter:
+    def execute(self, listing, response):
         if listing.service == 'route53resolver':
             if listing.operation == 'ListResolverRules':
                 response['ResolverRules'] = [
@@ -76,31 +78,48 @@ class XRayGroupsFilter:
                     if rule['ResolverRuleId'] != 'rslvr-autodefined-rr-internet-resolver'
                 ]
 
+class CountFilter:
+    def __init__(self, complete):
+        self.complete = complete
+
+    def execute(self, listing, response):
         if 'Count' in response:
             if 'MaxResults' in response:
                 if response['MaxResults'] <= response['Count']:
-                    complete = False
+                    self.complete = False
                 del response['MaxResults']
             del response['Count']
 
+class QuantityFilter:
+    def __init__(self, complete):
+        self.complete = complete
+
+    def execute(self, listing, response):
         if 'Quantity' in response:
             if 'MaxItems' in response:
                 if response['MaxItems'] <= response['Quantity']:
-                    complete = False
+                    self.complete = False
                 del response['MaxItems']
             del response['Quantity']
 
+class NeutralThingFilter:
+    def execute(self, listing, response):
         for neutral_thing in ('MaxItems', 'MaxResults', 'Quantity'):
             if neutral_thing in response:
                 del response[neutral_thing]
 
+class BadThingFilter:
+    def __init__(self, complete):
+        self.complete = complete
+
+    def execute(self, listing, response):
         for bad_thing in (
             'hasMoreResults', 'IsTruncated', 'Truncated', 'HasMoreApplications', 'HasMoreDeliveryStreams',
             'HasMoreStreams', 'NextToken', 'NextMarker', 'nextMarker', 'Marker'
         ):
             if bad_thing in response:
                 if response[bad_thing]:
-                    complete = False
+                    self.complete = False
                 del response[bad_thing]
 
 class KMSListAliasesFilter:
@@ -112,23 +131,23 @@ class KMSListAliasesFilter:
                 if not alias.get('AliasName').lower().startswith('alias/aws')
             ]
 
-# class KMSListKeysFilter:
-#     def __init__(self, directory):
-#         self.directory = directory
+class KMSListKeysFilter:
+    def __init__(self, directory):
+        self.directory = directory
 
-#     def execute(self, listing, response):
-#         # Special handling for service-level kms keys; derived from alias name.
-#         if listing.input.service == 'kms' and listing.input.operation == 'ListKeys':
-#             #list_aliases = run_raw_listing_operation(self.service, self.region, 'ListAliases', self.profile)
-#             aliases_file = '{}_{}_{}_{}.json'.format(listing.input.service, 'ListAliases', listing.input.region, listing.input.profile)
-#             aliases_file = self.directory + aliases_file
-#             aliases_listing = Listing.from_json(json.load(open(aliases_file, 'rb')))
-#             list_aliases = aliases_listing.response
-#             service_key_ids = [
-#                 k.get('TargetKeyId') for k in list_aliases.get('Aliases', [])
-#                 if k.get('AliasName').lower().startswith('alias/aws')
-#             ]
-#             response['Keys'] = [k for k in response.get('Keys', []) if k.get('KeyId') not in service_key_ids]
+    def execute(self, listing, response):
+        # Special handling for service-level kms keys; derived from alias name.
+        if listing.service == 'kms' and listing.operation == 'ListKeys':
+            #list_aliases = run_raw_listing_operation(self.service, self.region, 'ListAliases', self.profile)
+            aliases_file = '{}_{}_{}_{}.json'.format(listing.service, 'ListAliases', listing.region, listing.profile)
+            aliases_file = self.directory + aliases_file
+            aliases_listing = Listing.from_json(json.load(open(aliases_file, 'rb')))
+            list_aliases = aliases_listing.response
+            service_key_ids = [
+                k.get('TargetKeyId') for k in list_aliases.get('Aliases', [])
+                if k.get('AliasName').lower().startswith('alias/aws')
+            ]
+            response['Keys'] = [k for k in response.get('Keys', []) if k.get('KeyId') not in service_key_ids]
 
 class AppstreamImagesFilter:
     def execute(self, listing, response):
@@ -262,33 +281,33 @@ class EC2NetworkAclsFilter:
         if listing.service == 'ec2' and listing.operation == 'DescribeNetworkAcls':
             response['NetworkAcls'] = [nacl for nacl in response['NetworkAcls'] if not nacl['IsDefault']]
 
-# class EC2InternetGatewaysFilter:
-#     def __init__(self, directory):
-#         self.directory = directory
+class EC2InternetGatewaysFilter:
+    def __init__(self, directory):
+        self.directory = directory
 
-#     def execute(self, listing, response):
-#         # Filter default Internet Gateways
-#         if listing.input.service == 'ec2' and listing.input.operation == 'DescribeInternetGateways':
-#             #describe_vpcs = run_raw_listing_operation(self.service, self.region, 'DescribeVpcs', self.profile)
-#             vpcs_file = '{}_{}_{}_{}.json'.format(listing.input.service, 'DescribeVpcs', listing.input.region, listing.input.profile)
-#             vpcs_file = self.directory + vpcs_file
-#             vpcs_listing = Listing.from_json(json.load(open(vpcs_file, 'rb')))
-#             describe_vpcs = vpcs_listing.response
-#             vpcs = {v['VpcId']: v for v in describe_vpcs.get('Vpcs', [])}
-#             internet_gateways = []
-#             # print(self.response)
-#             # print(response)
-#             for ig in response['InternetGateways']:
-#                 attachments = ig.get('Attachments', [])
-#                 # more than one, it cannot be default.
-#                 if len(attachments) != 1:
-#                     continue
-#                 vpc = attachments[0].get('VpcId')
-#                 if not vpcs.get(vpc, {}).get('IsDefault', False):
-#                     internet_gateways.append(ig)
-#             response['InternetGateways'] = internet_gateways
+    def execute(self, listing, response):
+        # Filter default Internet Gateways
+        if listing.service == 'ec2' and listing.operation == 'DescribeInternetGateways':
+            #describe_vpcs = run_raw_listing_operation(self.service, self.region, 'DescribeVpcs', self.profile)
+            vpcs_file = '{}_{}_{}_{}.json'.format(listing.service, 'DescribeVpcs', listing.region, listing.profile)
+            vpcs_file = self.directory + vpcs_file
+            vpcs_listing = Listing.from_json(json.load(open(vpcs_file, 'rb')))
+            describe_vpcs = vpcs_listing.response
+            vpcs = {v['VpcId']: v for v in describe_vpcs.get('Vpcs', [])}
+            internet_gateways = []
+            # print(self.response)
+            # print(response)
+            for ig in response['InternetGateways']:
+                attachments = ig.get('Attachments', [])
+                # more than one, it cannot be default.
+                if len(attachments) != 1:
+                    continue
+                vpc = attachments[0].get('VpcId')
+                if not vpcs.get(vpc, {}).get('IsDefault', False):
+                    internet_gateways.append(ig)
+            response['InternetGateways'] = internet_gateways
 
-class EC2FpgaImgaesFilter:
+class EC2FpgaImagesFilter:
     def execute(self, listing, response):
         # Filter Public images from ec2.fpga images
         if listing.service == 'ec2' and listing.operation == 'DescribeFpgaImages':
@@ -310,9 +329,12 @@ class ElasticacheSubnetGroupsFilter:
             ]
 
 class NextTokenFilter:
+    def __init__(self, complete):
+        self.complete = complete
+
     def execute(self, listing, response):
         # interpret nextToken in several services
         if (listing.service, listing.operation) in (('inspector', 'ListFindings'), ('logs', 'DescribeLogGroups')):
             if response.get('nextToken'):
-                complete = False
+                self.complete = False
                 del response['nextToken']

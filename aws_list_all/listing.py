@@ -3,6 +3,7 @@ import pprint
 
 import boto3
 
+from .apply_filter import apply_filters
 from .client import get_client
 from .resource_filter import *
 
@@ -83,13 +84,47 @@ def run_raw_listing_operation(service, region, operation, profile):
 
 class ListingFile(object):
 
-    def __init__(self, input, directory='./'):
+    def __init__(self, input, directory='./', unfilter=()):
         self.input = input
         self.directory = directory
+        self.unfilter = unfilter
+
+    @property
+    def resource_types(self):
+        """The list of resource types (Keys with list content) in the response"""
+        return list(self.resources.keys())
+
+    @property
+    def resource_total_count(self):
+        """The estimated total count of resources - can be incomplete"""
+        return sum(len(v) for v in self.resources.values())
+
+    def export_resources(self, filename):
+        """Export the result to the given JSON file"""
+        with open(filename, 'w') as outfile:
+            outfile.write(pprint.pformat(self.resources).encode('utf-8'))
+
+    def __str__(self):
+        opdesc = '{} {} {} {}'.format(self.input.service, self.input.region, self.input.operation, self.input.profile)
+        if len(self.resource_types) == 0 or self.resource_total_count == 0:
+            return '{} (no resources found)'.format(opdesc)
+        return opdesc + ', '.join('#{}: {}'.format(key, len(listing)) for key, listing in self.resources.items())
 
     @property
     def resources(self):
-        response = self.input.resources
+        """Transform the response data into a dict of resource names to resource listings"""
+        if not(self.input.response):
+            return self.input.response.copy()
+        response = self.input.response.copy()
+        complete = True
+        del response['ResponseMetadata']
+
+        complete = apply_filters(self.input, self.unfilter, response, complete)
+        #response = self.input.resources
+        kmsListKeys_filter = KMSListKeysFilter(self.directory)
+        ec2InternetGateways_filter = EC2InternetGatewaysFilter(self.directory)
+        kmsListKeys_filter.execute(self.input, response)
+        ec2InternetGateways_filter.execute(self.input, response)
 
         # Special handling for service-level kms keys; derived from alias name.
         if self.input.service == 'kms' and self.input.operation == 'ListKeys':
@@ -120,6 +155,13 @@ class ListingFile(object):
                 if not vpcs.get(vpc, {}).get('IsDefault', False):
                     internet_gateways.append(ig)
             response['InternetGateways'] = internet_gateways
+
+        for key, value in response.items():
+            if not isinstance(value, list):
+                raise Exception('No listing: {} is no list:'.format(key), response)
+
+        if not complete:
+            response['truncated'] = [True]
 
         return response
 
@@ -193,68 +235,7 @@ class Listing(object):
         complete = True
 
         del response['ResponseMetadata']
-
-        cloudfront_filter = CloudfrontFilter()
-        medialive_filter = MedialiveFilter()
-        ssmListCommands_filter = SSMListCommandsFilter()
-        snsListSubscriptions_filter = SNSListSubscriptionsFilter()
-        athenaWorkGroups_filter = AthenaWorkGroupsFilter()
-        listEventBuses_filter = ListEventBusesFilter()
-        xRayGroups_filter = XRayGroupsFilter()
-        kmsListAliases_filter = KMSListAliasesFilter()
-        appstreamImages_filter = AppstreamImagesFilter()
-        cloudsearch_filter = CloudsearchFilter()
-        cloudTrail_filter = CloudTrailFilter()
-        cloudWatch_filter = CloudWatchFilter()
-        iamPolicies_filter = IAMPoliciesFilter()
-        s3Owner_filter = S3OwnerFilter()
-        ecsClustersFailure_filter = ECSClustersFailureFilter()
-        pinpointGetApps_filter = PinpointGetAppsFilter()
-        ssmBaselines_filter = SSMBaselinesFilter()
-        dbSecurityGroups_filter = DBSecurityGroupsFilter()
-        dbParameterGroups_filter = DBParameterGroupsFilter()
-        dbClusterParameterGroups_filter = DBClusterParameterGroupsFilter()
-        dbOptionGroups_filter = DBOptionGroupsFilter()
-        ec2VPC_filter = EC2VPCFilter()
-        ec2Subnets_filter = EC2SubnetsFilter()
-        ec2SecurityGroups_filter = EC2SecurityGroupsFilter()
-        ec2RouteTables_filter = EC2RouteTablesFilter()
-        ec2NetworkAcls_filter = EC2NetworkAclsFilter()
-        ec2FpgaImgaes_filter = EC2FpgaImgaesFilter()
-        workmailDeletedOrganizations_filter = WorkmailDeletedOrganizationsFilter()
-        elasticacheSubnetGroups_filter = ElasticacheSubnetGroupsFilter()
-        nextToken_filter = NextTokenFilter()
-
-        cloudfront_filter.execute(self, response)
-        medialive_filter.execute(self, response)
-        ssmListCommands_filter.execute(self, response)
-        snsListSubscriptions_filter.execute(self, response)
-        athenaWorkGroups_filter.execute(self, response)
-        listEventBuses_filter.execute(self, response)
-        xRayGroups_filter.execute(self, response)
-        kmsListAliases_filter.execute(self, response)
-        appstreamImages_filter.execute(self, response)
-        cloudsearch_filter.execute(self, response)
-        cloudTrail_filter.execute(self, response)
-        cloudWatch_filter.execute(self, response)
-        iamPolicies_filter.execute(self, response)
-        s3Owner_filter.execute(self, response)
-        ecsClustersFailure_filter.execute(self, response)
-        pinpointGetApps_filter.execute(self, response)
-        ssmBaselines_filter.execute(self, response)
-        dbSecurityGroups_filter.execute(self, response)
-        dbParameterGroups_filter.execute(self, response)
-        dbClusterParameterGroups_filter.execute(self, response)
-        dbOptionGroups_filter.execute(self, response)
-        ec2VPC_filter.execute(self, response)
-        ec2Subnets_filter.execute(self, response)
-        ec2SecurityGroups_filter.execute(self, response)
-        ec2RouteTables_filter.execute(self, response)
-        ec2NetworkAcls_filter.execute(self, response)
-        ec2FpgaImgaes_filter.execute(self, response)
-        workmailDeletedOrganizations_filter.execute(self, response)
-        elasticacheSubnetGroups_filter.execute(self, response)
-        nextToken_filter.execute(self, response)
+        #complete = apply_filters(self, response, complete)
 
         # # Filter default Internet Gateways
         # if self.service == 'ec2' and self.operation == 'DescribeInternetGateways':
@@ -277,9 +258,5 @@ class Listing(object):
 
         if not complete:
             response['truncated'] = [True]
-
-        # if self.operation == 'DescribeInternetGateways':
-        #     print('RIGHT HERE!')
-        #     print(response.values())
 
         return response
