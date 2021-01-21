@@ -85,7 +85,6 @@ def test_get_listing_operations():
         'amplifybackend',
         'sagemaker-featurestore-runtime',
         'sagemaker-edge',
-
     }
 
     services_with_no_listings = set()

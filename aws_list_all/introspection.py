@@ -391,9 +391,11 @@ def get_endpoint_hosts():
             # This means that the endpoint_url itself may not point to any host, defeating our heuristic.
             # Therefore, we only pick the base URL if at least one operation accesses it, otherwise we pick the
             # alphabetically first host prefix.
-            endpoint_prefixes = set(meta.service_model.operation_model(op_name).endpoint.get('hostPrefix')
-                                    for op_name in meta.service_model.operation_names
-                                    if meta.service_model.operation_model(op_name).endpoint)
+            endpoint_prefixes = set(
+                meta.service_model.operation_model(op_name).endpoint.get('hostPrefix')
+                for op_name in meta.service_model.operation_names
+                if meta.service_model.operation_model(op_name).endpoint
+            )
             if None in endpoint_prefixes or not endpoint_prefixes:
                 result[service][region] = meta.endpoint_url
             else:

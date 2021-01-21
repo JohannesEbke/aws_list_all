@@ -117,12 +117,7 @@ def main():
         action='append',
         help='Only list discovered operations of the given service (can be specified multiple times)'
     )
-    ops.add_argument(
-        '-r',
-        '--region',
-        default='us-east-1',
-        help='Region to use to query for listing operations'
-    )
+    ops.add_argument('-r', '--region', default='us-east-1', help='Region to use to query for listing operations')
     introspecters.add_parser('debug', description='Debug information', help='Debug information')
 
     # Finally, refreshing the service/region caches comes last.
