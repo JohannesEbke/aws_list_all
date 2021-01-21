@@ -386,8 +386,21 @@ def get_endpoint_hosts():
         print('  ...looking for {} in all regions...'.format(service))
         result[service] = {}
         for region in ALL_REGIONS:
-            result[service][region] = sessions[region].client(service).meta.endpoint_url
-
+            meta = sessions[region].client(service).meta
+            # In some services, different operations must access different host prefixes ("api.", "env.").
+            # This means that the endpoint_url itself may not point to any host, defeating our heuristic.
+            # Therefore, we only pick the base URL if at least one operation accesses it, otherwise we pick the
+            # alphabetically first host prefix.
+            endpoint_prefixes = set(meta.service_model.operation_model(op_name).endpoint.get('hostPrefix')
+                                    for op_name in meta.service_model.operation_names
+                                    if meta.service_model.operation_model(op_name).endpoint)
+            if None in endpoint_prefixes or not endpoint_prefixes:
+                result[service][region] = meta.endpoint_url
+            else:
+                prefixes = sorted(endpoint_prefixes)
+                print("   Picking {} from host prefixes {}".format(prefixes[0], prefixes))
+                assert meta.endpoint_url.startswith("https://")
+                result[service][region] = "https://" + prefixes[0] + meta.endpoint_url[len("https://"):]
     print('...done.')
     return result
 
@@ -398,7 +411,7 @@ def get_endpoint_ip(service_region_host):
         result = gethostbyname(host.split('/')[2])
         return (service, region, result)
     except gaierror as ex:
-        if ex.errno != -5: # -5 is "No address associated with hostname"
+        if ex.errno != -5:  # -5 is "No address associated with hostname"
             raise
         return (service, region, None)
 
