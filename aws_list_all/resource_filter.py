@@ -78,50 +78,6 @@ class Route53ResolverFilter:
                     if rule['ResolverRuleId'] != 'rslvr-autodefined-rr-internet-resolver'
                 ]
 
-class CountFilter:
-    def __init__(self, complete):
-        self.complete = complete
-
-    def execute(self, listing, response):
-        if 'Count' in response:
-            if 'MaxResults' in response:
-                if response['MaxResults'] <= response['Count']:
-                    self.complete = False
-                del response['MaxResults']
-            del response['Count']
-
-class QuantityFilter:
-    def __init__(self, complete):
-        self.complete = complete
-
-    def execute(self, listing, response):
-        if 'Quantity' in response:
-            if 'MaxItems' in response:
-                if response['MaxItems'] <= response['Quantity']:
-                    self.complete = False
-                del response['MaxItems']
-            del response['Quantity']
-
-class NeutralThingFilter:
-    def execute(self, listing, response):
-        for neutral_thing in ('MaxItems', 'MaxResults', 'Quantity'):
-            if neutral_thing in response:
-                del response[neutral_thing]
-
-class BadThingFilter:
-    def __init__(self, complete):
-        self.complete = complete
-
-    def execute(self, listing, response):
-        for bad_thing in (
-            'hasMoreResults', 'IsTruncated', 'Truncated', 'HasMoreApplications', 'HasMoreDeliveryStreams',
-            'HasMoreStreams', 'NextToken', 'NextMarker', 'nextMarker', 'Marker'
-        ):
-            if bad_thing in response:
-                if response[bad_thing]:
-                    self.complete = False
-                del response[bad_thing]
-
 class KMSListAliasesFilter:
     def execute(self, listing, response):
         # Special handling for Aliases in kms, there are some reserved AWS-managed aliases.

@@ -14,7 +14,7 @@ from time import time
 from traceback import print_exc
 
 from .introspection import get_listing_operations, get_regions_for_service
-from .listing import Listing, ListingFile
+from .listing import RawListing, FilteredListing
 
 RESULT_NOTHING = '---'
 RESULT_SOMETHING = '+++'
@@ -236,8 +236,8 @@ def acquire_listing(verbose, what):
     try:
         if verbose > 1:
             print(what, 'starting request...')
-        listing = Listing.acquire(service, region, operation, profile)
-        listingFile = ListingFile(listing, './', unfilter) #os.getcwd() + '/'
+        listing = RawListing.acquire(service, region, operation, profile)
+        listingFile = FilteredListing(listing, './', unfilter) #os.getcwd() + '/'
         duration = time() - start_time
         if verbose > 1:
             print(what, '...request successful')
@@ -269,7 +269,7 @@ def acquire_listing(verbose, what):
             if not_available_string in str(exc):
                 result_type = RESULT_NOTHING
 
-        listing = Listing(service, region, operation, {}, profile, result_type)
+        listing = RawListing(service, region, operation, {}, profile, result_type)
         with open('{}_{}_{}_{}.json'.format(service, operation, region, profile), 'w') as jsonfile:
                 json.dump(listing.to_json(), jsonfile, default=datetime.isoformat)
         return (result_type, service, region, operation, profile, repr(exc))
@@ -279,8 +279,8 @@ def do_list_files(filenames, verbose=0, not_found=False, errors=False, denied=Fa
     """Print out a rudimentary summary of the Listing objects contained in the given files"""
     dir = filenames[0][:filenames[0].rfind('/') + 1]
     for listing_filename in filenames:
-        listing = Listing.from_json(json.load(open(listing_filename, 'rb')))
-        listing_entry = ListingFile(listing, dir, unfilter)
+        listing = RawListing.from_json(json.load(open(listing_filename, 'rb')))
+        listing_entry = FilteredListing(listing, dir, unfilter)
         resources = listing_entry.resources
 
         truncated = False

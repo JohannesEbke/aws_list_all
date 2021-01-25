@@ -2,9 +2,11 @@ import json
 import os
 import sys
 
+from .fixing_filter import *
 from .resource_filter import *
 
 def apply_filters(listing, unfilter, response, complete):
+    """Apply filters to remove default resources from the response"""
     unfilterList = convert_unfilterList(unfilter)
     apply_complete = complete
 
@@ -155,6 +157,7 @@ def apply_filters(listing, unfilter, response, complete):
     return apply_complete
 
 def convert_unfilterList(unfilter):
+    """Check if unfilter parameter is a list or single argument and return list of it"""
     unfilterList = []
     if unfilter is not None:
         if isinstance(unfilter, list):

@@ -82,7 +82,7 @@ def run_raw_listing_operation(service, region, operation, profile):
     return getattr(client, api_to_method_mapping[operation])(**parameters)
 
 
-class ListingFile(object):
+class FilteredListing(object):
 
     def __init__(self, input, directory='./', unfilter=()):
         self.input = input
@@ -126,7 +126,7 @@ class ListingFile(object):
         if 'kmsListKeys' not in unfilterList and self.input.service == 'kms' and self.input.operation == 'ListKeys':
             aliases_file = '{}_{}_{}_{}.json'.format(self.input.service, 'ListAliases', self.input.region, self.input.profile)
             aliases_file = self.directory + aliases_file
-            aliases_listing = Listing.from_json(json.load(open(aliases_file, 'rb')))
+            aliases_listing = RawListing.from_json(json.load(open(aliases_file, 'rb')))
             list_aliases = aliases_listing.response
             service_key_ids = [
                 k.get('TargetKeyId') for k in list_aliases.get('Aliases', [])
@@ -138,8 +138,9 @@ class ListingFile(object):
         if 'ec2InternetGateways' not in unfilterList and self.input.service == 'ec2' and self.input.operation == 'DescribeInternetGateways':
             vpcs_file = '{}_{}_{}_{}.json'.format(self.input.service, 'DescribeVpcs', self.input.region, self.input.profile)
             vpcs_file = self.directory + vpcs_file
-            vpcs_listing = Listing.from_json(json.load(open(vpcs_file, 'rb')))
-            describe_vpcs = getattr(vpcs_listing, 'response')
+            # Sometimes 'No JSON Object' or 'Directory not found'
+            vpcs_listing = RawListing.from_json(json.load(open(vpcs_file, 'rb')))
+            describe_vpcs = vpcs_listing.response
             vpcs = {v['VpcId']: v for v in describe_vpcs.get('Vpcs', [])}
             internet_gateways = []
             for ig in response['InternetGateways']:
@@ -162,7 +163,7 @@ class ListingFile(object):
         return response
 
 
-class Listing(object):
+class RawListing(object):
     """Represents a listing operation on an AWS service and its result"""
     def __init__(self, service, region, operation, response, profile, error=''):
         self.service = service
@@ -193,21 +194,6 @@ class Listing(object):
             error=data.get('error')
         )
 
-    @property
-    def resource_types(self):
-        """The list of resource types (Keys with list content) in the response"""
-        return list(self.resources.keys())
-
-    @property
-    def resource_total_count(self):
-        """The estimated total count of resources - can be incomplete"""
-        return sum(len(v) for v in self.resources.values())
-
-    def export_resources(self, filename):
-        """Export the result to the given JSON file"""
-        with open(filename, 'w') as outfile:
-            outfile.write(pprint.pformat(self.resources).encode('utf-8'))
-
     def __str__(self):
         opdesc = '{} {} {} {}'.format(self.service, self.region, self.operation, self.profile)
         if len(self.resource_types) == 0 or self.resource_total_count == 0:
@@ -232,21 +218,6 @@ class Listing(object):
 
         del response['ResponseMetadata']
         #complete = apply_filters(self, response, complete)
-
-        # # Filter default Internet Gateways
-        # if self.service == 'ec2' and self.operation == 'DescribeInternetGateways':
-        #     describe_vpcs = run_raw_listing_operation(self.service, self.region, 'DescribeVpcs', self.profile)
-        #     vpcs = {v['VpcId']: v for v in describe_vpcs.get('Vpcs', [])}
-        #     internet_gateways = []
-        #     for ig in response['InternetGateways']:
-        #         attachments = ig.get('Attachments', [])
-        #         # more than one, it cannot be default.
-        #         if len(attachments) != 1:
-        #             continue
-        #         vpc = attachments[0].get('VpcId')
-        #         if not vpcs.get(vpc, {}).get('IsDefault', False):
-        #             internet_gateways.append(ig)
-        #     response['InternetGateways'] = internet_gateways
 
         for key, value in response.items():
             if not isinstance(value, list):
