@@ -283,14 +283,3 @@ class ElasticacheSubnetGroupsFilter:
             response['CacheSubnetGroups'] = [
                 g for g in response.get('CacheSubnetGroups', []) if g.get('CacheSubnetGroupName') != 'default'
             ]
-
-class NextTokenFilter:
-    def __init__(self, complete):
-        self.complete = complete
-
-    def execute(self, listing, response):
-        # interpret nextToken in several services
-        if (listing.service, listing.operation) in (('inspector', 'ListFindings'), ('logs', 'DescribeLogGroups')):
-            if response.get('nextToken'):
-                self.complete = False
-                del response['nextToken']

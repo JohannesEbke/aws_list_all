@@ -42,24 +42,20 @@ def apply_filters(listing, unfilter, response, complete):
         filter = Route53ResolverFilter()
         filter.execute(listing, response)
 
-    if not('count' in unfilterList):
-        filter = CountFilter(apply_complete)
-        filter.execute(listing, response)
-        apply_complete = getattr(filter, 'complete')
+    filter = CountFilter(apply_complete)
+    filter.execute(listing, response)
+    apply_complete = getattr(filter, 'complete')
 
-    if not('quantity' in unfilterList):
-        filter = QuantityFilter(apply_complete)
-        filter.execute(listing, response)
-        apply_complete = getattr(filter, 'complete')
+    filter = QuantityFilter(apply_complete)
+    filter.execute(listing, response)
+    apply_complete = getattr(filter, 'complete')
 
-    if not('neutralThing' in unfilterList):
-        filter = NeutralThingFilter()
-        filter.execute(listing, response)
+    filter = NeutralThingFilter()
+    filter.execute(listing, response)
 
-    if not('badThing' in unfilterList):
-        filter = BadThingFilter(apply_complete)
-        filter.execute(listing, response)
-        apply_complete = getattr(filter, 'complete')
+    filter = BadThingFilter(apply_complete)
+    filter.execute(listing, response)
+    apply_complete = getattr(filter, 'complete')
 
     if not('kmsListAliases' in unfilterList):
         filter = KMSListAliasesFilter()
@@ -149,10 +145,9 @@ def apply_filters(listing, unfilter, response, complete):
         filter = ElasticacheSubnetGroupsFilter()
         filter.execute(listing, response)    
 
-    if not('nextToken' in unfilterList):
-        filter = NextTokenFilter(apply_complete)
-        filter.execute(listing, response)
-        apply_complete = getattr(filter, 'complete')
+    filter = NextTokenFilter(apply_complete)
+    filter.execute(listing, response)
+    apply_complete = getattr(filter, 'complete')
 
     return apply_complete
 
