@@ -13,6 +13,7 @@ from sys import stdout
 from time import time
 from traceback import print_exc
 
+from .generate_html import generate_table
 from .introspection import get_listing_operations, get_regions_for_service
 from .listing import Listing
 
@@ -232,7 +233,6 @@ def print_query(services, selected_regions=(), selected_operations=(), verbose=0
     """For the given services, execute all selected operations (default: all) in selected regions
     (default: all)"""
     to_run = []
-    #print('Building set of queries to execute...')
     for service in services:
         for region in get_regions_for_service(service, selected_regions):
             for operation in get_listing_operations(service, region, selected_operations, selected_profile):
@@ -246,8 +246,7 @@ def print_query(services, selected_regions=(), selected_operations=(), verbose=0
     results_by_region = defaultdict(lambda: defaultdict(list))
     services_in_grid = set()
     regions_in_grid = set()
-    #print('...done. Executing queries...')
-    # the `with` block is a workaround for a bug: https://bugs.python.org/issue35629
+    
     with contextlib.closing(ThreadPool(parallel)) as pool:
         for result in pool.imap_unordered(partial(acquire_listing, verbose), to_run):
             #print('RESULT: ')
@@ -262,44 +261,11 @@ def print_query(services, selected_regions=(), selected_operations=(), verbose=0
             else:
                 #print(result[0][-1], end='')
                 sys.stdout.flush()
-    #print('...done<br>\n')
+    
     print('<h2>AWS_list_all</h2><br>\n')
     print('Following list of resources has been generated from your AWS account:<br><br>')
-    print('<table style="width:100%">')
-    print('    <tr>\n')
-    print('        <th>Service</th>\n')
-    for region_column in sorted(results_by_region):
-        print('<th>' + str(region_column) + '</th>\n')
-    #print('        <th>None Found</th>\n')
-    #print('        <th>Some Found</th>\n')
-    #print('        <th>No Access</th>\n')
-    #print('        <th>Error</th>\n')
-    print('    </tr>\n')
-    rest_by_type = defaultdict(list)
-    for service_type in sorted(services_in_grid):
-        print('    <tr>\n')
-        print('        <td>' + service_type + '</td>\n')
-        for result_region in sorted(results_by_region):
-            print('        <td>\n')
-            for result_type in (RESULT_NOTHING, RESULT_SOMETHING, RESULT_NO_ACCESS, RESULT_ERROR):
-                empty_type = True
-                result_type_list = list(filter(lambda x: x[1] == service_type, sorted(results_by_region[result_region][result_type])))
-                result_type_count = ' [' + str(len(result_type_list)) + ']'
-                for result in result_type_list:
-                    if empty_type:
-                        print('        <button type="button" class="' + status_switch(result_type + 'col') + '">'
-                            + status_switch(result_type + 'box') + result_type_count + '</button>\n')
-                        print('        <div class="content">\n')
-                        empty_type = False
-                    print('<div class="' + status_switch(result_type) + '">')
-                    print(str(result[3]))
-                    print('</div><br>')
-                    #print('<br>')
-                if not(empty_type):
-                    print('        </div>')
-            print('        </td>')
-        print('    </tr>\n')
-    print('</table>')
+    print('<input type="text" id="searchInput" onkeyup="search()" placeholder="Search for ...">')
+    generate_table(results_by_region, services_in_grid)
 
 
 def acquire_listing(verbose, what):
@@ -389,21 +355,3 @@ def do_list_files(filenames, verbose=0):
                         print('    - ', item)
                 if truncated:
                     print('    - ... (more items, query truncated)')
-
-
-def status_switch(arg):
-    switcher = {
-        '---': 'nfound',
-        '+++': 'found',
-        '!!!': 'error',
-        '>:|': 'denied',
-        '---box': 'No Resources Found',
-        '+++box': 'Resources Found',
-        '!!!box': 'Error During Query',
-        '>:|box': 'Missing Permissions',
-        '---col': 'nCollapse',
-        '+++col': 'fCollapse',
-        '!!!col': 'eCollapse',
-        '>:|col': 'dCollapse'
-    }
-    return switcher.get(arg, '')
