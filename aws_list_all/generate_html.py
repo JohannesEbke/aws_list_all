@@ -12,31 +12,24 @@ def generate_head():
     print('.found {border: 10px solid LightGreen; padding: 10px;}\n')
     print('.error {border: 10px solid Red; padding: 10px;}\n')
     print('.denied {border: 10px solid Blue; padding: 10px;}\n')
-    # for region in region_colors:
-    #     print('.' + region + '{border: 5px solid ' + region_colors[region]
-    #         + '; padding: 10px; position: relative;}\n'
-    #         + '.' + region + ':after {margin: -1rem; content: "'
-    #         +  region.upper() + '"; font-size: 40px; position: absolute; '
-    #         + 'color: rgb(210, 210, 210); z-index: -1; left: 50%; margin-left: -20%;}\n')
-    #print('th, td {padding: 10px;}')
     print('.nCollapse {background-color: Orange; color: white; cursor: pointer; '
-        + 'padding: 14px; width: 100%; border: none; text-align: left; font-size: 20px;}\n')
+        + 'padding: 14px; width: 450px; border: none; text-align: left; font-size: 20px;}\n')
     print('.fCollapse {background-color: LightGreen; color: white; cursor: pointer; '
-        + 'padding: 14px; width: 100%; border: none; text-align: left; font-size: 20px;}\n')
+        + 'padding: 14px; width: 450px; border: none; text-align: left; font-size: 20px;}\n')
     print('.eCollapse {background-color: Red; color: white; cursor: pointer; '
-        + 'padding: 14px; width: 100%; border: none; text-align: left; font-size: 20px;}\n')
+        + 'padding: 14px; width: 450px; border: none; text-align: left; font-size: 20px;}\n')
     print('.dCollapse {background-color: Blue; color: white; cursor: pointer; '
-        + 'padding: 14px; width: 100%; border: none; text-align: left; font-size: 20px;}\n')
-    print('.active, .nCollapse:hover {background-color: #777;}\n')
-    print('.active, .fCollapse:hover {background-color: #777;}\n')
-    print('.active, .eCollapse:hover {background-color: #777;}\n')
-    print('.active, .dCollapse:hover {background-color: #777;}\n')
-    print('.content {display: none; overflow: hidden; background-color: #f1f1f1;}\n')
+        + 'padding: 14px; width: 450px; border: none; text-align: left; font-size: 20px;}\n')
+    print('.active, .nCollapse:hover {width: 450px; background-color: #777;}\n')
+    print('.active, .fCollapse:hover {width: 450px; background-color: #777;}\n')
+    print('.active, .eCollapse:hover {width: 450px; background-color: #777;}\n')
+    print('.active, .dCollapse:hover {width: 450px; background-color: #777;}\n')
+    print('.content {display: none; overflow: hidden; width: 450px; background-color: #f1f1f1;}\n')
 
     print('#searchInput {\n')
     print('  background-position: 10px 10px;\n')
     print('  background-repeat: no-repeat;\n')
-    print('  width: 100%;\n')
+    print('  width: 300px;\n')
     print('  font-size: 16px;\n')
     print('  padding: 12px 20px 12px 40px;\n')
     print('  border: 1px solid #ddd;\n')
@@ -47,7 +40,7 @@ def generate_head():
 
 
 def generate_table(results_by_region, services_in_grid):
-    print('<table id="mainTable" style="width:100%">')
+    print('<table id="mainTable"; table-layout:fixed;>')
     print('    <tr>\n')
     print('        <th>Service</th>\n')
     for region_column in sorted(results_by_region):
@@ -56,9 +49,9 @@ def generate_table(results_by_region, services_in_grid):
     rest_by_type = defaultdict(list)
     for service_type in sorted(services_in_grid):
         print('    <tr>\n')
-        print('        <td>' + service_type + '</td>\n')
+        print('        <td width="200">' + service_type + '</td>\n')
         for result_region in sorted(results_by_region):
-            print('        <td>\n')
+            print('        <td width="450">\n')
             for result_type in ('---', '+++', '>:|', '!!!'):
                 empty_type = True
                 result_type_list = list(filter(lambda x: x[1] == service_type, sorted(results_by_region[result_region][result_type])))
