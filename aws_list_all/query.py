@@ -210,7 +210,6 @@ def do_query(services, selected_regions=(), selected_operations=(), verbose=0, p
                     region_name = region or 'n/a'
                     print('Service: {: <28} | Region: {:<15} | Operation: {}'.format(service, region_name, operation))
 
-
                 to_run.append([service, region, operation, selected_profile, unfilter])
     shuffle(to_run)  # Distribute requests across endpoints
     results_by_type = defaultdict(list)
