@@ -53,6 +53,40 @@ region, and operation used to find them. They can be dumped with::
   aws-list-all show data/ec2_*
   aws-list-all show --verbose data/ec2_DescribeSecurityGroups_eu-west-1.json
 
+Special treatment and removal of default resources which are performed by default during
+data handling can be omitted with --unfilter and following arguments:
+- cloudfront
+- medialive
+- ssmListCommands
+- snsListSubscriptions
+- athenaWorkGroups
+- listEventBuses
+- xRayGroups
+- route53Resolver
+- kmsListAliases
+- appstreamImages
+- cloudsearch
+- cloudTrail
+- cloudWatch
+- iamPolicies
+- s3Owner
+- ecsClustersFailure
+- pinpointGetApps
+- ssmBaselines
+- dbSecurityGroups
+- dbParameterGroups
+- dbClusterParameterGroups
+- dbOptionGroups
+- ec2VPC
+- ec2Subnets
+- ec2SecurityGroups
+- ec2RouteTables
+- ec2NetworkAcls
+- ec2FpgaImages
+- workmailDeletedOrganizations
+- elasticacheSubnetGroups
+
+
 How do I really list everything?
 ------------------------------------------------
 
