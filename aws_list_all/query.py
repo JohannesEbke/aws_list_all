@@ -258,8 +258,11 @@ def print_query(services, selected_regions=(), selected_operations=(), verbose=0
             else:
                 sys.stdout.flush()
     
+    now = datetime.now()
+    now_str = '(Finished at: ' + now.strftime('%d/%m/%Y %H:%M:%S') + ')'
     print('<h2>AWS_list_all</h2><br>\n')
-    print('Following list of resources has been generated from your AWS account:<br><br>')
+    print('Following list of resources has been generated from your AWS account '
+        + now_str + ':<br><br>')
     print('<input type="text" id="searchInput" onkeyup="search()" placeholder="Search for ...">')
     generate_table(results_by_region, services_in_grid)
 
