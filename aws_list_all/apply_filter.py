@@ -6,7 +6,8 @@ from .fixing_filter import *
 from .resource_filter import *
 
 def apply_filters(listing, unfilter, response, complete):
-    """Apply filters to remove default resources from the response"""
+    """Apply filters for operations to be handled in a special way or 
+        to remove default resources from the response"""
     unfilterList = convert_unfilterList(unfilter)
     apply_complete = complete
 

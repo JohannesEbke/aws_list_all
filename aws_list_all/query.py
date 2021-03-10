@@ -201,6 +201,7 @@ def do_query(services, selected_regions=(), selected_operations=(), verbose=0, p
     """For the given services, execute all selected operations (default: all) in selected regions
     (default: all)"""
     to_run = []
+    selected_operations = check_special_ops(selected_operations)
     print('Building set of queries to execute...')
     for service in services:
         for region in get_regions_for_service(service, selected_regions):
@@ -208,6 +209,7 @@ def do_query(services, selected_regions=(), selected_operations=(), verbose=0, p
                 if verbose > 0:
                     region_name = region or 'n/a'
                     print('Service: {: <28} | Region: {:<15} | Operation: {}'.format(service, region_name, operation))
+
 
                 to_run.append([service, region, operation, selected_profile, unfilter])
     shuffle(to_run)  # Distribute requests across endpoints
@@ -337,3 +339,14 @@ def do_list_files(filenames, verbose=0, not_found=False, errors=False, denied=Fa
                 if truncated:
                     print('    - ... (more items, query truncated)')
                     
+def check_special_ops(sel_ops):
+    """Special operations require other operations to be queried first"""
+    if sel_ops is None:
+        return sel_ops
+    else:
+        sel_oplist = list(sel_ops)
+        if 'ListKeys' in sel_oplist:
+            sel_oplist.insert(sel_oplist.index('ListKeys'), 'ListAliases')
+        if 'DescribeInternetGateways' in sel_oplist:
+            sel_oplist.insert(sel_oplist.index('DescribeInternetGateways'), 'DescribeVpcs')
+        return tuple(sel_oplist)
