@@ -238,15 +238,17 @@ def main():
             selected_profile=args.profile
         )
         print('<script>\n')
-            #+ 'var coll = document.getElementsByClassName("collapsible");\n'
         generate_collapsibles()
         generate_searchfunc()
         print('</script>\n')
-        print('\n</body>\n</html>')
+        print('\n</body>\n')
+        print('</html>')
         sys.stdout = origout
 
         new = 2
-        url = "/home/devuser/BA-thesis/aws_list_all/test.html"
+        path_up = os.path.dirname(os.getcwd())
+        os.chdir(path_up)
+        url = os.getcwd() + "/test.html"
         webbrowser.open(url,new=new)
     elif args.command == 'recreate-caches':
         increase_limit_nofiles()

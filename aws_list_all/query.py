@@ -249,9 +249,6 @@ def print_query(services, selected_regions=(), selected_operations=(), verbose=0
     
     with contextlib.closing(ThreadPool(parallel)) as pool:
         for result in pool.imap_unordered(partial(acquire_listing, verbose), to_run):
-            #print('RESULT: ')
-            #print (str(result[0]))
-            #print('\n')
             results_by_type[result[0]].append(result)
             results_by_region[result[2]][result[0]].append(result)
             services_in_grid.add(result[1])
@@ -259,7 +256,6 @@ def print_query(services, selected_regions=(), selected_operations=(), verbose=0
             if verbose > 1:
                 print('ExecutedQueryResult: {}'.format(result))
             else:
-                #print(result[0][-1], end='')
                 sys.stdout.flush()
     
     print('<h2>AWS_list_all</h2><br>\n')
@@ -281,9 +277,9 @@ def acquire_listing(verbose, what):
         if verbose > 1:
             print(what, '...request successful')
             print("timing [success]:", duration, what)
+        with open('{}_{}_{}_{}.json'.format(service, operation, region, profile), 'w') as jsonfile:
+            json.dump(listing.to_json(), jsonfile, default=datetime.isoformat)
         if listing.resource_total_count > 0:
-            with open('{}_{}_{}_{}.json'.format(service, operation, region, profile), 'w') as jsonfile:
-                json.dump(listing.to_json(), jsonfile, default=datetime.isoformat)
             return (RESULT_SOMETHING, service, region, operation, profile, ', '.join(listing.resource_types))
         else:
             return (RESULT_NOTHING, service, region, operation, profile, ', '.join(listing.resource_types))

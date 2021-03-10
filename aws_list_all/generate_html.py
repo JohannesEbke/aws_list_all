@@ -7,19 +7,24 @@ from sys import exit, stderr
 def generate_head():
     print('<head>\n')
     print('<style>\n')
-    print('table, th, td {border: 1px solid black; border-collapse: collapse; table-layout:fixed;}\n')
-    print('.nfound {border: 10px solid Orange; padding: 10px;}\n')
-    print('.found {border: 10px solid LightGreen; padding: 10px;}\n')
-    print('.error {border: 10px solid Red; padding: 10px;}\n')
-    print('.denied {border: 10px solid Blue; padding: 10px;}\n')
-    print('.nCollapse {background-color: Orange; color: white; cursor: pointer; '
-        + 'padding: 14px; width: 450px; border: none; text-align: left; font-size: 20px;}\n')
-    print('.fCollapse {background-color: LightGreen; color: white; cursor: pointer; '
-        + 'padding: 14px; width: 450px; border: none; text-align: left; font-size: 20px;}\n')
-    print('.eCollapse {background-color: Red; color: white; cursor: pointer; '
-        + 'padding: 14px; width: 450px; border: none; text-align: left; font-size: 20px;}\n')
-    print('.dCollapse {background-color: Blue; color: white; cursor: pointer; '
-        + 'padding: 14px; width: 450px; border: none; text-align: left; font-size: 20px;}\n')
+    print('.aws-table th {border: none; border-collapse: collapse; border-radius: 10px; background-color: #f1f1f1; '
+        + 'font-family: Arial; font-size: 20px; padding: 10px; text-align: center; table-layout:fixed;}\n')
+    print('.aws-table td {border: none; border-collapse: collapse; border-radius: 10px; background-color: #f1f1f1; '
+        + 'text-align: center; table-layout:fixed;}\n')
+    print('.aws-table .service {border: none; border-collapse: collapse; font-family: Arial; '
+        + 'font-size: 18px; text-align: center; table-layout:fixed; background-color: #f1f1f1;}\n')
+    print('.nfound {border: 10px solid Orange; border-radius: 10px; padding: 10px;}\n')
+    print('.found {border: 10px solid LightGreen; border-radius: 10px; padding: 10px;}\n')
+    print('.error {border: 10px solid Red; border-radius: 10px; padding: 10px;}\n')
+    print('.denied {border: 10px solid Blue; border-radius: 10px; padding: 10px;}\n')
+    print('.nCollapse {background-color: Orange; border-radius: 10px; color: white; cursor: pointer; '
+        + 'padding: 14px; width: 450px; border: none; text-align: center; font-size: 20px;}\n')
+    print('.fCollapse {background-color: LightGreen; border-radius: 10px; color: white; cursor: pointer; '
+        + 'padding: 14px; width: 450px; border: none; text-align: center; font-size: 20px;}\n')
+    print('.eCollapse {background-color: Red; border-radius: 10px; color: white; cursor: pointer; '
+        + 'padding: 14px; width: 450px; border: none; text-align: center; font-size: 20px;}\n')
+    print('.dCollapse {background-color: Blue; border-radius: 10px; color: white; cursor: pointer; '
+        + 'padding: 14px; width: 450px; border: none; text-align: center; font-size: 20px;}\n')
     print('.active, .nCollapse:hover {width: 450px; background-color: #777;}\n')
     print('.active, .fCollapse:hover {width: 450px; background-color: #777;}\n')
     print('.active, .eCollapse:hover {width: 450px; background-color: #777;}\n')
@@ -40,16 +45,16 @@ def generate_head():
 
 
 def generate_table(results_by_region, services_in_grid):
-    print('<table id="mainTable"; table-layout:fixed;>')
+    print('<table class="aws-table"; id="mainTable"; table-layout:fixed;>')
     print('    <tr>\n')
     print('        <th>Service</th>\n')
     for region_column in sorted(results_by_region):
-        print('<th>' + str(region_column) + '</th>\n')
+        print('<th >' + str(region_column) + '</th>\n')
     print('    </tr>\n')
     rest_by_type = defaultdict(list)
     for service_type in sorted(services_in_grid):
         print('    <tr>\n')
-        print('        <td width="200">' + service_type + '</td>\n')
+        print('        <td class="service">' + service_type + '</td>\n')
         for result_region in sorted(results_by_region):
             print('        <td width="450">\n')
             for result_type in ('---', '+++', '>:|', '!!!'):
