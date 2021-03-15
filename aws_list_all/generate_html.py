@@ -7,23 +7,32 @@ from sys import exit, stderr
 def generate_head():
     print('<head>\n')
     print('<style>\n')
+    print(""".headerbar {overflow: hidden; background-color: #232F3E; position: fixed; top: 0; width: 100%;}""")
+    print(""".headerbar a {float: left; color: #FFFFFF; font-size: 40px; font-family: arial;
+        padding: 10px 30px; text-decoration: none;}""")
+    print(""".headerbar input[type=text] {margin-top: 12px; margin-right: 30px; border: none; float: right;}""")
+    print('.footer {overflow: hidden; background-color: #232F3E; position: fixed; bottom: 0; width: 100%;}')
+    print(""".footer a {float: left; color: #f2f2f2; font-size: 12px; font-family: arial;
+        padding: 5px 5px; text-decoration: none;}""")
+    print('.main {margin-top: 70px; margin-bottom: 30px;}')
+
     print('.aws-table th {border: none; border-collapse: collapse; border-radius: 10px; background-color: #f1f1f1; '
         + 'font-family: Arial; font-size: 20px; padding: 10px; text-align: center; table-layout:fixed;}\n')
     print('.aws-table td {border: none; border-collapse: collapse; border-radius: 10px; background-color: #f1f1f1; '
         + 'text-align: center; table-layout:fixed;}\n')
     print('.aws-table .service {border: none; border-collapse: collapse; font-family: Arial; '
         + 'font-size: 18px; text-align: center; table-layout:fixed; background-color: #f1f1f1;}\n')
-    print('.nfound {border: 10px solid Orange; border-radius: 10px; padding: 10px;}\n')
+    print('.nfound {border: 10px solid Gold; border-radius: 10px; padding: 10px;}\n')
     print('.found {border: 10px solid LightGreen; border-radius: 10px; padding: 10px;}\n')
     print('.error {border: 10px solid Red; border-radius: 10px; padding: 10px;}\n')
-    print('.denied {border: 10px solid Blue; border-radius: 10px; padding: 10px;}\n')
-    print('.nCollapse {background-color: Orange; border-radius: 10px; color: white; cursor: pointer; '
+    print('.denied {border: 10px solid Orange; border-radius: 10px; padding: 10px;}\n')
+    print('.nCollapse {background-color: Gold; border-radius: 10px; color: white; cursor: pointer; '
         + 'padding: 14px; width: 450px; border: none; text-align: center; font-size: 20px;}\n')
     print('.fCollapse {background-color: LightGreen; border-radius: 10px; color: white; cursor: pointer; '
         + 'padding: 14px; width: 450px; border: none; text-align: center; font-size: 20px;}\n')
     print('.eCollapse {background-color: Red; border-radius: 10px; color: white; cursor: pointer; '
         + 'padding: 14px; width: 450px; border: none; text-align: center; font-size: 20px;}\n')
-    print('.dCollapse {background-color: Blue; border-radius: 10px; color: white; cursor: pointer; '
+    print('.dCollapse {background-color: Orange; border-radius: 10px; color: white; cursor: pointer; '
         + 'padding: 14px; width: 450px; border: none; text-align: center; font-size: 20px;}\n')
     print('.active, .nCollapse:hover {width: 450px; background-color: #777;}\n')
     print('.active, .fCollapse:hover {width: 450px; background-color: #777;}\n')
@@ -44,7 +53,19 @@ def generate_head():
     print('</head>\n')
 
 
+def generate_header():
+    print('<div class="headerbar">')
+    print('  <a href="https://github.com/kntrain/aws_list_all"><b>aws_list_all</b></a>')
+    print('  <div class="searchbar">')
+    print('    <input type="text" id="searchInput" onkeyup="search()" placeholder="FIlter for ...">')
+    print('  </div>')
+    print('</div>')
+    print('<br>')
+    #print('<input type="text" id="searchInput" onkeyup="search()" placeholder="Search for ...">')
+
+
 def generate_table(results_by_region, services_in_grid):
+    print('<div class="main">')
     print('<table class="aws-table"; id="mainTable"; table-layout:fixed;>')
     print('    <tr>\n')
     print('        <th>Service</th>\n')
@@ -75,6 +96,14 @@ def generate_table(results_by_region, services_in_grid):
             print('        </td>')
         print('    </tr>\n')
     print('</table>')
+    print('</div>')
+
+
+def generate_footer(start, fin):
+    print('<div class="footer">')
+    print('  <a>Started processing at: ' + '<span style="color: #98FB98">' + start + '</span>'
+        + '; Finished at: ' + '<span style="color: #F08080">' + fin + '</span>' + '</a>')
+    print('</div>')
 
 
 def generate_collapsibles():

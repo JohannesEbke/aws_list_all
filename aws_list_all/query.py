@@ -13,7 +13,7 @@ from sys import stdout
 from time import time
 from traceback import print_exc
 
-from .generate_html import generate_table
+from .generate_html import generate_header, generate_table, generate_footer
 from .introspection import get_listing_operations, get_regions_for_service
 from .listing import Listing
 
@@ -247,6 +247,8 @@ def print_query(services, selected_regions=(), selected_operations=(), verbose=0
     services_in_grid = set()
     regions_in_grid = set()
     
+    start = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S GMT")
+
     with contextlib.closing(ThreadPool(parallel)) as pool:
         for result in pool.imap_unordered(partial(acquire_listing, verbose), to_run):
             results_by_type[result[0]].append(result)
@@ -258,13 +260,10 @@ def print_query(services, selected_regions=(), selected_operations=(), verbose=0
             else:
                 sys.stdout.flush()
     
-    now = datetime.now()
-    now_str = '(Finished at: ' + now.strftime('%d/%m/%Y %H:%M:%S') + ')'
-    print('<h2>AWS_list_all</h2><br>\n')
-    print('Following list of resources has been generated from your AWS account '
-        + now_str + ':<br><br>')
-    print('<input type="text" id="searchInput" onkeyup="search()" placeholder="Search for ...">')
+    fin = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S GMT")
+    generate_header()
     generate_table(results_by_region, services_in_grid)
+    generate_footer(start, fin)
 
 
 def acquire_listing(verbose, what):
