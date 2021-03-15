@@ -122,7 +122,7 @@ def main():
     )
     introspecters.add_parser('debug', description='Debug information', help='Debug information')
 
-    # Print to an HTML file to be viewed in a browser
+    # Print the findings from query to an HTML file to be viewed in a browser
     viewhtml = subparsers.add_parser(
         'print-html', description='Print a listing to an HTML file to be viewed in a browser',
         help='Create browser view of listing'
@@ -149,6 +149,13 @@ def main():
     viewhtml.add_argument('-d', '--directory', default='.', help='Directory to save result listings to')
     viewhtml.add_argument('-v', '--verbose', action='count', help='Print detailed info during run')
     viewhtml.add_argument('-c', '--profile', help='Use a specific .aws/credentials profile.')
+
+    # Visually compare and display the differences in listings from two directories
+    compare = subparsers.add_parser(
+        'compare', description='Compare listings from two different directories', help='Compare saved listings'
+    )
+    show.add_argument('base', nargs='*', help='listing file(s) to load and print')
+    show.add_argument('new', nargs='*', help='listing file(s) to load and print')
 
     # Finally, refreshing the service/region caches comes last.
     caches = subparsers.add_parser(
@@ -250,6 +257,8 @@ def main():
         os.chdir(path_up)
         url = os.getcwd() + "/test.html"
         webbrowser.open(url,new=new)
+    elif args.command == 'show':
+        print('Comparing directories...')
     elif args.command == 'recreate-caches':
         increase_limit_nofiles()
         recreate_caches(args.update_packaged_values)

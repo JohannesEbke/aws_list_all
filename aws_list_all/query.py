@@ -309,6 +309,10 @@ def acquire_listing(verbose, what):
         return (result_type, service, region, operation, profile, repr(exc))
 
 
+def compare_list_files(basefiles, newfiles):
+    print('Comparing')
+
+
 def do_list_files(filenames, verbose=0):
     """Print out a rudimentary summary of the Listing objects contained in the given files"""
     for listing_filename in filenames:
@@ -322,34 +326,38 @@ def do_list_files(filenames, verbose=0):
             len_string = '> {}'.format(len(value)) if truncated else str(len(value))
             print(listing.service, listing.region, listing.operation, resource_type, len_string)
             if verbose > 0:
-                for item in value:
-                    idkey = None
-                    if isinstance(item, dict):
-                        guesses = [resource_type[:-1] + "Id", "id", "SerialNumber"]
-                        # Find the last uppercase word in the resource_type and construct some guesses from that
-                        uppercase_indices = [i for (i, c) in enumerate(resource_type) if c.isupper()]
-                        if uppercase_indices:
-                            last_word_in_resource_type = resource_type[uppercase_indices[-1]:]
-                            guesses.append(last_word_in_resource_type[:-1] + "Id")
-                            guesses.append(last_word_in_resource_type + "Id")
-                        for guess in guesses:
-                            if guess in item:
-                                idkey = guess
-                                break
-                        if idkey is None:
-                            for heuristic in [
-                                lambda x: x.endswith('Id'),
-                                lambda x: x.endswith('Name'),
-                            ]:
-                                idkeys = [k for k in item.keys() if heuristic(k)]
-                                if idkeys:
-                                    # Heuristic: Shortest ID is probably the Resource ID
-                                    idkeys.sort(key=len)
-                                    idkey = idkeys[0]
-                                    break
-                    if idkey:
-                        print('    - ', item.get(idkey, ', '.join(item.keys())))
-                    else:
-                        print('    - ', item)
-                if truncated:
-                    print('    - ... (more items, query truncated)')
+                verbose_list_files(resource_type, value)
+
+
+def verbose_list_files(resource_type, value):
+    for item in value:
+        idkey = None
+        if isinstance(item, dict):
+            guesses = [resource_type[:-1] + "Id", "id", "SerialNumber"]
+            # Find the last uppercase word in the resource_type and construct some guesses from that
+            uppercase_indices = [i for (i, c) in enumerate(resource_type) if c.isupper()]
+            if uppercase_indices:
+                last_word_in_resource_type = resource_type[uppercase_indices[-1]:]
+                guesses.append(last_word_in_resource_type[:-1] + "Id")
+                guesses.append(last_word_in_resource_type + "Id")
+            for guess in guesses:
+                if guess in item:
+                    idkey = guess
+                    break
+            if idkey is None:
+                for heuristic in [
+                    lambda x: x.endswith('Id'),
+                    lambda x: x.endswith('Name'),
+                ]:
+                    idkeys = [k for k in item.keys() if heuristic(k)]
+                    if idkeys:
+                        # Heuristic: Shortest ID is probably the Resource ID
+                        idkeys.sort(key=len)
+                        idkey = idkeys[0]
+                        break
+        if idkey:
+            print('    - ', item.get(idkey, ', '.join(item.keys())))
+        else:
+            print('    - ', item)
+    if truncated:
+        print('    - ... (more items, query truncated)')
