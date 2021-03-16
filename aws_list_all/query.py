@@ -21,6 +21,11 @@ RESULT_SOMETHING = '+++'
 RESULT_ERROR = '!!!'
 RESULT_NO_ACCESS = '>:|'
 
+DEPENDENT_OPERATIONS = {
+    'ListKeys' : 'ListAliases',
+    'DescribeInternetGateways' : 'DescribeVpcs',
+}
+
 # List of requests with legitimate, persistent errors that indicate that no listable resources are present.
 #
 # If the request would never return listable resources, it should not be done and be listed in one of the lists
@@ -201,7 +206,7 @@ def do_query(services, selected_regions=(), selected_operations=(), verbose=0, p
     """For the given services, execute all selected operations (default: all) in selected regions
     (default: all)"""
     to_run = []
-    selected_operations = check_special_ops(selected_operations)
+    dependencies = {}
     print('Building set of queries to execute...')
     for service in services:
         for region in get_regions_for_service(service, selected_regions):
@@ -209,11 +214,26 @@ def do_query(services, selected_regions=(), selected_operations=(), verbose=0, p
                 if verbose > 0:
                     region_name = region or 'n/a'
                     print('Service: {: <28} | Region: {:<15} | Operation: {}'.format(service, region_name, operation))
+                if operation in DEPENDENT_OPERATIONS:
+                    dependencies[DEPENDENT_OPERATIONS[operation], region] = [service, region, DEPENDENT_OPERATIONS[operation], selected_profile, unfilter]
+                if operation in DEPENDENT_OPERATIONS.values():
+                    dependencies[operation, region] = [service, region, operation, selected_profile, unfilter]
+                    continue
 
                 to_run.append([service, region, operation, selected_profile, unfilter])
     shuffle(to_run)  # Distribute requests across endpoints
     results_by_type = defaultdict(list)
     print('...done. Executing queries...')
+
+    results_by_type = execute_query(dependencies.values(), verbose, parallel, results_by_type)
+    results_by_type = execute_query(to_run, verbose, parallel, results_by_type)
+    print('...done')
+    for result_type in (RESULT_NOTHING, RESULT_SOMETHING, RESULT_NO_ACCESS, RESULT_ERROR):
+        for result in sorted(results_by_type[result_type]):
+            print(*result)
+
+
+def execute_query(to_run, verbose, parallel, results_by_type):
     # the `with` block is a workaround for a bug: https://bugs.python.org/issue35629
     with contextlib.closing(ThreadPool(parallel)) as pool:
         for result in pool.imap_unordered(partial(acquire_listing, verbose), to_run):
@@ -223,10 +243,7 @@ def do_query(services, selected_regions=(), selected_operations=(), verbose=0, p
             else:
                 print(result[0][-1], end='')
                 sys.stdout.flush()
-    print('...done')
-    for result_type in (RESULT_NOTHING, RESULT_SOMETHING, RESULT_NO_ACCESS, RESULT_ERROR):
-        for result in sorted(results_by_type[result_type]):
-            print(*result)
+    return results_by_type
 
 
 def acquire_listing(verbose, what):
@@ -295,7 +312,7 @@ def do_list_files(filenames, verbose=0, not_found=False, errors=False, denied=Fa
                 print(listing.service, listing.region, listing.operation, 'MISSING PERMISSION', '0')
         if listing.error == RESULT_ERROR and errors:
             print(listing.service, listing.region, listing.operation, 'ERROR', '0')
-        
+
         for resource_type, value in resources.items():
             if not not_found and len(value) == 0 and not was_denied:
                 continue
@@ -338,14 +355,3 @@ def do_list_files(filenames, verbose=0, not_found=False, errors=False, denied=Fa
                 if truncated:
                     print('    - ... (more items, query truncated)')
                     
-def check_special_ops(sel_ops):
-    """Special operations require other operations to be queried first"""
-    if sel_ops is None:
-        return sel_ops
-    else:
-        sel_oplist = list(sel_ops)
-        if 'ListKeys' in sel_oplist:
-            sel_oplist.insert(sel_oplist.index('ListKeys'), 'ListAliases')
-        if 'DescribeInternetGateways' in sel_oplist:
-            sel_oplist.insert(sel_oplist.index('DescribeInternetGateways'), 'DescribeVpcs')
-        return tuple(sel_oplist)

@@ -89,9 +89,9 @@ def main():
     )
     show.add_argument('listingfile', nargs='*', help='listing file(s) to load and print')
     show.add_argument('-v', '--verbose', action='count', help='print given listing files with detailed info')
-    show.add_argument('-n', '--not_found', default=False, type=bool, help='additionally print listing files of resources not found')
-    show.add_argument('-e', '--errors', default=False, type=bool, help='additionally print listing files of resources where queries resulted in errors')
-    show.add_argument('-d', '--denied', default=False, type=bool, help='additionally print listing files of resources with "missing permission" errors')
+    show.add_argument('-n', '--not_found', default=False, action='store_true', help='additionally print listing files of resources not found')
+    show.add_argument('-e', '--errors', default=False, action='store_true', help='additionally print listing files of resources where queries resulted in errors')
+    show.add_argument('-d', '--denied', default=False, action='store_true', help='additionally print listing files of resources with "missing permission" errors')
     show.add_argument(
         '-u',
         '--unfilter',
