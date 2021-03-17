@@ -23,16 +23,16 @@ def generate_head():
     print('.aws-table .service {border: none; border-collapse: collapse; font-family: Arial; '
         + 'font-size: 18px; text-align: center; table-layout:fixed; background-color: #f1f1f1;}\n')
     print('.nfound {border: 10px solid Gold; border-radius: 10px; padding: 10px;}\n')
-    print('.found {border: 10px solid LightGreen; border-radius: 10px; padding: 10px;}\n')
+    print('.found {border: 10px solid LimeGreen; border-radius: 10px; padding: 10px;}\n')
     print('.error {border: 10px solid Red; border-radius: 10px; padding: 10px;}\n')
-    print('.denied {border: 10px solid Orange; border-radius: 10px; padding: 10px;}\n')
+    print('.denied {border: 10px solid DarkOrange; border-radius: 10px; padding: 10px;}\n')
     print('.nCollapse {background-color: Gold; border-radius: 10px; color: white; cursor: pointer; '
         + 'padding: 14px; width: 450px; border: none; text-align: center; font-size: 20px;}\n')
-    print('.fCollapse {background-color: LightGreen; border-radius: 10px; color: white; cursor: pointer; '
+    print('.fCollapse {background-color: LimeGreen; border-radius: 10px; color: white; cursor: pointer; '
         + 'padding: 14px; width: 450px; border: none; text-align: center; font-size: 20px;}\n')
     print('.eCollapse {background-color: Red; border-radius: 10px; color: white; cursor: pointer; '
         + 'padding: 14px; width: 450px; border: none; text-align: center; font-size: 20px;}\n')
-    print('.dCollapse {background-color: Orange; border-radius: 10px; color: white; cursor: pointer; '
+    print('.dCollapse {background-color: DarkOrange; border-radius: 10px; color: white; cursor: pointer; '
         + 'padding: 14px; width: 450px; border: none; text-align: center; font-size: 20px;}\n')
     print('.active, .nCollapse:hover {width: 450px; background-color: #777;}\n')
     print('.active, .fCollapse:hover {width: 450px; background-color: #777;}\n')
@@ -88,7 +88,10 @@ def generate_table(results_by_region, services_in_grid):
                             + status_switch(result_type + 'box') + result_type_count + '</button>\n')
                         print('        <div class="content">\n')
                         empty_type = False
-                    print('<div class="' + status_switch(result_type) + '">')
+                    diff_color = ''
+                    if len(result) == 7:
+                        diff_color = 'style="background-color:' + status_switch(result[6]) + ';"'
+                    print('<div class="' + status_switch(result_type) + '" ' + diff_color + '>')
                     print(str(result[3]))
                     print('<br></div>')
                 if not(empty_type):
@@ -99,10 +102,17 @@ def generate_table(results_by_region, services_in_grid):
     print('</div>')
 
 
-def generate_footer(start, fin):
+def generate_time_footer(start, fin):
     print('<div class="footer">')
     print('  <a>Started processing at: ' + '<span style="color: #98FB98">' + start + '</span>'
         + '; Finished at: ' + '<span style="color: #F08080">' + fin + '</span>' + '</a>')
+    print('</div>')
+
+
+def generate_compare_footer(base, mod):
+    print('<div class="footer">')
+    print('  <a>Observed changes from: ' + '<span style="color: #98FB98">' + base + '</span>'
+        + '   ---->   To: ' + '<span style="color: #F08080">' + mod + '</span>' + '</a>')
     print('</div>')
 
 
@@ -163,6 +173,9 @@ def status_switch(arg):
         '---col': 'nCollapse',
         '+++col': 'fCollapse',
         '!!!col': 'eCollapse',
-        '>:|col': 'dCollapse'
+        '>:|col': 'dCollapse',
+        'same': '#f1f1f1',
+        'added': 'LightGreen',
+        'deleted': 'LightCoral'
     }
     return switcher.get(arg, '')

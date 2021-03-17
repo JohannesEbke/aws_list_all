@@ -12,7 +12,7 @@ from .generate_html import generate_head, generate_collapsibles, generate_search
 from .introspection import (
     get_listing_operations, get_services, get_verbs, introspect_regions_for_service, recreate_caches
 )
-from .query import do_list_files, do_query, print_query
+from .query import do_list_files, do_query, print_query, compare_list_files
 
 
 def increase_limit_nofiles():
@@ -75,6 +75,12 @@ def main():
         action='append',
         help='Restrict querying to the given operation (can be specified multiple times)'
     )
+    query.add_argument(
+        '-u',
+        '--unfilter',
+        action='append',
+        help='Exclude given default-value filter from being applied (can be specified multiple times)'
+    )
     query.add_argument('-p', '--parallel', default=32, type=int, help='Number of request to do in parallel')
     query.add_argument('-d', '--directory', default='.', help='Directory to save result listings to')
     query.add_argument('-v', '--verbose', action='count', help='Print detailed info during run')
@@ -86,6 +92,15 @@ def main():
     )
     show.add_argument('listingfile', nargs='*', help='listing file(s) to load and print')
     show.add_argument('-v', '--verbose', action='count', help='print given listing files with detailed info')
+    show.add_argument('-n', '--not_found', default=False, action='store_true', help='additionally print listing files of resources not found')
+    show.add_argument('-e', '--errors', default=False, action='store_true', help='additionally print listing files of resources where queries resulted in errors')
+    show.add_argument('-d', '--denied', default=False, action='store_true', help='additionally print listing files of resources with "missing permission" errors')
+    show.add_argument(
+        '-u',
+        '--unfilter',
+        action='append',
+        help='Exclude given default-value filter from being applied (can be specified multiple times)'
+    )
 
     # Introspection debugging is not the main function. So we put it all into a subcommand.
     introspect = subparsers.add_parser(
@@ -145,6 +160,12 @@ def main():
         action='append',
         help='Restrict querying to the given operation (can be specified multiple times)'
     )
+    viewhtml.add_argument(
+        '-u',
+        '--unfilter',
+        action='append',
+        help='Exclude given default-value filter from being applied (can be specified multiple times)'
+    )
     viewhtml.add_argument('-p', '--parallel', default=32, type=int, help='Number of request to do in parallel')
     viewhtml.add_argument('-d', '--directory', default='.', help='Directory to save result listings to')
     viewhtml.add_argument('-v', '--verbose', action='count', help='Print detailed info during run')
@@ -154,8 +175,9 @@ def main():
     compare = subparsers.add_parser(
         'compare', description='Compare listings from two different directories', help='Compare saved listings'
     )
-    show.add_argument('base', nargs='*', help='listing file(s) to load and print')
-    show.add_argument('new', nargs='*', help='listing file(s) to load and print')
+    compare.add_argument('-b', '--basedir', nargs='*', default='.', help='Listing file(s) used as comparison base')
+    compare.add_argument('-m', '--moddir', nargs='*', default='.', help='Listing file(s) to be compared')
+    #compare.add_argument('base', nargs='*', help='listing file(s) to load and print')
 
     # Finally, refreshing the service/region caches comes last.
     caches = subparsers.add_parser(
@@ -194,12 +216,20 @@ def main():
             args.operation,
             verbose=args.verbose or 0,
             parallel=args.parallel,
-            selected_profile=args.profile
+            selected_profile=args.profile,
+            unfilter=args.unfilter
         )
     elif args.command == 'show':
         if args.listingfile:
             increase_limit_nofiles()
-            do_list_files(args.listingfile, verbose=args.verbose or 0)
+            do_list_files(
+                args.listingfile, 
+                verbose=args.verbose or 0,
+                not_found=args.not_found,
+                errors=args.errors,
+                denied=args.denied,
+                unfilter=args.unfilter
+            )
         else:
             show.print_help()
             return 1
@@ -242,7 +272,8 @@ def main():
             args.operation,
             verbose=args.verbose or 0,
             parallel=args.parallel,
-            selected_profile=args.profile
+            selected_profile=args.profile,
+            unfilter=args.unfilter
         )
         print('<script>\n')
         generate_collapsibles()
@@ -257,8 +288,32 @@ def main():
         os.chdir(path_up)
         url = os.getcwd() + "/test.html"
         webbrowser.open(url,new=new)
-    elif args.command == 'show':
-        print('Comparing directories...')
+    elif args.command == 'compare':
+        origout = sys.stdout
+        f = open("compare.html", 'w')
+        sys.stdout = f
+        print('<!DOCTYPE html>\n<html>\n')
+        generate_head()
+        print('<body>\n')
+        if args.basedir and args.moddir:
+            increase_limit_nofiles()
+            print('SOMETHING')
+            compare_list_files(
+                args.basedir,
+                args.moddir
+            )
+        print('<script>\n')
+        generate_collapsibles()
+        generate_searchfunc()
+        print('</script>\n')
+        print('\n</body>\n')
+        print('</html>')
+        sys.stdout = origout
+
+        new = 2
+        path_up = os.path.dirname(os.getcwd())
+        url = os.getcwd() + "/compare.html"
+        webbrowser.open(url,new=new)
     elif args.command == 'recreate-caches':
         increase_limit_nofiles()
         recreate_caches(args.update_packaged_values)

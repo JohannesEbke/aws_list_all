@@ -1,6 +1,8 @@
 from __future__ import print_function
 
+import codecs
 import json
+import os
 import sys
 import pprint
 import contextlib
@@ -8,19 +10,29 @@ from collections import defaultdict
 from datetime import datetime
 from functools import partial
 from multiprocessing.pool import ThreadPool
+from os import listdir
 from random import shuffle
 from sys import stdout
 from time import time
 from traceback import print_exc
 
-from .generate_html import generate_header, generate_table, generate_footer
+from .generate_html import generate_header, generate_table, generate_time_footer, generate_compare_footer
 from .introspection import get_listing_operations, get_regions_for_service
-from .listing import Listing
+from .listing import RawListing, FilteredListing
 
 RESULT_NOTHING = '---'
 RESULT_SOMETHING = '+++'
 RESULT_ERROR = '!!!'
 RESULT_NO_ACCESS = '>:|'
+
+DIFF_NONE = 'same'
+DIFF_NEW = 'added'
+DIFF_DEL = 'deleted'
+
+DEPENDENT_OPERATIONS = {
+    'ListKeys' : 'ListAliases',
+    'DescribeInternetGateways' : 'DescribeVpcs',
+}
 
 # List of requests with legitimate, persistent errors that indicate that no listable resources are present.
 #
@@ -198,10 +210,11 @@ NOT_AVAILABLE_FOR_ACCOUNT_STRINGS = [
 NOT_AVAILABLE_STRINGS = NOT_AVAILABLE_FOR_REGION_STRINGS + NOT_AVAILABLE_FOR_ACCOUNT_STRINGS
 
 
-def do_query(services, selected_regions=(), selected_operations=(), verbose=0, parallel=32, selected_profile=None):
+def do_query(services, selected_regions=(), selected_operations=(), verbose=0, parallel=32, selected_profile=None, unfilter=()):
     """For the given services, execute all selected operations (default: all) in selected regions
     (default: all)"""
     to_run = []
+    dependencies = {}
     print('Building set of queries to execute...')
     for service in services:
         for region in get_regions_for_service(service, selected_regions):
@@ -209,11 +222,26 @@ def do_query(services, selected_regions=(), selected_operations=(), verbose=0, p
                 if verbose > 0:
                     region_name = region or 'n/a'
                     print('Service: {: <28} | Region: {:<15} | Operation: {}'.format(service, region_name, operation))
+                if operation in DEPENDENT_OPERATIONS:
+                    dependencies[DEPENDENT_OPERATIONS[operation], region] = [service, region, DEPENDENT_OPERATIONS[operation], selected_profile, unfilter]
+                if operation in DEPENDENT_OPERATIONS.values():
+                    dependencies[operation, region] = [service, region, operation, selected_profile, unfilter]
+                    continue
 
-                to_run.append([service, region, operation, selected_profile])
+                to_run.append([service, region, operation, selected_profile, unfilter])
     shuffle(to_run)  # Distribute requests across endpoints
     results_by_type = defaultdict(list)
     print('...done. Executing queries...')
+
+    results_by_type = execute_query(dependencies.values(), verbose, parallel, results_by_type)
+    results_by_type = execute_query(to_run, verbose, parallel, results_by_type)
+    print('...done')
+    for result_type in (RESULT_NOTHING, RESULT_SOMETHING, RESULT_NO_ACCESS, RESULT_ERROR):
+        for result in sorted(results_by_type[result_type]):
+            print(*result)
+
+
+def execute_query(to_run, verbose, parallel, results_by_type):
     # the `with` block is a workaround for a bug: https://bugs.python.org/issue35629
     with contextlib.closing(ThreadPool(parallel)) as pool:
         for result in pool.imap_unordered(partial(acquire_listing, verbose), to_run):
@@ -223,68 +251,78 @@ def do_query(services, selected_regions=(), selected_operations=(), verbose=0, p
             else:
                 print(result[0][-1], end='')
                 sys.stdout.flush()
-    print('...done')
-    for result_type in (RESULT_NOTHING, RESULT_SOMETHING, RESULT_NO_ACCESS, RESULT_ERROR):
-        for result in sorted(results_by_type[result_type]):
-            print(*result)
+    return results_by_type
 
 
-def print_query(services, selected_regions=(), selected_operations=(), verbose=0, parallel=32, selected_profile=None):
+def print_query(services, selected_regions=(), selected_operations=(), verbose=0, parallel=32, selected_profile=None, unfilter=()):
     """For the given services, execute all selected operations (default: all) in selected regions
     (default: all)"""
     to_run = []
+    dependencies = {}
     for service in services:
         for region in get_regions_for_service(service, selected_regions):
             for operation in get_listing_operations(service, region, selected_operations, selected_profile):
                 if verbose > 0:
                     region_name = region or 'n/a'
                     print('Service: {: <28} | Region: {:<15} | Operation: {}'.format(service, region_name, operation))
+                if operation in DEPENDENT_OPERATIONS:
+                    dependencies[DEPENDENT_OPERATIONS[operation], region] = [service, region, DEPENDENT_OPERATIONS[operation], selected_profile, unfilter]
+                if operation in DEPENDENT_OPERATIONS.values():
+                    dependencies[operation, region] = [service, region, operation, selected_profile, unfilter]
+                    continue
 
-                to_run.append([service, region, operation, selected_profile])
+                to_run.append([service, region, operation, selected_profile, unfilter])
     shuffle(to_run)  # Distribute requests across endpoints
     results_by_type = defaultdict(list)
     results_by_region = defaultdict(lambda: defaultdict(list))
     services_in_grid = set()
-    regions_in_grid = set()
     
     start = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S GMT")
 
-    with contextlib.closing(ThreadPool(parallel)) as pool:
-        for result in pool.imap_unordered(partial(acquire_listing, verbose), to_run):
-            results_by_type[result[0]].append(result)
-            results_by_region[result[2]][result[0]].append(result)
-            services_in_grid.add(result[1])
-            regions_in_grid.add(result[2])
-            if verbose > 1:
-                print('ExecutedQueryResult: {}'.format(result))
-            else:
-                sys.stdout.flush()
+    results_by_type, results_by_region, services_in_grid = execute_html_query(
+        dependencies.values(), verbose, parallel, results_by_type, results_by_region, services_in_grid)
+    results_by_type, results_by_region, services_in_grid = execute_html_query(
+        to_run, verbose, parallel, results_by_type, results_by_region, services_in_grid)
     
     fin = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S GMT")
     generate_header()
     generate_table(results_by_region, services_in_grid)
-    generate_footer(start, fin)
+    generate_time_footer(start, fin)
+
+
+def execute_html_query(to_run, verbose, parallel, typesorted, regionsorted, services):
+    with contextlib.closing(ThreadPool(parallel)) as pool:
+        for result in pool.imap_unordered(partial(acquire_listing, verbose), to_run):
+            typesorted[result[0]].append(result)
+            regionsorted[result[2]][result[0]].append(result)
+            services.add(result[1])
+            if verbose > 1:
+                print('ExecutedQueryResult: {}'.format(result))
+            else:
+                sys.stdout.flush()
+    return [typesorted, regionsorted, services]
 
 
 def acquire_listing(verbose, what):
     """Given a service, region and operation execute the operation, serialize and save the result and
     return a tuple of strings describing the result."""
-    service, region, operation, profile = what
+    service, region, operation, profile, unfilter = what
     start_time = time()
     try:
         if verbose > 1:
             print(what, 'starting request...')
-        listing = Listing.acquire(service, region, operation, profile)
+        listing = RawListing.acquire(service, region, operation, profile)
+        listingFile = FilteredListing(listing, './', unfilter) #os.getcwd() + '/'
         duration = time() - start_time
         if verbose > 1:
             print(what, '...request successful')
             print("timing [success]:", duration, what)
         with open('{}_{}_{}_{}.json'.format(service, operation, region, profile), 'w') as jsonfile:
-            json.dump(listing.to_json(), jsonfile, default=datetime.isoformat)
-        if listing.resource_total_count > 0:
-            return (RESULT_SOMETHING, service, region, operation, profile, ', '.join(listing.resource_types))
+                json.dump(listing.to_json(), jsonfile, default=datetime.isoformat)
+        if listingFile.resource_total_count > 0:
+            return (RESULT_SOMETHING, service, region, operation, profile, ', '.join(listingFile.resource_types))
         else:
-            return (RESULT_NOTHING, service, region, operation, profile, ', '.join(listing.resource_types))
+            return (RESULT_NOTHING, service, region, operation, profile, ', '.join(listingFile.resource_types))
     except Exception as exc:  # pylint:disable=broad-except
         duration = time() - start_time
         if verbose > 1:
@@ -306,23 +344,79 @@ def acquire_listing(verbose, what):
             if not_available_string in str(exc):
                 result_type = RESULT_NOTHING
 
+        listing = RawListing(service, region, operation, {}, profile, result_type)
+        with open('{}_{}_{}_{}.json'.format(service, operation, region, profile), 'w') as jsonfile:
+                json.dump(listing.to_json(), jsonfile, default=datetime.isoformat)
         return (result_type, service, region, operation, profile, repr(exc))
 
 
-def compare_list_files(basefiles, newfiles):
-    print('Comparing')
+def compare_list_files(basefiles, modfiles):
+    basedir = basefiles[0][:basefiles[0].rfind('/') + 1]
+    moddir = modfiles[0][:modfiles[0].rfind('/') + 1]
+    base_typesorted, base_regionsorted, base_services = setup_table_headers(basedir, basefiles)
+    mod_typesorted, mod_regionsorted, mod_services = setup_table_headers(moddir, modfiles)
+    diff_regionsorted = defaultdict(lambda: defaultdict(list))
+    diff_services = base_services.union(mod_services)
+
+    for base_region in base_regionsorted:
+        for result_type in base_regionsorted[base_region]:
+            for listing in base_regionsorted[base_region][result_type]:
+                if listing in mod_regionsorted[base_region][result_type]:
+                    diff_regionsorted[base_region][result_type].append(listing + (DIFF_NONE,))
+                    mod_regionsorted[base_region][result_type].remove(listing)
+                else:
+                    diff_regionsorted[base_region][result_type].append(listing + (DIFF_DEL,))
+    for mod_region in mod_regionsorted:
+        for result_type in mod_regionsorted[mod_region]:
+            for listing in mod_regionsorted[mod_region][result_type]:
+                diff_regionsorted[mod_region][result_type].append(listing + (DIFF_NEW,))
+
+    generate_header()
+    generate_table(diff_regionsorted, diff_services)
+    generate_compare_footer(basedir, moddir)
 
 
-def do_list_files(filenames, verbose=0):
-    """Print out a rudimentary summary of the Listing objects contained in the given files"""
+def setup_table_headers(dir, filenames):
+    typesorted = defaultdict(list)
+    regionsorted = defaultdict(lambda: defaultdict(list))
+    services = set()
     for listing_filename in filenames:
-        listing = Listing.from_json(json.load(open(listing_filename, 'rb')))
-        resources = listing.resources
+        listing = RawListing.from_json(json.load(open(listing_filename, 'rb')))
+        listing_entry = FilteredListing(listing, dir, [])
+        result = (listing_entry.result_type, listing.service, listing.region, listing.operation, listing.profile, '')
+        typesorted[result[0]].append(result)
+        regionsorted[result[2]][result[0]].append(result)
+        services.add(result[1])
+    return [typesorted, regionsorted, services]
+
+
+def do_list_files(filenames, verbose=0, not_found=False, errors=False, denied=False, unfilter=()):
+    """Print out a rudimentary summary of the Listing objects contained in the given files"""
+    dir = filenames[0][:filenames[0].rfind('/') + 1]
+    for listing_filename in filenames:
+        listing = RawListing.from_json(json.load(open(listing_filename, 'rb')))
+        listing_entry = FilteredListing(listing, dir, unfilter)
+        resources = listing_entry.resources
+
         truncated = False
+        was_denied = False
         if 'truncated' in resources:
             truncated = resources['truncated']
             del resources['truncated']
+        if listing.error == RESULT_NO_ACCESS:
+            was_denied = True
+            if not resources and denied:
+                print(listing.service, listing.region, listing.operation, 'MISSING PERMISSION', '0')
+        if listing.error == RESULT_ERROR and errors:
+            print(listing.service, listing.region, listing.operation, 'ERROR', '0')
+
         for resource_type, value in resources.items():
+            if not not_found and len(value) == 0 and not was_denied:
+                continue
+            if not denied and was_denied:
+                continue
+            if was_denied:
+                resource_type = 'MISSING PERMISSION'
             len_string = '> {}'.format(len(value)) if truncated else str(len(value))
             print(listing.service, listing.region, listing.operation, resource_type, len_string)
             if verbose > 0:
