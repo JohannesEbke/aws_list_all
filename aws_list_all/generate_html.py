@@ -4,6 +4,27 @@ import webbrowser
 from collections import defaultdict
 from sys import exit, stderr
 
+
+def before_content(name):
+    origout = sys.stdout
+    f = open(name, 'w')
+    sys.stdout = f
+    print('<!DOCTYPE html>\n<html>\n')
+    generate_head()
+    print('<body>\n')
+    return origout
+
+
+def after_content(origout):
+    print('<script>\n')
+    generate_collapsibles()
+    generate_searchfunc()
+    print('</script>\n')
+    print('\n</body>\n')
+    print('</html>')
+    sys.stdout = origout
+
+
 def generate_head():
     print('<head>\n')
     print('<style>\n')

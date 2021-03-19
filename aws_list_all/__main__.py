@@ -8,7 +8,7 @@ from resource import getrlimit, setrlimit, RLIMIT_NOFILE
 from argparse import ArgumentParser
 from sys import exit, stderr
 
-from .generate_html import generate_head, generate_collapsibles, generate_searchfunc
+from .generate_html import  before_content, after_content
 from .introspection import (
     get_listing_operations, get_services, get_verbs, introspect_regions_for_service, recreate_caches
 )
@@ -252,12 +252,7 @@ def main():
             introspect.print_help()
             return 1
     elif args.command == 'print-html':
-        origout = sys.stdout
-        f = open("test.html", 'w')
-        sys.stdout = f
-        print('<!DOCTYPE html>\n<html>\n')
-        generate_head()
-        print('<body>\n')
+        origout = before_content('test.html')
         if args.directory:
             try:
                 os.makedirs(args.directory)
@@ -275,13 +270,7 @@ def main():
             selected_profile=args.profile,
             unfilter=args.unfilter
         )
-        print('<script>\n')
-        generate_collapsibles()
-        generate_searchfunc()
-        print('</script>\n')
-        print('\n</body>\n')
-        print('</html>')
-        sys.stdout = origout
+        after_content(origout)
 
         new = 2
         path_up = os.path.dirname(os.getcwd())
@@ -289,29 +278,16 @@ def main():
         url = os.getcwd() + "/test.html"
         webbrowser.open(url,new=new)
     elif args.command == 'compare':
-        origout = sys.stdout
-        f = open("compare.html", 'w')
-        sys.stdout = f
-        print('<!DOCTYPE html>\n<html>\n')
-        generate_head()
-        print('<body>\n')
+        origout = before_content('compare.html')
         if args.basedir and args.moddir:
             increase_limit_nofiles()
-            print('SOMETHING')
             compare_list_files(
                 args.basedir,
                 args.moddir
             )
-        print('<script>\n')
-        generate_collapsibles()
-        generate_searchfunc()
-        print('</script>\n')
-        print('\n</body>\n')
-        print('</html>')
-        sys.stdout = origout
+        after_content(origout)
 
         new = 2
-        path_up = os.path.dirname(os.getcwd())
         url = os.getcwd() + "/compare.html"
         webbrowser.open(url,new=new)
     elif args.command == 'recreate-caches':
