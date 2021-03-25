@@ -3,7 +3,7 @@ import pprint
 
 import boto3
 
-from .apply_filter import apply_filters, convert_unfilterList
+from .apply_filter import apply_filters
 from .client import get_client
 from .resource_filter import *
 
@@ -120,12 +120,15 @@ class FilteredListing(object):
         del response['ResponseMetadata']
 
         complete = apply_filters(self.input, self.unfilter, response, complete)
-        unfilterList = convert_unfilterList(self.unfilter)
+        unfilterList = self.unfilter
+
+        # Following two if-blocks rely on certain JSON-files being present, hence the DEPENDENT_OPERATIONS
+        # in query.py. May need rework to function without dependencies.
 
         # Special handling for service-level kms keys; derived from alias name.
         if 'kmsListKeys' not in unfilterList and self.input.service == 'kms' and self.input.operation == 'ListKeys':
             aliases_file = '{}_{}_{}_{}.json'.format(self.input.service, 'ListAliases', self.input.region, self.input.profile)
-            aliases_file = self.directory + aliases_file
+            aliases_file = self.directory + '/' + aliases_file
             aliases_listing = RawListing.from_json(json.load(open(aliases_file, 'rb')))
             list_aliases = aliases_listing.response
             service_key_ids = [
@@ -137,7 +140,7 @@ class FilteredListing(object):
         # Filter default Internet Gateways
         if 'ec2InternetGateways' not in unfilterList and self.input.service == 'ec2' and self.input.operation == 'DescribeInternetGateways':
             vpcs_file = '{}_{}_{}_{}.json'.format(self.input.service, 'DescribeVpcs', self.input.region, self.input.profile)
-            vpcs_file = self.directory + vpcs_file
+            vpcs_file = self.directory + '/' + vpcs_file
             # Sometimes 'No JSON Object' or 'Directory not found'
             vpcs_listing = RawListing.from_json(json.load(open(vpcs_file, 'rb')))
             describe_vpcs = vpcs_listing.response

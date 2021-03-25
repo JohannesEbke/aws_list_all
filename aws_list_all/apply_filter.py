@@ -5,10 +5,9 @@ import sys
 from .fixing_filter import *
 from .resource_filter import *
 
-def apply_filters(listing, unfilter, response, complete):
+def apply_filters(listing, unfilterList, response, complete):
     """Apply filters for operations to be handled in a special way or 
         to remove default resources from the response"""
-    unfilterList = convert_unfilterList(unfilter)
     apply_complete = complete
 
     if not('cloudfront' in unfilterList):
@@ -45,18 +44,18 @@ def apply_filters(listing, unfilter, response, complete):
 
     filter = CountFilter(apply_complete)
     filter.execute(listing, response)
-    apply_complete = getattr(filter, 'complete')
+    apply_complete = filter.complete
 
     filter = QuantityFilter(apply_complete)
     filter.execute(listing, response)
-    apply_complete = getattr(filter, 'complete')
+    apply_complete = filter.complete
 
     filter = NeutralThingFilter()
     filter.execute(listing, response)
 
     filter = BadThingFilter(apply_complete)
     filter.execute(listing, response)
-    apply_complete = getattr(filter, 'complete')
+    apply_complete = filter.complete
 
     if not('kmsListAliases' in unfilterList):
         filter = KMSListAliasesFilter()
@@ -148,20 +147,10 @@ def apply_filters(listing, unfilter, response, complete):
 
     filter = NextTokenFilter(apply_complete)
     filter.execute(listing, response)
-    apply_complete = getattr(filter, 'complete')
+    apply_complete = filter.complete
 
     return apply_complete
 
-def convert_unfilterList(unfilter):
-    """Check if unfilter parameter is a list or single argument and return list of it"""
-    unfilterList = []
-    if unfilter is not None:
-        if isinstance(unfilter, list):
-            unfilterList = unfilter
-        else:
-            unfilterList.append(unfilter)
-
-    return unfilterList
 
 
 
