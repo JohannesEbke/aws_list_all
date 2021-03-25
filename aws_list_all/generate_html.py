@@ -44,7 +44,7 @@ def generate_head():
     print('.aws-table .service {border: none; border-collapse: collapse; font-family: Arial; '
         + 'font-size: 18px; text-align: center; table-layout:fixed; background-color: #f1f1f1;}\n')
     print('.nfound {border: 10px solid Gold; border-radius: 10px; padding: 10px;}\n')
-    print('.found {border: 10px solid LimeGreen; border-radius: 10px; padding: 10px;}\n')
+    print('.found {border: 10px solid LimeGreen; border-radius: 10px; font-size: 20px; padding: 10px;}\n')
     print('.error {border: 10px solid Red; border-radius: 10px; padding: 10px;}\n')
     print('.denied {border: 10px solid DarkOrange; border-radius: 10px; padding: 10px;}\n')
     print('.nCollapse {background-color: Gold; border-radius: 10px; color: white; cursor: pointer; '
@@ -60,6 +60,17 @@ def generate_head():
     print('.active, .eCollapse:hover {width: 450px; background-color: #777;}\n')
     print('.active, .dCollapse:hover {width: 450px; background-color: #777;}\n')
     print('.content {display: none; overflow: hidden; width: 450px; background-color: #f1f1f1;}\n')
+
+    print(""".popup {position: relative; display: inline-block; cursor: pointer; 
+        -webkit-user-select: none; -ms-user-select: none; user-select: none;}\n""")
+    print(""".popup .popuptext {visibility: hidden; width: 160px; background-color: #555; color: #fff; 
+        text-align: center; border-radius: 6px; padding: 8px 0; position: absolute; z-index: 1; 
+        bottom: 125%; left: 50%; margin-left: -80px;}\n""")
+    print(""".popup .popuptext::after {content: ""; position: absolute; top: 100%; left: 50%; margin-left: -5px; 
+        border-width: 5px; border-style: solid; border-color: #555 transparent transparent transparent;}\n""")
+    print('.popup .show {visibility: visible; -webkit-animation: fadeIn 1s; animation: fadeIn 1s;}\n')
+    print('@-webkit-keyframes fadeIn {from {opacity: 0;} to {opacity: 1;}}\n')
+    print('@keyframes fadeIn {from {opacity: 0;} to {opacity:1 ;}}\n')
 
     print('#searchInput {\n')
     print('  background-position: 10px 10px;\n')
@@ -85,7 +96,8 @@ def generate_header():
     #print('<input type="text" id="searchInput" onkeyup="search()" placeholder="Search for ...">')
 
 
-def generate_table(results_by_region, services_in_grid):
+def generate_table(results_by_region, services_in_grid, id_list):
+    id_i = 0
     print('<div class="main">')
     print('<table class="aws-table"; id="mainTable"; table-layout:fixed;>')
     print('    <tr>\n')
@@ -178,6 +190,13 @@ def generate_searchfunc():
     print('    btn[i].textContent = btnText.substring(0, btnText.indexOf("[") + 1) + count + "]";\n')
 
     print('  }\n')
+    print('}\n')
+
+
+def generate_popupfunc():
+    print('function popup() {\n')
+    print('  var popup = document.getElementById("myPopup");\n')
+    print('  popup.classList.toggle("show");\n')
     print('}\n')
 
 

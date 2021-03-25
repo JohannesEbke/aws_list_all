@@ -258,6 +258,7 @@ def print_query(services, selected_regions=(), selected_operations=(), verbose=0
     """For the given services, execute all selected operations (default: all) in selected regions
     (default: all)"""
     to_run = []
+    id_list = []
     dependencies = {}
     for service in services:
         for region in get_regions_for_service(service, selected_regions):
@@ -271,6 +272,12 @@ def print_query(services, selected_regions=(), selected_operations=(), verbose=0
                     dependencies[operation, region] = [service, region, operation, selected_profile, unfilter]
                     continue
 
+                # listing = RawListing.acquire(service, region, operation, selected_profile)
+                # listingFile = FilteredListing(listing, './', unfilter)
+                # resources = listingFile.resources
+                # for resource_type, value in resources.items():
+                #     #id_list[operation, region] = verbose_list_files(resource_type, value)
+                #     id_list.append(verbose_list_files(resource_type, value))
                 to_run.append([service, region, operation, selected_profile, unfilter])
     shuffle(to_run)  # Distribute requests across endpoints
     results_by_type = defaultdict(list)
@@ -286,7 +293,7 @@ def print_query(services, selected_regions=(), selected_operations=(), verbose=0
     
     fin = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S GMT")
     generate_header()
-    generate_table(results_by_region, services_in_grid)
+    generate_table(results_by_region, services_in_grid, id_list)
     generate_time_footer(start, fin)
 
 
@@ -372,7 +379,7 @@ def compare_list_files(basefiles, modfiles):
                 diff_regionsorted[mod_region][result_type].append(listing + (DIFF_NEW,))
 
     generate_header()
-    generate_table(diff_regionsorted, diff_services)
+    generate_table(diff_regionsorted, diff_services, [])
     generate_compare_footer(basedir, moddir)
 
 
@@ -420,10 +427,15 @@ def do_list_files(filenames, verbose=0, not_found=False, errors=False, denied=Fa
             len_string = '> {}'.format(len(value)) if truncated else str(len(value))
             print(listing.service, listing.region, listing.operation, resource_type, len_string)
             if verbose > 0:
-                verbose_list_files(resource_type, value)
+                id_list = verbose_list_files(resource_type, value)
+                for resource_id in id_list:
+                    print('    - ', resource_id)
+                if truncated:
+                    print('    - ... (more items, query truncated)')
 
 
 def verbose_list_files(resource_type, value):
+    IDs = []
     for item in value:
         idkey = None
         if isinstance(item, dict):
@@ -450,8 +462,9 @@ def verbose_list_files(resource_type, value):
                         idkey = idkeys[0]
                         break
         if idkey:
-            print('    - ', item.get(idkey, ', '.join(item.keys())))
+            IDs.append(item.get(idkey, ', '.join(item.keys())))
+            #print('    - ', item.get(idkey, ', '.join(item.keys())))
         else:
-            print('    - ', item)
-    if truncated:
-        print('    - ... (more items, query truncated)')
+            IDs.append(item)
+            #print('    - ', item)
+    return IDs
