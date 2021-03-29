@@ -263,7 +263,11 @@ def acquire_listing(verbose, what):
             print("timing [success]:", duration, what)
         with open('{}_{}_{}_{}.json'.format(service, operation, region, profile), 'w') as jsonfile:
                 json.dump(listing.to_json(), jsonfile, default=datetime.isoformat)
-        if listingFile.resource_total_count > 0:
+
+        resource_count = listingFile.resource_total_count
+        if listingFile.input.error == RESULT_ERROR:
+            return (RESULT_ERROR, service, region, operation, profile, 'Error(Error during processing of resources)')
+        if resource_count > 0:
             return (RESULT_SOMETHING, service, region, operation, profile, ', '.join(listingFile.resource_types))
         else:
             return (RESULT_NOTHING, service, region, operation, profile, ', '.join(listingFile.resource_types))
