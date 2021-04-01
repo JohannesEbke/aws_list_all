@@ -19,6 +19,7 @@ from traceback import print_exc
 from .generate_html import generate_header, generate_table, generate_time_footer, generate_compare_footer
 from .introspection import get_listing_operations, get_regions_for_service
 from .listing import RawListing, FilteredListing
+from os.path import dirname
 
 RESULT_NOTHING = '---'
 RESULT_SOMETHING = '+++'
@@ -272,12 +273,6 @@ def print_query(services, selected_regions=(), selected_operations=(), verbose=0
                     dependencies[operation, region] = [service, region, operation, selected_profile, unfilter]
                     continue
 
-                # listing = RawListing.acquire(service, region, operation, selected_profile)
-                # listingFile = FilteredListing(listing, './', unfilter)
-                # resources = listingFile.resources
-                # for resource_type, value in resources.items():
-                #     #id_list[operation, region] = verbose_list_files(resource_type, value)
-                #     id_list.append(verbose_list_files(resource_type, value))
                 to_run.append([service, region, operation, selected_profile, unfilter])
     shuffle(to_run)  # Distribute requests across endpoints
     results_by_type = defaultdict(list)
@@ -319,14 +314,18 @@ def acquire_listing(verbose, what):
         if verbose > 1:
             print(what, 'starting request...')
         listing = RawListing.acquire(service, region, operation, profile)
-        listingFile = FilteredListing(listing, './', unfilter) #os.getcwd() + '/'
+        listingFile = FilteredListing(listing, './', unfilter)
         duration = time() - start_time
         if verbose > 1:
             print(what, '...request successful')
             print("timing [success]:", duration, what)
         with open('{}_{}_{}_{}.json'.format(service, operation, region, profile), 'w') as jsonfile:
                 json.dump(listing.to_json(), jsonfile, default=datetime.isoformat)
-        if listingFile.resource_total_count > 0:
+
+        resource_count = listingFile.resource_total_count
+        if listingFile.input.error == RESULT_ERROR:
+            return (RESULT_ERROR, service, region, operation, profile, 'Error(Error during processing of resources)')
+        if resource_count > 0:
             return (RESULT_SOMETHING, service, region, operation, profile, ', '.join(listingFile.resource_types))
         else:
             return (RESULT_NOTHING, service, region, operation, profile, ', '.join(listingFile.resource_types))
@@ -399,7 +398,7 @@ def setup_table_headers(dir, filenames):
 
 def do_list_files(filenames, verbose=0, not_found=False, errors=False, denied=False, unfilter=()):
     """Print out a rudimentary summary of the Listing objects contained in the given files"""
-    dir = filenames[0][:filenames[0].rfind('/') + 1]
+    dir = dirname(filenames[0])
     for listing_filename in filenames:
         listing = RawListing.from_json(json.load(open(listing_filename, 'rb')))
         listing_entry = FilteredListing(listing, dir, unfilter)
@@ -416,6 +415,8 @@ def do_list_files(filenames, verbose=0, not_found=False, errors=False, denied=Fa
                 print(listing.service, listing.region, listing.operation, 'MISSING PERMISSION', '0')
         if listing.error == RESULT_ERROR and errors:
             print(listing.service, listing.region, listing.operation, 'ERROR', '0')
+        if listing.error == RESULT_ERROR and listing_entry.resource_total_count > 0:
+            continue
 
         for resource_type, value in resources.items():
             if not not_found and len(value) == 0 and not was_denied:

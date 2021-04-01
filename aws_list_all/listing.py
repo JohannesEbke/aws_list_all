@@ -2,10 +2,14 @@ import json
 import pprint
 
 import boto3
+import json
+from datetime import datetime
 
-from .apply_filter import apply_filters, convert_unfilterList
+from .apply_filter import apply_filters
 from .client import get_client
 from .resource_filter import *
+
+RESULT_TYPE_LENGTH = 3
 
 PARAMETERS = {
     'cloudfront': {
@@ -84,10 +88,10 @@ def run_raw_listing_operation(service, region, operation, profile):
 
 class FilteredListing(object):
 
-    def __init__(self, input, directory='./', unfilter=()):
+    def __init__(self, input, directory='./', unfilter=None):
         self.input = input
         self.directory = directory
-        self.unfilter = unfilter
+        self.unfilter = [] if unfilter is None else unfilter
 
     @property
     def resource_types(self):
@@ -129,38 +133,45 @@ class FilteredListing(object):
         del response['ResponseMetadata']
 
         complete = apply_filters(self.input, self.unfilter, response, complete)
-        unfilterList = convert_unfilterList(self.unfilter)
+
+        # Following two if-blocks rely on certain JSON-files being present, hence the DEPENDENT_OPERATIONS
+        # in query.py. May need rework to function without dependencies.
 
         # Special handling for service-level kms keys; derived from alias name.
-        if 'kmsListKeys' not in unfilterList and self.input.service == 'kms' and self.input.operation == 'ListKeys':
-            aliases_file = '{}_{}_{}_{}.json'.format(self.input.service, 'ListAliases', self.input.region, self.input.profile)
-            aliases_file = self.directory + aliases_file
-            aliases_listing = RawListing.from_json(json.load(open(aliases_file, 'rb')))
-            list_aliases = aliases_listing.response
-            service_key_ids = [
-                k.get('TargetKeyId') for k in list_aliases.get('Aliases', [])
-                if k.get('AliasName').lower().startswith('alias/aws')
-            ]
-            response['Keys'] = [k for k in response.get('Keys', []) if k.get('KeyId') not in service_key_ids]
+        if 'kmsListKeys' not in self.unfilter and self.input.service == 'kms' and self.input.operation == 'ListKeys':
+            try:
+                aliases_file = '{}_{}_{}_{}.json'.format(self.input.service, 'ListAliase', self.input.region, self.input.profile)
+                aliases_file = self.directory + '/' + aliases_file
+                aliases_listing = RawListing.from_json(json.load(open(aliases_file, 'rb')))
+                list_aliases = aliases_listing.response
+                service_key_ids = [
+                    k.get('TargetKeyId') for k in list_aliases.get('Aliases', [])
+                    if k.get('AliasName').lower().startswith('alias/aws')
+                ]
+                response['Keys'] = [k for k in response.get('Keys', []) if k.get('KeyId') not in service_key_ids]
+            except Exception as exc:
+                self.input.error = repr(exc)
 
         # Filter default Internet Gateways
-        if 'ec2InternetGateways' not in unfilterList and self.input.service == 'ec2' and self.input.operation == 'DescribeInternetGateways':
-            vpcs_file = '{}_{}_{}_{}.json'.format(self.input.service, 'DescribeVpcs', self.input.region, self.input.profile)
-            vpcs_file = self.directory + vpcs_file
-            # Sometimes 'No JSON Object' or 'Directory not found'
-            vpcs_listing = RawListing.from_json(json.load(open(vpcs_file, 'rb')))
-            describe_vpcs = vpcs_listing.response
-            vpcs = {v['VpcId']: v for v in describe_vpcs.get('Vpcs', [])}
-            internet_gateways = []
-            for ig in response['InternetGateways']:
-                attachments = ig.get('Attachments', [])
-                # more than one, it cannot be default.
-                if len(attachments) != 1:
-                    continue
-                vpc = attachments[0].get('VpcId')
-                if not vpcs.get(vpc, {}).get('IsDefault', False):
-                    internet_gateways.append(ig)
-            response['InternetGateways'] = internet_gateways
+        if 'ec2InternetGateways' not in self.unfilter and self.input.service == 'ec2' and self.input.operation == 'DescribeInternetGateways':
+            try:
+                vpcs_file = '{}_{}_{}_{}.json'.format(self.input.service, 'DescribeVpc', self.input.region, self.input.profile)
+                vpcs_file = self.directory + '/' + vpcs_file
+                vpcs_listing = RawListing.from_json(json.load(open(vpcs_file, 'rb')))
+                describe_vpcs = vpcs_listing.response
+                vpcs = {v['VpcId']: v for v in describe_vpcs.get('Vpcs', [])}
+                internet_gateways = []
+                for ig in response['InternetGateways']:
+                    attachments = ig.get('Attachments', [])
+                    # more than one, it cannot be default.
+                    if len(attachments) != 1:
+                        continue
+                    vpc = attachments[0].get('VpcId')
+                    if not vpcs.get(vpc, {}).get('IsDefault', False):
+                        internet_gateways.append(ig)
+                response['InternetGateways'] = internet_gateways
+            except Exception as exc:
+                self.input.error = repr(exc)
 
         for key, value in response.items():
             if not isinstance(value, list):
@@ -168,6 +179,13 @@ class FilteredListing(object):
 
         if not complete:
             response['truncated'] = [True]
+
+        # Update JSON-file in case an error occurred during resources-processing
+        if len(self.input.error) > RESULT_TYPE_LENGTH:
+            self.input.error = '!!!'
+            with open('{}_{}_{}_{}.json'.format(
+                self.input.service, self.input.operation, self.input.region, self.input.profile), 'w') as jsonfile:
+                json.dump(self.input.to_json(), jsonfile, default=datetime.isoformat)
 
         return response
 
