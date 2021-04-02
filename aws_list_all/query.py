@@ -317,6 +317,8 @@ def do_list_files(filenames, verbose=0, not_found=False, errors=False, denied=Fa
                 print(listing.service, listing.region, listing.operation, 'MISSING PERMISSION', '0')
         if listing.error == RESULT_ERROR and errors:
             print(listing.service, listing.region, listing.operation, 'ERROR', '0')
+        if listing.error == RESULT_ERROR and listing_entry.resource_total_count > 0:
+            continue
 
         for resource_type, value in resources.items():
             if not not_found and len(value) == 0 and not was_denied:
