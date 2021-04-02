@@ -246,3 +246,17 @@ class RawListing(object):
             response['truncated'] = [True]
 
         return response
+
+
+class ResultListing(object):
+    """Represents a listing result summary acquired from the function acquire_listing"""
+    def __init__(self, input, result_type, details):
+        self.input = input
+        self.result_type = result_type
+        self.details = details
+
+    @property
+    def to_tuple(self):
+        """Return a tiple of strings describing the result of an executed query"""
+        return (self.result_type, self.input.service, self.input.region, 
+            self.input.operation, self.input.profile, self.details)

@@ -14,7 +14,7 @@ from time import time
 from traceback import print_exc
 
 from .introspection import get_listing_operations, get_regions_for_service
-from .listing import RawListing, FilteredListing
+from .listing import RawListing, FilteredListing, ResultListing
 from os.path import dirname;
 
 RESULT_NOTHING = '---'
@@ -231,18 +231,18 @@ def do_query(services, selected_regions=(), selected_operations=(), verbose=0, p
     print('...done')
     for result_type in (RESULT_NOTHING, RESULT_SOMETHING, RESULT_NO_ACCESS, RESULT_ERROR):
         for result in sorted(results_by_type[result_type]):
-            print(*result)
+            print(*result.to_tuple)
 
 
 def execute_query(to_run, verbose, parallel, results_by_type):
     # the `with` block is a workaround for a bug: https://bugs.python.org/issue35629
     with contextlib.closing(ThreadPool(parallel)) as pool:
         for result in pool.imap_unordered(partial(acquire_listing, verbose), to_run):
-            results_by_type[result[0]].append(result)
+            results_by_type[result.result_type].append(result)
             if verbose > 1:
-                print('ExecutedQueryResult: {}'.format(result))
+                print('ExecutedQueryResult: {}'.format(result.to_tuple))
             else:
-                print(result[0][-1], end='')
+                print(result.to_tuple[0][-1], end='')
                 sys.stdout.flush()
     return results_by_type
 
@@ -266,11 +266,11 @@ def acquire_listing(verbose, what):
 
         resource_count = listingFile.resource_total_count
         if listingFile.input.error == RESULT_ERROR:
-            return (RESULT_ERROR, service, region, operation, profile, 'Error(Error during processing of resources)')
+            return ResultListing(listing, RESULT_ERROR, 'Error(Error during processing of resources)')
         if resource_count > 0:
-            return (RESULT_SOMETHING, service, region, operation, profile, ', '.join(listingFile.resource_types))
+            return ResultListing(listing, RESULT_SOMETHING, ', '.join(listingFile.resource_types))
         else:
-            return (RESULT_NOTHING, service, region, operation, profile, ', '.join(listingFile.resource_types))
+            return ResultListing(listing, RESULT_NOTHING, ', '.join(listingFile.resource_types))
     except Exception as exc:  # pylint:disable=broad-except
         duration = time() - start_time
         if verbose > 1:
@@ -295,7 +295,7 @@ def acquire_listing(verbose, what):
         listing = RawListing(service, region, operation, {}, profile, result_type)
         with open('{}_{}_{}_{}.json'.format(service, operation, region, profile), 'w') as jsonfile:
                 json.dump(listing.to_json(), jsonfile, default=datetime.isoformat)
-        return (result_type, service, region, operation, profile, repr(exc))
+        return ResultListing(listing, result_type, repr(exc))
 
 
 def do_list_files(filenames, verbose=0, not_found=False, errors=False, denied=False, unfilter=()):
