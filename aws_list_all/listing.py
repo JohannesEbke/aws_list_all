@@ -140,7 +140,7 @@ class FilteredListing(object):
         # Special handling for service-level kms keys; derived from alias name.
         if 'kmsListKeys' not in self.unfilter and self.input.service == 'kms' and self.input.operation == 'ListKeys':
             try:
-                aliases_file = '{}_{}_{}_{}.json'.format(self.input.service, 'ListAliase', self.input.region, self.input.profile)
+                aliases_file = '{}_{}_{}_{}.json'.format(self.input.service, 'ListAliases', self.input.region, self.input.profile)
                 aliases_file = self.directory + '/' + aliases_file
                 aliases_listing = RawListing.from_json(json.load(open(aliases_file, 'rb')))
                 list_aliases = aliases_listing.response
@@ -155,7 +155,7 @@ class FilteredListing(object):
         # Filter default Internet Gateways
         if 'ec2InternetGateways' not in self.unfilter and self.input.service == 'ec2' and self.input.operation == 'DescribeInternetGateways':
             try:
-                vpcs_file = '{}_{}_{}_{}.json'.format(self.input.service, 'DescribeVpc', self.input.region, self.input.profile)
+                vpcs_file = '{}_{}_{}_{}.json'.format(self.input.service, 'DescribeVpcs', self.input.region, self.input.profile)
                 vpcs_file = self.directory + '/' + vpcs_file
                 vpcs_listing = RawListing.from_json(json.load(open(vpcs_file, 'rb')))
                 describe_vpcs = vpcs_listing.response
@@ -254,3 +254,59 @@ class RawListing(object):
             response['truncated'] = [True]
 
         return response
+
+
+class ResultListing(object):
+    """Represents a listing result summary acquired from the function acquire_listing"""
+    def __init__(self, input, result_type, details, id_list=None, diff=''):
+        self.input = input
+        self.result_type = result_type
+        self.details = details
+        self.id_list = [] if id_list is None else id_list
+        self.diff = diff
+
+    @classmethod
+    def diffInListing(cls, base, diff):
+        return cls(base.input, base.result_type, base.details, base.id_list, diff)
+
+    def __eq__(self, other):
+        return ((self.input.service, self.input.region, self.input.operation, #self.input.response
+            self.input.profile, self.input.error, self.result_type) #self.details, self.id_list, self.diff
+            == (other.input.service, other.input.region, other.input.operation, 
+            other.input.profile, other.input.error, other.result_type))
+    
+    def __ne__(self, other):
+        return ((self.input.service, self.input.region, self.input.operation, 
+            self.input.profile, self.input.error, self.result_type) 
+            != (other.input.service, other.input.region, other.input.operation, 
+            other.input.profile, other.input.error, other.result_type))
+
+    def __lt__(self, other):
+        return ((self.input.service, self.input.region, self.input.operation, 
+            self.input.profile, self.input.error, self.result_type) 
+            < (other.input.service, other.input.region, other.input.operation, 
+            other.input.profile, other.input.error, other.result_type))
+
+    def __le__(self, other):
+        return ((self.input.service, self.input.region, self.input.operation, 
+            self.input.profile, self.input.error, self.result_type) 
+            <= (other.input.service, other.input.region, other.input.operation, 
+            other.input.profile, other.input.error, other.result_type))
+
+    def __gt__(self, other):
+        return ((self.input.service, self.input.region, self.input.operation, 
+            self.input.profile, self.input.error, self.result_type) 
+            > (other.input.service, other.input.region, other.input.operation, 
+            other.input.profile, other.input.error, other.result_type))
+
+    def __ge__(self, other):
+        return ((self.input.service, self.input.region, self.input.operation, 
+            self.input.profile, self.input.error, self.result_type) 
+            >= (other.input.service, other.input.region, other.input.operation, 
+            other.input.profile, other.input.error, other.result_type))
+
+    @property
+    def to_tuple(self):
+        """Return a tiple of strings describing the result of an executed query"""
+        return (self.result_type, self.input.service, self.input.region, 
+            self.input.operation, self.input.profile, self.details)

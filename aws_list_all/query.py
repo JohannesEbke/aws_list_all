@@ -18,7 +18,7 @@ from traceback import print_exc
 
 from .generate_html import generate_header, generate_table, generate_time_footer, generate_compare_footer
 from .introspection import get_listing_operations, get_regions_for_service
-from .listing import RawListing, FilteredListing
+from .listing import RawListing, FilteredListing, ResultListing
 from os.path import dirname
 
 RESULT_NOTHING = '---'
@@ -239,27 +239,27 @@ def do_query(services, selected_regions=(), selected_operations=(), verbose=0, p
     print('...done')
     for result_type in (RESULT_NOTHING, RESULT_SOMETHING, RESULT_NO_ACCESS, RESULT_ERROR):
         for result in sorted(results_by_type[result_type]):
-            print(*result)
+            print(*result.to_tuple)
 
 
 def execute_query(to_run, verbose, parallel, results_by_type):
+    """Execute the queries in the given list and save the results in the given dict sorted by result type"""
     # the `with` block is a workaround for a bug: https://bugs.python.org/issue35629
     with contextlib.closing(ThreadPool(parallel)) as pool:
         for result in pool.imap_unordered(partial(acquire_listing, verbose), to_run):
-            results_by_type[result[0]].append(result)
+            results_by_type[result.result_type].append(result)
             if verbose > 1:
-                print('ExecutedQueryResult: {}'.format(result))
+                print('ExecutedQueryResult: {}'.format(result.to_tuple))
             else:
-                print(result[0][-1], end='')
+                print(result.to_tuple[0][-1], end='')
                 sys.stdout.flush()
     return results_by_type
 
 
 def print_query(services, selected_regions=(), selected_operations=(), verbose=0, parallel=32, selected_profile=None, unfilter=()):
     """For the given services, execute all selected operations (default: all) in selected regions
-    (default: all)"""
+    (default: all) and display result in HTML-format"""
     to_run = []
-    id_list = []
     dependencies = {}
     for service in services:
         for region in get_regions_for_service(service, selected_regions):
@@ -288,18 +288,20 @@ def print_query(services, selected_regions=(), selected_operations=(), verbose=0
     
     fin = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S GMT")
     generate_header()
-    generate_table(results_by_region, services_in_grid, id_list)
+    generate_table(results_by_region, services_in_grid)
     generate_time_footer(start, fin)
 
 
 def execute_html_query(to_run, verbose, parallel, typesorted, regionsorted, services):
+    """Execute the queries in the given list and save the results in the given dictionaries 
+    sorted by result type and region"""
     with contextlib.closing(ThreadPool(parallel)) as pool:
         for result in pool.imap_unordered(partial(acquire_listing, verbose), to_run):
-            typesorted[result[0]].append(result)
-            regionsorted[result[2]][result[0]].append(result)
-            services.add(result[1])
+            typesorted[result.result_type].append(result)
+            regionsorted[result.input.region][result.result_type].append(result)
+            services.add(result.input.service)
             if verbose > 1:
-                print('ExecutedQueryResult: {}'.format(result))
+                print('ExecutedQueryResult: {}'.format(result.to_tuple))
             else:
                 sys.stdout.flush()
     return [typesorted, regionsorted, services]
@@ -324,11 +326,14 @@ def acquire_listing(verbose, what):
 
         resource_count = listingFile.resource_total_count
         if listingFile.input.error == RESULT_ERROR:
-            return (RESULT_ERROR, service, region, operation, profile, 'Error(Error during processing of resources)')
+            return ResultListing(listing, RESULT_ERROR, 'Error(Error during processing of resources)')
         if resource_count > 0:
-            return (RESULT_SOMETHING, service, region, operation, profile, ', '.join(listingFile.resource_types))
+            id_list = []
+            for resource_type, value in listingFile.resources.items():
+                id_list += verbose_list_files(resource_type, value)
+            return ResultListing(listing, RESULT_SOMETHING, ', '.join(listingFile.resource_types), id_list)
         else:
-            return (RESULT_NOTHING, service, region, operation, profile, ', '.join(listingFile.resource_types))
+            return ResultListing(listing, RESULT_NOTHING, ', '.join(listingFile.resource_types))
     except Exception as exc:  # pylint:disable=broad-except
         duration = time() - start_time
         if verbose > 1:
@@ -353,10 +358,12 @@ def acquire_listing(verbose, what):
         listing = RawListing(service, region, operation, {}, profile, result_type)
         with open('{}_{}_{}_{}.json'.format(service, operation, region, profile), 'w') as jsonfile:
                 json.dump(listing.to_json(), jsonfile, default=datetime.isoformat)
-        return (result_type, service, region, operation, profile, repr(exc))
+        return ResultListing(listing, result_type, repr(exc))
 
 
 def compare_list_files(basefiles, modfiles):
+    """Compare the saved listing-files from two directories and display the changes from base to mod 
+    in HTML-format"""
     basedir = basefiles[0][:basefiles[0].rfind('/') + 1]
     moddir = modfiles[0][:modfiles[0].rfind('/') + 1]
     base_typesorted, base_regionsorted, base_services = setup_table_headers(basedir, basefiles)
@@ -368,31 +375,40 @@ def compare_list_files(basefiles, modfiles):
         for result_type in base_regionsorted[base_region]:
             for listing in base_regionsorted[base_region][result_type]:
                 if listing in mod_regionsorted[base_region][result_type]:
-                    diff_regionsorted[base_region][result_type].append(listing + (DIFF_NONE,))
+                    diff_regionsorted[base_region][result_type].append(
+                        ResultListing.diffInListing(listing, DIFF_NONE))
                     mod_regionsorted[base_region][result_type].remove(listing)
                 else:
-                    diff_regionsorted[base_region][result_type].append(listing + (DIFF_DEL,))
+                    diff_regionsorted[base_region][result_type].append(
+                        ResultListing.diffInListing(listing, DIFF_DEL))
     for mod_region in mod_regionsorted:
         for result_type in mod_regionsorted[mod_region]:
             for listing in mod_regionsorted[mod_region][result_type]:
-                diff_regionsorted[mod_region][result_type].append(listing + (DIFF_NEW,))
+                diff_regionsorted[mod_region][result_type].append(
+                    ResultListing.diffInListing(listing, DIFF_NEW))
 
     generate_header()
-    generate_table(diff_regionsorted, diff_services, [])
+    generate_table(diff_regionsorted, diff_services)
     generate_compare_footer(basedir, moddir)
 
 
 def setup_table_headers(dir, filenames):
+    """Read the listing results from a given directory and return them inside dictionaries
+    sorted by result type and region"""
     typesorted = defaultdict(list)
     regionsorted = defaultdict(lambda: defaultdict(list))
     services = set()
     for listing_filename in filenames:
         listing = RawListing.from_json(json.load(open(listing_filename, 'rb')))
         listing_entry = FilteredListing(listing, dir, [])
-        result = (listing_entry.result_type, listing.service, listing.region, listing.operation, listing.profile, '')
-        typesorted[result[0]].append(result)
-        regionsorted[result[2]][result[0]].append(result)
-        services.add(result[1])
+        id_list = []
+        if listing_entry.resource_total_count > 0:
+            for resource_type, value in listing_entry.resources.items():
+                id_list += verbose_list_files(resource_type, value)
+        result = ResultListing(listing, listing_entry.result_type, '', id_list)
+        typesorted[result.result_type].append(result)
+        regionsorted[result.input.region][result.result_type].append(result)
+        services.add(result.input.service)
     return [typesorted, regionsorted, services]
 
 
@@ -436,6 +452,7 @@ def do_list_files(filenames, verbose=0, not_found=False, errors=False, denied=Fa
 
 
 def verbose_list_files(resource_type, value):
+    """Search and return a list of the resource IDs from a listing-response entry"""
     IDs = []
     for item in value:
         idkey = None

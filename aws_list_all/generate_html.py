@@ -4,6 +4,8 @@ import webbrowser
 from collections import defaultdict
 from sys import exit, stderr
 
+from .listing import ResultListing
+
 
 def before_content(name):
     origout = sys.stdout
@@ -44,7 +46,7 @@ def generate_head():
     print('.aws-table .service {border: none; border-collapse: collapse; font-family: Arial; '
         + 'font-size: 18px; text-align: center; table-layout:fixed; background-color: #f1f1f1;}\n')
     print('.nfound {border: 10px solid Gold; border-radius: 10px; padding: 10px;}\n')
-    print('.found {border: 10px solid LimeGreen; border-radius: 10px; font-size: 20px; padding: 10px;}\n')
+    print('.found {border: 10px solid LimeGreen; border-radius: 10px; padding: 10px;}\n')
     print('.error {border: 10px solid Red; border-radius: 10px; padding: 10px;}\n')
     print('.denied {border: 10px solid DarkOrange; border-radius: 10px; padding: 10px;}\n')
     print('.nCollapse {background-color: Gold; border-radius: 10px; color: white; cursor: pointer; '
@@ -96,8 +98,7 @@ def generate_header():
     #print('<input type="text" id="searchInput" onkeyup="search()" placeholder="Search for ...">')
 
 
-def generate_table(results_by_region, services_in_grid, id_list):
-    id_i = 0
+def generate_table(results_by_region, services_in_grid):
     print('<div class="main">')
     print('<table class="aws-table"; id="mainTable"; table-layout:fixed;>')
     print('    <tr>\n')
@@ -113,7 +114,7 @@ def generate_table(results_by_region, services_in_grid, id_list):
             print('        <td width="450">\n')
             for result_type in ('---', '+++', '>:|', '!!!'):
                 empty_type = True
-                result_type_list = list(filter(lambda x: x[1] == service_type, sorted(results_by_region[result_region][result_type])))
+                result_type_list = list(filter(lambda x: x.input.service == service_type, sorted(results_by_region[result_region][result_type])))
                 result_type_count = ' [' + str(len(result_type_list)) + ']'
                 for result in result_type_list:
                     if empty_type:
@@ -122,11 +123,15 @@ def generate_table(results_by_region, services_in_grid, id_list):
                         print('        <div class="content">\n')
                         empty_type = False
                     diff_color = ''
-                    if len(result) == 7:
-                        diff_color = 'style="background-color:' + status_switch(result[6]) + ';"'
+                    if result.diff:
+                        diff_color = 'style="background-color:' + status_switch(result.diff) + ';"'
                     print('<div class="' + status_switch(result_type) + '" ' + diff_color + '>')
-                    print(str(result[3]))
-                    print('<br></div>')
+                    print(str(result.input.operation))
+                    if result_type == '+++':
+                        print('<p style="font-size:14px;margin:0">')
+                        print(str(result.id_list))
+                        print('</p>')
+                    print('</div>')
                 if not(empty_type):
                     print('        </div>')
             print('        </td>')
