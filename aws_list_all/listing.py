@@ -93,6 +93,27 @@ class FilteredListing(object):
         self.directory = directory
         self.unfilter = [] if unfilter is None else unfilter
 
+    def to_json(self):
+        return {
+            'service': self.input.service,
+            'region': self.input.region,
+            'profile': self.input.profile,
+            'operation': self.input.operation,
+            'response': self.input.response,
+            'error': self.input.error,
+            'directory': self.directory,
+            'unfilter': self.unfilter,
+        }
+
+    @classmethod
+    def from_json(cls, data):
+        return cls(
+            input=RawListing(data.get('service'), data.get('region'), data.get('operation'),
+                data.get('response'), data.get('profile'), data.get('error'),),
+            directory=data.get('directory'),
+            unfilter=data.get('unfilter')
+        )
+
     @property
     def resource_types(self):
         """The list of resource types (Keys with list content) in the response"""
@@ -142,8 +163,8 @@ class FilteredListing(object):
             try:
                 aliases_file = '{}_{}_{}_{}.json'.format(self.input.service, 'ListAliases', self.input.region, self.input.profile)
                 aliases_file = self.directory + '/' + aliases_file
-                aliases_listing = RawListing.from_json(json.load(open(aliases_file, 'rb')))
-                list_aliases = aliases_listing.response
+                aliases_listing = self.from_json(json.load(open(aliases_file, 'rb')))
+                list_aliases = aliases_listing.input.response
                 service_key_ids = [
                     k.get('TargetKeyId') for k in list_aliases.get('Aliases', [])
                     if k.get('AliasName').lower().startswith('alias/aws')
@@ -157,8 +178,8 @@ class FilteredListing(object):
             try:
                 vpcs_file = '{}_{}_{}_{}.json'.format(self.input.service, 'DescribeVpcs', self.input.region, self.input.profile)
                 vpcs_file = self.directory + '/' + vpcs_file
-                vpcs_listing = RawListing.from_json(json.load(open(vpcs_file, 'rb')))
-                describe_vpcs = vpcs_listing.response
+                vpcs_listing = self.from_json(json.load(open(vpcs_file, 'rb')))
+                describe_vpcs = vpcs_listing.input.response
                 vpcs = {v['VpcId']: v for v in describe_vpcs.get('Vpcs', [])}
                 internet_gateways = []
                 for ig in response['InternetGateways']:
@@ -185,7 +206,7 @@ class FilteredListing(object):
             self.input.error = '!!!'
             with open('{}_{}_{}_{}.json'.format(
                 self.input.service, self.input.operation, self.input.region, self.input.profile), 'w') as jsonfile:
-                json.dump(self.input.to_json(), jsonfile, default=datetime.isoformat)
+                json.dump(self.to_json(), jsonfile, default=datetime.isoformat)
 
         return response
 
@@ -257,7 +278,7 @@ class RawListing(object):
 
 
 class ResultListing(object):
-    """Represents a listing result summary acquired from the function acquire_listing"""
+    """Represents a listing result summary acquired from the function acquire_listing in query.py"""
     def __init__(self, input, result_type, details, id_list=None, diff=''):
         self.input = input
         self.result_type = result_type
@@ -270,40 +291,40 @@ class ResultListing(object):
         return cls(base.input, base.result_type, base.details, base.id_list, diff)
 
     def __eq__(self, other):
-        return ((self.input.service, self.input.region, self.input.operation, #self.input.response
-            self.input.profile, self.input.error, self.result_type) #self.details, self.id_list, self.diff
-            == (other.input.service, other.input.region, other.input.operation, 
-            other.input.profile, other.input.error, other.result_type))
+        return ((self.input.service, self.input.region, self.input.operation, self.input.profile, 
+            self.input.error, self.result_type, self.details, self.id_list, self.diff)
+            == (other.input.service, other.input.region, other.input.operation, other.input.profile, 
+            other.input.error, other.result_type, other.details, other.id_list, other.diff))
     
     def __ne__(self, other):
-        return ((self.input.service, self.input.region, self.input.operation, 
-            self.input.profile, self.input.error, self.result_type) 
-            != (other.input.service, other.input.region, other.input.operation, 
-            other.input.profile, other.input.error, other.result_type))
+        return ((self.input.service, self.input.region, self.input.operation, self.input.profile, 
+            self.input.error, self.result_type, self.details, self.id_list, self.diff) 
+            != (other.input.service, other.input.region, other.input.operation, other.input.profile, 
+            other.input.error, other.result_type, other.details, other.id_list, other.diff))
 
     def __lt__(self, other):
-        return ((self.input.service, self.input.region, self.input.operation, 
-            self.input.profile, self.input.error, self.result_type) 
-            < (other.input.service, other.input.region, other.input.operation, 
-            other.input.profile, other.input.error, other.result_type))
+        return ((self.input.service, self.input.region, self.input.operation, self.input.profile, 
+            self.input.error, self.result_type, self.details, self.id_list, self.diff) 
+            < (other.input.service, other.input.region, other.input.operation, other.input.profile, 
+            other.input.error, other.result_type, other.details, other.id_list, other.diff))
 
     def __le__(self, other):
-        return ((self.input.service, self.input.region, self.input.operation, 
-            self.input.profile, self.input.error, self.result_type) 
-            <= (other.input.service, other.input.region, other.input.operation, 
-            other.input.profile, other.input.error, other.result_type))
+        return ((self.input.service, self.input.region, self.input.operation, self.input.profile, 
+            self.input.error, self.result_type, self.details, self.id_list, self.diff) 
+            <= (other.input.service, other.input.region, other.input.operation, other.input.profile, 
+            other.input.error, other.result_type, other.details, other.id_list, other.diff))
 
     def __gt__(self, other):
-        return ((self.input.service, self.input.region, self.input.operation, 
-            self.input.profile, self.input.error, self.result_type) 
-            > (other.input.service, other.input.region, other.input.operation, 
-            other.input.profile, other.input.error, other.result_type))
+        return ((self.input.service, self.input.region, self.input.operation, self.input.profile, 
+            self.input.error, self.result_type, self.details, self.id_list, self.diff) 
+            > (other.input.service, other.input.region, other.input.operation, other.input.profile, 
+            other.input.error, other.result_type, other.details, other.id_list, other.diff))
 
     def __ge__(self, other):
-        return ((self.input.service, self.input.region, self.input.operation, 
-            self.input.profile, self.input.error, self.result_type) 
-            >= (other.input.service, other.input.region, other.input.operation, 
-            other.input.profile, other.input.error, other.result_type))
+        return ((self.input.service, self.input.region, self.input.operation, self.input.profile, 
+            self.input.error, self.result_type, self.details, self.id_list, self.diff) 
+            >= (other.input.service, other.input.region, other.input.operation, other.input.profile, 
+            other.input.error, other.result_type, other.details, other.id_list, other.diff))
 
     @property
     def to_tuple(self):

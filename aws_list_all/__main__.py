@@ -177,7 +177,6 @@ def main():
     )
     compare.add_argument('-b', '--basedir', nargs='*', default='.', help='Listing file(s) used as comparison base')
     compare.add_argument('-m', '--moddir', nargs='*', default='.', help='Listing file(s) to be compared')
-    #compare.add_argument('base', nargs='*', help='listing file(s) to load and print')
 
     # Finally, refreshing the service/region caches comes last.
     caches = subparsers.add_parser(

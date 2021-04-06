@@ -322,7 +322,7 @@ def acquire_listing(verbose, what):
             print(what, '...request successful')
             print("timing [success]:", duration, what)
         with open('{}_{}_{}_{}.json'.format(service, operation, region, profile), 'w') as jsonfile:
-                json.dump(listing.to_json(), jsonfile, default=datetime.isoformat)
+                json.dump(listingFile.to_json(), jsonfile, default=datetime.isoformat)
 
         resource_count = listingFile.resource_total_count
         if listingFile.input.error == RESULT_ERROR:
@@ -356,16 +356,17 @@ def acquire_listing(verbose, what):
                 result_type = RESULT_NOTHING
 
         listing = RawListing(service, region, operation, {}, profile, result_type)
+        listingFile = FilteredListing(listing, './', unfilter)
         with open('{}_{}_{}_{}.json'.format(service, operation, region, profile), 'w') as jsonfile:
-                json.dump(listing.to_json(), jsonfile, default=datetime.isoformat)
+                json.dump(listingFile.to_json(), jsonfile, default=datetime.isoformat)
         return ResultListing(listing, result_type, repr(exc))
 
 
 def compare_list_files(basefiles, modfiles):
     """Compare the saved listing-files from two directories and display the changes from base to mod 
     in HTML-format"""
-    basedir = basefiles[0][:basefiles[0].rfind('/') + 1]
-    moddir = modfiles[0][:modfiles[0].rfind('/') + 1]
+    basedir = dirname(basefiles[0])
+    moddir = dirname(modfiles[0])
     base_typesorted, base_regionsorted, base_services = setup_table_headers(basedir, basefiles)
     mod_typesorted, mod_regionsorted, mod_services = setup_table_headers(moddir, modfiles)
     diff_regionsorted = defaultdict(lambda: defaultdict(list))
@@ -381,6 +382,7 @@ def compare_list_files(basefiles, modfiles):
                 else:
                     diff_regionsorted[base_region][result_type].append(
                         ResultListing.diffInListing(listing, DIFF_DEL))
+
     for mod_region in mod_regionsorted:
         for result_type in mod_regionsorted[mod_region]:
             for listing in mod_regionsorted[mod_region][result_type]:
@@ -399,13 +401,14 @@ def setup_table_headers(dir, filenames):
     regionsorted = defaultdict(lambda: defaultdict(list))
     services = set()
     for listing_filename in filenames:
+        read_file = FilteredListing.from_json(json.load(open(listing_filename, 'rb')))
         listing = RawListing.from_json(json.load(open(listing_filename, 'rb')))
-        listing_entry = FilteredListing(listing, dir, [])
+        listing_entry = FilteredListing(listing, dir, read_file.unfilter)
         id_list = []
         if listing_entry.resource_total_count > 0:
             for resource_type, value in listing_entry.resources.items():
                 id_list += verbose_list_files(resource_type, value)
-        result = ResultListing(listing, listing_entry.result_type, '', id_list)
+        result = ResultListing(listing_entry.input, listing_entry.result_type, '', id_list)
         typesorted[result.result_type].append(result)
         regionsorted[result.input.region][result.result_type].append(result)
         services.add(result.input.service)
@@ -481,8 +484,7 @@ def verbose_list_files(resource_type, value):
                         break
         if idkey:
             IDs.append(item.get(idkey, ', '.join(item.keys())))
-            #print('    - ', item.get(idkey, ', '.join(item.keys())))
         else:
             IDs.append(item)
-            #print('    - ', item)
+            
     return IDs

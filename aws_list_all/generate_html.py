@@ -95,7 +95,6 @@ def generate_header():
     print('  </div>')
     print('</div>')
     print('<br>')
-    #print('<input type="text" id="searchInput" onkeyup="search()" placeholder="Search for ...">')
 
 
 def generate_table(results_by_region, services_in_grid):
