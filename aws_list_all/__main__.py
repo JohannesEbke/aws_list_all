@@ -72,6 +72,12 @@ def main():
         action='append',
         help='Restrict querying to the given operation (can be specified multiple times)'
     )
+    query.add_argument(
+        '-u',
+        '--unfilter',
+        action='append',
+        help='Exclude given default-value filter from being applied (can be specified multiple times)'
+    )
     query.add_argument('-p', '--parallel', default=32, type=int, help='Number of request to do in parallel')
     query.add_argument('-d', '--directory', default='.', help='Directory to save result listings to')
     query.add_argument('-v', '--verbose', action='count', help='Print detailed info during run')
@@ -83,6 +89,15 @@ def main():
     )
     show.add_argument('listingfile', nargs='*', help='listing file(s) to load and print')
     show.add_argument('-v', '--verbose', action='count', help='print given listing files with detailed info')
+    show.add_argument('-n', '--not_found', default=False, action='store_true', help='additionally print listing files of resources not found')
+    show.add_argument('-e', '--errors', default=False, action='store_true', help='additionally print listing files of resources where queries resulted in errors')
+    show.add_argument('-d', '--denied', default=False, action='store_true', help='additionally print listing files of resources with "missing permission" errors')
+    show.add_argument(
+        '-u',
+        '--unfilter',
+        action='append',
+        help='Exclude given default-value filter from being applied (can be specified multiple times)'
+    )
 
     # Introspection debugging is not the main function. So we put it all into a subcommand.
     introspect = subparsers.add_parser(
@@ -157,12 +172,20 @@ def main():
             args.operation,
             verbose=args.verbose or 0,
             parallel=args.parallel,
-            selected_profile=args.profile
+            selected_profile=args.profile,
+            unfilter=args.unfilter
         )
     elif args.command == 'show':
         if args.listingfile:
             increase_limit_nofiles()
-            do_list_files(args.listingfile, verbose=args.verbose or 0)
+            do_list_files(
+                args.listingfile, 
+                verbose=args.verbose or 0,
+                not_found=args.not_found,
+                errors=args.errors,
+                denied=args.denied,
+                unfilter=args.unfilter
+            )
         else:
             show.print_help()
             return 1
