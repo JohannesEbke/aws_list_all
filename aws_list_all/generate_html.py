@@ -6,45 +6,89 @@ from sys import exit, stderr
 
 from .listing import ResultListing
 
+DEFINE_HEADERBAR = """
+    .headerbar {overflow: hidden; background-color: #232F3E; position: fixed; top: 0; width: 100%;}
+    .headerbar a {float: left; color: #FFFFFF; font-size: 40px; font-family: arial;
+        padding: 10px 30px; text-decoration: none;}
+    .headerbar input[type=text] {margin-top: 12px; margin-right: 30px; border: none; float: right;}
+"""
+
+DEFINE_FOOTER = """
+    .footer {overflow: hidden; background-color: #232F3E; position: fixed; bottom: 0; width: 100%;}
+    .footer a {float: left; color: #f2f2f2; font-size: 12px; font-family: arial;
+        padding: 5px 5px; text-decoration: none;}
+"""
+
+DEFINE_TABLE = """
+    .aws-table th {border: none; border-collapse: collapse; border-radius: 10px; background-color: #f1f1f1; 
+        font-family: Arial; font-size: 20px; padding: 10px; text-align: center; table-layout:fixed;}\n
+    .aws-table td {border: none; border-collapse: collapse; border-radius: 10px; background-color: #f1f1f1; 
+        text-align: center; table-layout:fixed;}\n
+    .aws-table .service {border: none; border-collapse: collapse; font-family: Arial; 
+        font-size: 18px; text-align: center; table-layout:fixed; background-color: #f1f1f1;}\n
+"""
+
+DEFINE_SEARCHINPUT = """
+    #searchInput {\n'
+      background-position: 10px 10px;\n
+      background-repeat: no-repeat;\n
+      width: 300px;\n
+      font-size: 16px;\n
+      padding: 12px 20px 12px 40px;\n
+      border: 1px solid #ddd;\n
+      margin-bottom: 12px;\n
+    }\n
+    </style>\n
+    </head>\n
+"""
+DEFINE_POPUP = """
+    .popup {position: relative; display: inline-block; cursor: pointer; 
+        -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;}\n
+    .popup .popuptext {visibility: hidden; width: 160px; background-color: #555; color: #fff; 
+        text-align: center; border-radius: 6px; padding: 8px 0; position: absolute; z-index: 1; 
+        bottom: 125%; left: 50%; margin-left: -80px;}\n
+    .popup .popuptext::after {content: ""; position: absolute; top: 100%; left: 50%; margin-left: -5px; 
+        border-width: 5px; border-style: solid; border-color: #555 transparent transparent transparent;}\n
+    .popup .show {visibility: visible; -webkit-animation: fadeIn 1s; animation: fadeIn 1s;}\n
+    @-webkit-keyframes fadeIn {from {opacity: 0;} to {opacity: 1;}}\n
+    @keyframes fadeIn {from {opacity: 0;} to {opacity:1 ;}}\n
+"""
+
 
 def before_content(name):
+    """Open a file to write HTML-content in and return the original system output and file path"""
     origout = sys.stdout
     f = open(name, 'w')
     sys.stdout = f
     print('<!DOCTYPE html>\n<html>\n')
     generate_head()
     print('<body>\n')
-    return origout
+    url = os.getcwd() + '/' + name
+    return origout, url
 
 
-def after_content(origout):
+def after_content(origout, url):
+    """Finish writing the currently opened HTML-file, set system output to default and
+    open the file from given url in a browser"""
     print('<script>\n')
     generate_collapsibles()
     generate_searchfunc()
+    generate_popupfunc()
     print('</script>\n')
     print('\n</body>\n')
     print('</html>')
     sys.stdout = origout
+    webbrowser.open(url,new=2)
 
 
 def generate_head():
     print('<head>\n')
     print('<style>\n')
-    print(""".headerbar {overflow: hidden; background-color: #232F3E; position: fixed; top: 0; width: 100%;}""")
-    print(""".headerbar a {float: left; color: #FFFFFF; font-size: 40px; font-family: arial;
-        padding: 10px 30px; text-decoration: none;}""")
-    print(""".headerbar input[type=text] {margin-top: 12px; margin-right: 30px; border: none; float: right;}""")
-    print('.footer {overflow: hidden; background-color: #232F3E; position: fixed; bottom: 0; width: 100%;}')
-    print(""".footer a {float: left; color: #f2f2f2; font-size: 12px; font-family: arial;
-        padding: 5px 5px; text-decoration: none;}""")
+    print(DEFINE_HEADERBAR)
+    print(DEFINE_FOOTER)
     print('.main {margin-top: 70px; margin-bottom: 30px;}')
+    print(DEFINE_TABLE)
 
-    print('.aws-table th {border: none; border-collapse: collapse; border-radius: 10px; background-color: #f1f1f1; '
-        + 'font-family: Arial; font-size: 20px; padding: 10px; text-align: center; table-layout:fixed;}\n')
-    print('.aws-table td {border: none; border-collapse: collapse; border-radius: 10px; background-color: #f1f1f1; '
-        + 'text-align: center; table-layout:fixed;}\n')
-    print('.aws-table .service {border: none; border-collapse: collapse; font-family: Arial; '
-        + 'font-size: 18px; text-align: center; table-layout:fixed; background-color: #f1f1f1;}\n')
     print('.nfound {border: 10px solid Gold; border-radius: 10px; padding: 10px;}\n')
     print('.found {border: 10px solid LimeGreen; border-radius: 10px; padding: 10px;}\n')
     print('.error {border: 10px solid Red; border-radius: 10px; padding: 10px;}\n')
@@ -63,28 +107,8 @@ def generate_head():
     print('.active, .dCollapse:hover {width: 450px; background-color: #777;}\n')
     print('.content {display: none; overflow: hidden; width: 450px; background-color: #f1f1f1;}\n')
 
-    print(""".popup {position: relative; display: inline-block; cursor: pointer; 
-        -webkit-user-select: none; -ms-user-select: none; user-select: none;}\n""")
-    print(""".popup .popuptext {visibility: hidden; width: 160px; background-color: #555; color: #fff; 
-        text-align: center; border-radius: 6px; padding: 8px 0; position: absolute; z-index: 1; 
-        bottom: 125%; left: 50%; margin-left: -80px;}\n""")
-    print(""".popup .popuptext::after {content: ""; position: absolute; top: 100%; left: 50%; margin-left: -5px; 
-        border-width: 5px; border-style: solid; border-color: #555 transparent transparent transparent;}\n""")
-    print('.popup .show {visibility: visible; -webkit-animation: fadeIn 1s; animation: fadeIn 1s;}\n')
-    print('@-webkit-keyframes fadeIn {from {opacity: 0;} to {opacity: 1;}}\n')
-    print('@keyframes fadeIn {from {opacity: 0;} to {opacity:1 ;}}\n')
-
-    print('#searchInput {\n')
-    print('  background-position: 10px 10px;\n')
-    print('  background-repeat: no-repeat;\n')
-    print('  width: 300px;\n')
-    print('  font-size: 16px;\n')
-    print('  padding: 12px 20px 12px 40px;\n')
-    print('  border: 1px solid #ddd;\n')
-    print('  margin-bottom: 12px;\n')
-    print('}\n')
-    print('</style>\n')
-    print('</head>\n')
+    print(DEFINE_POPUP)
+    print(DEFINE_SEARCHINPUT)
 
 
 def generate_header():
@@ -202,6 +226,15 @@ def generate_popupfunc():
     print('  var popup = document.getElementById("myPopup");\n')
     print('  popup.classList.toggle("show");\n')
     print('}\n')
+
+
+def wrap_popup(result_type, text, id_list):
+    if not result_type == '+++':
+        return text
+    else:
+        return ('<div class="popup" onclick="popup()">' + text + '\n'
+            + '  <span class="popuptext" id="myPopup">' + str(id_list) + '</span>\n'
+            + '</div>\n')
 
 
 def status_switch(arg):

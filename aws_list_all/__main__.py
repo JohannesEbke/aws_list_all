@@ -251,7 +251,7 @@ def main():
             introspect.print_help()
             return 1
     elif args.command == 'print-html':
-        origout = before_content('test.html')
+        origout, url = before_content('test.html')
         if args.directory:
             try:
                 os.makedirs(args.directory)
@@ -269,26 +269,16 @@ def main():
             selected_profile=args.profile,
             unfilter=args.unfilter
         )
-        after_content(origout)
-
-        new = 2
-        path_up = os.path.dirname(os.getcwd())
-        os.chdir(path_up)
-        url = os.getcwd() + "/test.html"
-        webbrowser.open(url,new=new)
+        after_content(origout, url)
     elif args.command == 'compare':
-        origout = before_content('compare.html')
+        origout, url = before_content('compare.html')
         if args.basedir and args.moddir:
             increase_limit_nofiles()
             compare_list_files(
                 args.basedir,
                 args.moddir
             )
-        after_content(origout)
-
-        new = 2
-        url = os.getcwd() + "/compare.html"
-        webbrowser.open(url,new=new)
+        after_content(origout, url)
     elif args.command == 'recreate-caches':
         increase_limit_nofiles()
         recreate_caches(args.update_packaged_values)
