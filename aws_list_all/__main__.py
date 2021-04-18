@@ -12,7 +12,7 @@ from .generate_html import  before_content, after_content
 from .introspection import (
     get_listing_operations, get_services, get_verbs, introspect_regions_for_service, recreate_caches
 )
-from .query import do_list_files, do_query, print_query, compare_list_files
+from .query import do_list_files, do_query, print_query, do_consecutive, compare_list_files
 
 
 def increase_limit_nofiles():
@@ -137,39 +137,44 @@ def main():
     )
     introspecters.add_parser('debug', description='Debug information', help='Debug information')
 
-    # Print the findings from query to an HTML file to be viewed in a browser
-    viewhtml = subparsers.add_parser(
-        'print-html', description='Print a listing to an HTML file to be viewed in a browser',
+    # Combine the features of query and show and optionally print the findings
+    # from query to an HTML file to be viewed in a browser
+    view = subparsers.add_parser(
+        'view', description='Print a listing to an HTML file to be viewed in a browser',
         help='Create browser view of listing'
     )
-    viewhtml.add_argument(
+    view.add_argument(
         '-s',
         '--service',
         action='append',
         help='Restrict querying to the given service (can be specified multiple times)'
     )
-    viewhtml.add_argument(
+    view.add_argument(
         '-r',
         '--region',
         action='append',
         help='Restrict querying to the given region (can be specified multiple times)'
     )
-    viewhtml.add_argument(
+    view.add_argument(
         '-o',
         '--operation',
         action='append',
         help='Restrict querying to the given operation (can be specified multiple times)'
     )
-    viewhtml.add_argument(
+    view.add_argument(
         '-u',
         '--unfilter',
         action='append',
         help='Exclude given default-value filter from being applied (can be specified multiple times)'
     )
-    viewhtml.add_argument('-p', '--parallel', default=32, type=int, help='Number of request to do in parallel')
-    viewhtml.add_argument('-d', '--directory', default='.', help='Directory to save result listings to')
-    viewhtml.add_argument('-v', '--verbose', action='count', help='Print detailed info during run')
-    viewhtml.add_argument('-c', '--profile', help='Use a specific .aws/credentials profile.')
+    view.add_argument('-p', '--parallel', default=32, type=int, help='Number of request to do in parallel')
+    view.add_argument('-d', '--directory', default='.', help='Directory to save result listings to')
+    view.add_argument('-v', '--verbose', action='count', help='Print detailed info during run')
+    view.add_argument('-c', '--profile', help='Use a specific .aws/credentials profile.')
+    view.add_argument('-n', '--not_found', default=False, action='store_true', help='additionally print listing files of resources not found')
+    view.add_argument('-e', '--errors', default=False, action='store_true', help='additionally print listing files of resources where queries resulted in errors')
+    view.add_argument('-b', '--denied', default=False, action='store_true', help='additionally print listing files of resources with "missing permission" errors')
+    view.add_argument('-w', '--html', default=False, action='store_true', help='Print and display the query results in HTML-format')
 
     # Visually compare and display the differences in listings from two directories
     compare = subparsers.add_parser(
@@ -250,8 +255,7 @@ def main():
         else:
             introspect.print_help()
             return 1
-    elif args.command == 'print-html':
-        origout, url = before_content('test.html')
+    elif args.command == 'view':
         if args.directory:
             try:
                 os.makedirs(args.directory)
@@ -260,16 +264,19 @@ def main():
             os.chdir(args.directory)
         increase_limit_nofiles()
         services = args.service or get_services()
-        print_query(
+        do_consecutive(
             services,
             args.region,
             args.operation,
             verbose=args.verbose or 0,
             parallel=args.parallel,
             selected_profile=args.profile,
-            unfilter=args.unfilter
+            unfilter=args.unfilter,
+            not_found=args.not_found,
+            errors=args.errors,
+            denied=args.denied,
+            html=args.html
         )
-        after_content(origout, url)
     elif args.command == 'compare':
         origout, url = before_content('compare.html')
         if args.basedir and args.moddir:

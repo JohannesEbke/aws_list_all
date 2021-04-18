@@ -16,7 +16,9 @@ from sys import stdout
 from time import time
 from traceback import print_exc
 
-from .generate_html import generate_header, generate_table, generate_time_footer, generate_compare_footer
+from .generate_html import (
+    generate_header, generate_table, generate_time_footer, generate_compare_footer, before_content, after_content
+)
 from .introspection import get_listing_operations, get_regions_for_service
 from .listing import RawListing, FilteredListing, ResultListing
 from os.path import dirname
@@ -486,5 +488,22 @@ def verbose_list_files(resource_type, value):
             IDs.append(item.get(idkey, ', '.join(item.keys())))
         else:
             IDs.append(item)
-            
+
     return IDs
+
+def do_consecutive(services, selected_regions=(), selected_operations=(), verbose=0, parallel=32, 
+    selected_profile=None, unfilter=(), not_found=False, errors=False, denied=False, html=False):
+    """ """
+    if html:
+        origout, url = before_content('test.html')
+        print_query(
+            services, selected_regions, selected_operations, verbose,
+            parallel, selected_profile, unfilter
+        )
+        after_content(origout, url)
+    else:
+        do_query(
+            services, selected_regions, selected_operations, verbose,
+            parallel, selected_profile, unfilter
+        )
+        do_list_files(os.listdir(os.getcwd()), verbose, not_found, errors, denied, unfilter)
