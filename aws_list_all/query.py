@@ -4,7 +4,6 @@ import codecs
 import json
 import os
 import sys
-import pprint
 import contextlib
 from collections import defaultdict
 from datetime import datetime
@@ -364,6 +363,22 @@ def acquire_listing(verbose, what):
         return ResultListing(listing, result_type, repr(exc))
 
 
+def show_list_files(filenames, cmp, verbose=0, not_found=False, errors=False, denied=False, html=False, unfilter=()):
+    """Print out a rudimentary summary of the Listing objects contained in the given files"""
+    if cmp != '.':
+        origout, url = before_content('compare.html')
+        compare_list_files(filenames, cmp)
+        after_content(origout, url)
+    elif html:
+        origout, url = before_content('test.html')
+        _, base_regionsorted, base_services = setup_table_headers(dirname(filenames[0]), filenames)
+        generate_header()
+        generate_table(base_regionsorted, base_services)
+        after_content(origout, url)
+    else:
+        do_list_files(filenames, verbose, not_found, errors, denied, unfilter)
+
+
 def compare_list_files(basefiles, modfiles):
     """Compare the saved listing-files from two directories and display the changes from base to mod 
     in HTML-format"""
@@ -421,8 +436,10 @@ def do_list_files(filenames, verbose=0, not_found=False, errors=False, denied=Fa
     """Print out a rudimentary summary of the Listing objects contained in the given files"""
     dir = dirname(filenames[0])
     for listing_filename in filenames:
+        read_file = FilteredListing.from_json(json.load(open(listing_filename, 'rb')))
+        combined_unf = read_file.unfilter if unfilter is None else (read_file.unfilter + unfilter)
         listing = RawListing.from_json(json.load(open(listing_filename, 'rb')))
-        listing_entry = FilteredListing(listing, dir, unfilter)
+        listing_entry = FilteredListing(listing, dir, combined_unf)
         resources = listing_entry.resources
 
         truncated = False
@@ -491,9 +508,9 @@ def verbose_list_files(resource_type, value):
 
     return IDs
 
-def do_consecutive(services, selected_regions=(), selected_operations=(), verbose=0, parallel=32, 
-    selected_profile=None, unfilter=(), not_found=False, errors=False, denied=False, html=False):
-    """ """
+def do_consecutive(services, orig_dir, directory, selected_regions=(), selected_operations=(), verbose=0, 
+    parallel=32, selected_profile=None, unfilter=(), not_found=False, errors=False, denied=False, html=False):
+    """Execute a query and print out the summarized results in succession or display them in HTML format"""
     if html:
         origout, url = before_content('test.html')
         print_query(
@@ -506,4 +523,9 @@ def do_consecutive(services, selected_regions=(), selected_operations=(), verbos
             services, selected_regions, selected_operations, verbose,
             parallel, selected_profile, unfilter
         )
-        do_list_files(os.listdir(os.getcwd()), verbose, not_found, errors, denied, unfilter)
+        os.chdir(orig_dir)
+        filenames = []
+        for fn in os.listdir(directory):
+            filenames.append(directory.replace('./', '') + fn)
+        print('\n-------------------- Summary of saved listings --------------------\n')
+        do_list_files(filenames, verbose, not_found, errors, denied, unfilter)

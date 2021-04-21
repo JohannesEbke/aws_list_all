@@ -139,10 +139,11 @@ def generate_table(results_by_region, services_in_grid):
                 empty_type = True
                 result_type_list = list(filter(lambda x: x.input.service == service_type, sorted(results_by_region[result_region][result_type])))
                 result_type_count = ' [' + str(len(result_type_list)) + ']'
+                diffs_count = diff_count(result_type_list)
                 for result in result_type_list:
                     if empty_type:
                         print('        <button type="button" class="' + status_switch(result_type + 'col') + '">'
-                            + status_switch(result_type + 'box') + result_type_count + '</button>\n')
+                            + status_switch(result_type + 'box') + result_type_count + diffs_count + '</button>\n')
                         print('        <div class="content">\n')
                         empty_type = False
                     diff_color = ''
@@ -235,6 +236,18 @@ def wrap_popup(result_type, text, id_list):
         return ('<div class="popup" onclick="popup()">' + text + '\n'
             + '  <span class="popuptext" id="myPopup">' + str(id_list) + '</span>\n'
             + '</div>\n')
+
+def diff_count(result_list):
+    count_str = '-'
+    counts = defaultdict(int)
+    if not result_list or result_list[0].diff == '':
+        return ''
+    for result in result_list:
+        counts[result.diff] += 1
+    counts.pop('same', None)
+    for count in counts:
+        count_str += str(counts[count]) + ' ' + count[:3] + '-'
+    return ' [' + count_str + ']'
 
 
 def status_switch(arg):

@@ -8,11 +8,10 @@ from resource import getrlimit, setrlimit, RLIMIT_NOFILE
 from argparse import ArgumentParser
 from sys import exit, stderr
 
-from .generate_html import  before_content, after_content
 from .introspection import (
     get_listing_operations, get_services, get_verbs, introspect_regions_for_service, recreate_caches
 )
-from .query import do_list_files, do_query, print_query, do_consecutive, compare_list_files
+from .query import show_list_files, do_query, do_consecutive
 
 
 def increase_limit_nofiles():
@@ -94,7 +93,9 @@ def main():
     show.add_argument('-v', '--verbose', action='count', help='print given listing files with detailed info')
     show.add_argument('-n', '--not_found', default=False, action='store_true', help='additionally print listing files of resources not found')
     show.add_argument('-e', '--errors', default=False, action='store_true', help='additionally print listing files of resources where queries resulted in errors')
-    show.add_argument('-d', '--denied', default=False, action='store_true', help='additionally print listing files of resources with "missing permission" errors')
+    show.add_argument('-b', '--denied', default=False, action='store_true', help='additionally print listing files of resources with "missing permission" errors')
+    show.add_argument('-w', '--html', default=False, action='store_true', help='Print and display the results in HTML-format')
+    show.add_argument('-c', '--cmp', nargs='*', default='.', help='Compare target directory to this and display the results in HTML-format')
     show.add_argument(
         '-u',
         '--unfilter',
@@ -176,13 +177,6 @@ def main():
     view.add_argument('-b', '--denied', default=False, action='store_true', help='additionally print listing files of resources with "missing permission" errors')
     view.add_argument('-w', '--html', default=False, action='store_true', help='Print and display the query results in HTML-format')
 
-    # Visually compare and display the differences in listings from two directories
-    compare = subparsers.add_parser(
-        'compare', description='Compare listings from two different directories', help='Compare saved listings'
-    )
-    compare.add_argument('-b', '--basedir', nargs='*', default='.', help='Listing file(s) used as comparison base')
-    compare.add_argument('-m', '--moddir', nargs='*', default='.', help='Listing file(s) to be compared')
-
     # Finally, refreshing the service/region caches comes last.
     caches = subparsers.add_parser(
         'recreate-caches',
@@ -226,12 +220,14 @@ def main():
     elif args.command == 'show':
         if args.listingfile:
             increase_limit_nofiles()
-            do_list_files(
-                args.listingfile, 
+            show_list_files(
+                args.listingfile,
+                args.cmp,
                 verbose=args.verbose or 0,
                 not_found=args.not_found,
                 errors=args.errors,
                 denied=args.denied,
+                html=args.html,
                 unfilter=args.unfilter
             )
         else:
@@ -256,6 +252,7 @@ def main():
             introspect.print_help()
             return 1
     elif args.command == 'view':
+        orig_dir = os.getcwd()
         if args.directory:
             try:
                 os.makedirs(args.directory)
@@ -266,6 +263,8 @@ def main():
         services = args.service or get_services()
         do_consecutive(
             services,
+            orig_dir,
+            args.directory,
             args.region,
             args.operation,
             verbose=args.verbose or 0,
@@ -277,15 +276,6 @@ def main():
             denied=args.denied,
             html=args.html
         )
-    elif args.command == 'compare':
-        origout, url = before_content('compare.html')
-        if args.basedir and args.moddir:
-            increase_limit_nofiles()
-            compare_list_files(
-                args.basedir,
-                args.moddir
-            )
-        after_content(origout, url)
     elif args.command == 'recreate-caches':
         increase_limit_nofiles()
         recreate_caches(args.update_packaged_values)
