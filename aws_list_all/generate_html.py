@@ -63,8 +63,8 @@ def before_content(name):
     print('<!DOCTYPE html>\n<html>\n')
     generate_head()
     print('<body>\n')
-    url = os.getcwd() + '/' + name
-    return origout, url
+    #url = os.getcwd() + '/' + name
+    return origout, name
 
 
 def after_content(origout, url):

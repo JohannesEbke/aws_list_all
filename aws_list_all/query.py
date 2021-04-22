@@ -363,14 +363,14 @@ def acquire_listing(verbose, what):
         return ResultListing(listing, result_type, repr(exc))
 
 
-def show_list_files(filenames, cmp, verbose=0, not_found=False, errors=False, denied=False, html=False, unfilter=()):
+def show_list_files(filenames, orig_dir, cmp, html, verbose=0, not_found=False, errors=False, denied=False, unfilter=()):
     """Print out a rudimentary summary of the Listing objects contained in the given files"""
     if cmp != '.':
-        origout, url = before_content('compare.html')
+        origout, url = before_content(orig_dir + '/cmp.html')
         compare_list_files(filenames, cmp)
         after_content(origout, url)
     elif html:
-        origout, url = before_content('test.html')
+        origout, url = before_content(orig_dir + '/' + html + '.html')
         _, base_regionsorted, base_services = setup_table_headers(dirname(filenames[0]), filenames)
         generate_header()
         generate_table(base_regionsorted, base_services)
@@ -508,11 +508,11 @@ def verbose_list_files(resource_type, value):
 
     return IDs
 
-def do_consecutive(services, orig_dir, directory, selected_regions=(), selected_operations=(), verbose=0, 
-    parallel=32, selected_profile=None, unfilter=(), not_found=False, errors=False, denied=False, html=False):
+def do_consecutive(services, orig_dir, directory, html, selected_regions=(), selected_operations=(), verbose=0, 
+    parallel=32, selected_profile=None, unfilter=(), not_found=False, errors=False, denied=False):
     """Execute a query and print out the summarized results in succession or display them in HTML format"""
     if html:
-        origout, url = before_content('test.html')
+        origout, url = before_content(orig_dir + '/' + html + '.html')
         print_query(
             services, selected_regions, selected_operations, verbose,
             parallel, selected_profile, unfilter

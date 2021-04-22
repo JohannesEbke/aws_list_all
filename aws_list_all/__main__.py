@@ -94,8 +94,8 @@ def main():
     show.add_argument('-n', '--not_found', default=False, action='store_true', help='additionally print listing files of resources not found')
     show.add_argument('-e', '--errors', default=False, action='store_true', help='additionally print listing files of resources where queries resulted in errors')
     show.add_argument('-b', '--denied', default=False, action='store_true', help='additionally print listing files of resources with "missing permission" errors')
-    show.add_argument('-w', '--html', default=False, action='store_true', help='Print and display the results in HTML-format')
-    show.add_argument('-c', '--cmp', nargs='*', default='.', help='Compare target directory to this and display the results in HTML-format')
+    show.add_argument('-w', '--html', default='', help='Print and display the results in HTML-file with given name')
+    show.add_argument('-c', '--cmp', nargs='*', default='.', help='Compare target directory to this and display the results in HTML-file named cmp.html')
     show.add_argument(
         '-u',
         '--unfilter',
@@ -175,7 +175,7 @@ def main():
     view.add_argument('-n', '--not_found', default=False, action='store_true', help='additionally print listing files of resources not found')
     view.add_argument('-e', '--errors', default=False, action='store_true', help='additionally print listing files of resources where queries resulted in errors')
     view.add_argument('-b', '--denied', default=False, action='store_true', help='additionally print listing files of resources with "missing permission" errors')
-    view.add_argument('-w', '--html', default=False, action='store_true', help='Print and display the query results in HTML-format')
+    view.add_argument('-w', '--html', default='', help='Print and display the query results inside HTML-file with given name')
 
     # Finally, refreshing the service/region caches comes last.
     caches = subparsers.add_parser(
@@ -218,16 +218,18 @@ def main():
             unfilter=args.unfilter
         )
     elif args.command == 'show':
+        orig_dir = os.getcwd()
         if args.listingfile:
             increase_limit_nofiles()
             show_list_files(
                 args.listingfile,
+                orig_dir,
                 args.cmp,
+                args.html,
                 verbose=args.verbose or 0,
                 not_found=args.not_found,
                 errors=args.errors,
                 denied=args.denied,
-                html=args.html,
                 unfilter=args.unfilter
             )
         else:
@@ -265,6 +267,7 @@ def main():
             services,
             orig_dir,
             args.directory,
+            args.html,
             args.region,
             args.operation,
             verbose=args.verbose or 0,
@@ -273,8 +276,7 @@ def main():
             unfilter=args.unfilter,
             not_found=args.not_found,
             errors=args.errors,
-            denied=args.denied,
-            html=args.html
+            denied=args.denied
         )
     elif args.command == 'recreate-caches':
         increase_limit_nofiles()
