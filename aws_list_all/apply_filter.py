@@ -147,10 +147,7 @@ def apply_filters(listing, unfilterList, response, complete):
 
     filter = NextTokenFilter(apply_complete)
     filter.execute(listing, response)
-    apply_complete = filter.complete
+    apply_complete = getattr(filter, 'complete')
 
     return apply_complete
-
-
-
 

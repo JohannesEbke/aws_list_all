@@ -9,18 +9,27 @@ from collections import defaultdict
 from datetime import datetime
 from functools import partial
 from multiprocessing.pool import ThreadPool
+from os import listdir
 from random import shuffle
+from sys import stdout
 from time import time
 from traceback import print_exc
 
+from .generate_html import (
+    generate_header, generate_table, generate_time_footer, generate_compare_footer, html_doc_start, generate_file
+)
 from .introspection import get_listing_operations, get_regions_for_service
 from .listing import RawListing, FilteredListing, ResultListing
-from os.path import dirname;
+from os.path import dirname
 
 RESULT_NOTHING = '---'
 RESULT_SOMETHING = '+++'
 RESULT_ERROR = '!!!'
 RESULT_NO_ACCESS = '>:|'
+
+DIFF_NONE = 'same'
+DIFF_NEW = 'added'
+DIFF_DEL = 'deleted'
 
 DEPENDENT_OPERATIONS = {
     'ListKeys' : 'ListAliases',
@@ -235,6 +244,7 @@ def do_query(services, selected_regions=(), selected_operations=(), verbose=0, p
 
 
 def execute_query(to_run, verbose, parallel, results_by_type):
+    """Execute the queries in the given list and save the results in the given dict sorted by result type"""
     # the `with` block is a workaround for a bug: https://bugs.python.org/issue35629
     with contextlib.closing(ThreadPool(parallel)) as pool:
         for result in pool.imap_unordered(partial(acquire_listing, verbose), to_run):
@@ -245,6 +255,59 @@ def execute_query(to_run, verbose, parallel, results_by_type):
                 print(result.to_tuple[0][-1], end='')
                 sys.stdout.flush()
     return results_by_type
+
+
+def print_query(services, selected_regions=(), selected_operations=(), verbose=0, parallel=32, selected_profile=None, unfilter=()):
+    """For the given services, execute all selected operations (default: all) in selected regions
+    (default: all) and display result in HTML-format"""
+    to_run = []
+    dependencies = {}
+    for service in services:
+        for region in get_regions_for_service(service, selected_regions):
+            for operation in get_listing_operations(service, region, selected_operations, selected_profile):
+                if verbose > 0:
+                    region_name = region or 'n/a'
+                    print('Service: {: <28} | Region: {:<15} | Operation: {}'.format(service, region_name, operation))
+                if operation in DEPENDENT_OPERATIONS:
+                    dependencies[DEPENDENT_OPERATIONS[operation], region] = [service, region, DEPENDENT_OPERATIONS[operation], selected_profile, unfilter]
+                if operation in DEPENDENT_OPERATIONS.values():
+                    dependencies[operation, region] = [service, region, operation, selected_profile, unfilter]
+                    continue
+
+                to_run.append([service, region, operation, selected_profile, unfilter])
+    shuffle(to_run)  # Distribute requests across endpoints
+    results_by_type = defaultdict(list)
+    results_by_region = defaultdict(lambda: defaultdict(list))
+    services_in_grid = set()
+    
+    start = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S GMT")
+
+    results_by_type, results_by_region, services_in_grid = execute_html_query(
+        dependencies.values(), verbose, parallel, results_by_type, results_by_region, services_in_grid)
+    results_by_type, results_by_region, services_in_grid = execute_html_query(
+        to_run, verbose, parallel, results_by_type, results_by_region, services_in_grid)
+    
+    fin = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S GMT")
+    return (
+        generate_header()
+        + generate_table(results_by_region, services_in_grid)
+        + generate_time_footer(start, fin)
+    )    
+
+
+def execute_html_query(to_run, verbose, parallel, typesorted, regionsorted, services):
+    """Execute the queries in the given list and save the results in the given dictionaries 
+    sorted by result type and region"""
+    with contextlib.closing(ThreadPool(parallel)) as pool:
+        for result in pool.imap_unordered(partial(acquire_listing, verbose), to_run):
+            typesorted[result.result_type].append(result)
+            regionsorted[result.input.region][result.result_type].append(result)
+            services.add(result.input.service)
+            if verbose > 1:
+                print('ExecutedQueryResult: {}'.format(result.to_tuple))
+            else:
+                sys.stdout.flush()
+    return [typesorted, regionsorted, services]
 
 
 def acquire_listing(verbose, what):
@@ -262,13 +325,16 @@ def acquire_listing(verbose, what):
             print(what, '...request successful')
             print("timing [success]:", duration, what)
         with open('{}_{}_{}_{}.json'.format(service, operation, region, profile), 'w') as jsonfile:
-                json.dump(listing.to_json(), jsonfile, default=datetime.isoformat)
+                json.dump(listingFile.to_json(), jsonfile, default=datetime.isoformat)
 
         resource_count = listingFile.resource_total_count
         if listingFile.input.error == RESULT_ERROR:
             return ResultListing(listing, RESULT_ERROR, 'Error(Error during processing of resources)')
         if resource_count > 0:
-            return ResultListing(listing, RESULT_SOMETHING, ', '.join(listingFile.resource_types))
+            id_list = []
+            for resource_type, value in listingFile.resources.items():
+                id_list += verbose_list_files(resource_type, value)
+            return ResultListing(listing, RESULT_SOMETHING, ', '.join(listingFile.resource_types), id_list)
         else:
             return ResultListing(listing, RESULT_NOTHING, ', '.join(listingFile.resource_types))
     except Exception as exc:  # pylint:disable=broad-except
@@ -293,17 +359,91 @@ def acquire_listing(verbose, what):
                 result_type = RESULT_NOTHING
 
         listing = RawListing(service, region, operation, {}, profile, result_type)
+        listingFile = FilteredListing(listing, './', unfilter)
         with open('{}_{}_{}_{}.json'.format(service, operation, region, profile), 'w') as jsonfile:
-                json.dump(listing.to_json(), jsonfile, default=datetime.isoformat)
+                json.dump(listingFile.to_json(), jsonfile, default=datetime.isoformat)
         return ResultListing(listing, result_type, repr(exc))
+
+
+def show_list_files(filenames, orig_dir, cmp, html, verbose=0, not_found=False, errors=False, denied=False, unfilter=()):
+    """Print out a rudimentary summary of the Listing objects contained in the given files"""
+    if cmp != '.':
+        content = html_doc_start()
+        content += compare_list_files(filenames, cmp)
+        generate_file(orig_dir, 'cmp', content)
+    elif html:
+        content = html_doc_start()
+        _, base_regionsorted, base_services = setup_table_headers(dirname(filenames[0]), filenames)
+        content += generate_header()
+        content += generate_table(base_regionsorted, base_services)
+        generate_file(orig_dir, html, content)
+    else:
+        do_list_files(filenames, verbose, not_found, errors, denied, unfilter)
+
+
+def compare_list_files(basefiles, modfiles):
+    """Compare the saved listing-files from two directories and display the changes from base to mod 
+    in HTML-format"""
+    basedir = dirname(basefiles[0])
+    moddir = dirname(modfiles[0])
+    base_typesorted, base_regionsorted, base_services = setup_table_headers(basedir, basefiles)
+    mod_typesorted, mod_regionsorted, mod_services = setup_table_headers(moddir, modfiles)
+    diff_regionsorted = defaultdict(lambda: defaultdict(list))
+    diff_services = base_services.union(mod_services)
+
+    for base_region in base_regionsorted:
+        for result_type in base_regionsorted[base_region]:
+            for listing in base_regionsorted[base_region][result_type]:
+                if listing in mod_regionsorted[base_region][result_type]:
+                    diff_regionsorted[base_region][result_type].append(
+                        ResultListing.diffInListing(listing, DIFF_NONE))
+                    mod_regionsorted[base_region][result_type].remove(listing)
+                else:
+                    diff_regionsorted[base_region][result_type].append(
+                        ResultListing.diffInListing(listing, DIFF_DEL))
+
+    for mod_region in mod_regionsorted:
+        for result_type in mod_regionsorted[mod_region]:
+            for listing in mod_regionsorted[mod_region][result_type]:
+                diff_regionsorted[mod_region][result_type].append(
+                    ResultListing.diffInListing(listing, DIFF_NEW))
+
+    return (
+        generate_header()
+        + generate_table(diff_regionsorted, diff_services)
+        + generate_compare_footer(basedir, moddir)
+    )    
+
+
+def setup_table_headers(dir, filenames):
+    """Read the listing results from a given directory and return them inside dictionaries
+    sorted by result type and region"""
+    typesorted = defaultdict(list)
+    regionsorted = defaultdict(lambda: defaultdict(list))
+    services = set()
+    for listing_filename in filenames:
+        read_file = FilteredListing.from_json(json.load(open(listing_filename, 'rb')))
+        listing = RawListing.from_json(json.load(open(listing_filename, 'rb')))
+        listing_entry = FilteredListing(listing, dir, read_file.unfilter)
+        id_list = []
+        if listing_entry.resource_total_count > 0:
+            for resource_type, value in listing_entry.resources.items():
+                id_list += verbose_list_files(resource_type, value)
+        result = ResultListing(listing_entry.input, listing_entry.result_type, '', id_list)
+        typesorted[result.result_type].append(result)
+        regionsorted[result.input.region][result.result_type].append(result)
+        services.add(result.input.service)
+    return [typesorted, regionsorted, services]
 
 
 def do_list_files(filenames, verbose=0, not_found=False, errors=False, denied=False, unfilter=()):
     """Print out a rudimentary summary of the Listing objects contained in the given files"""
     dir = dirname(filenames[0])
     for listing_filename in filenames:
+        read_file = FilteredListing.from_json(json.load(open(listing_filename, 'rb')))
+        combined_unf = read_file.unfilter if unfilter is None else (read_file.unfilter + unfilter)
         listing = RawListing.from_json(json.load(open(listing_filename, 'rb')))
-        listing_entry = FilteredListing(listing, dir, unfilter)
+        listing_entry = FilteredListing(listing, dir, combined_unf)
         resources = listing_entry.resources
 
         truncated = False
@@ -330,35 +470,67 @@ def do_list_files(filenames, verbose=0, not_found=False, errors=False, denied=Fa
             len_string = '> {}'.format(len(value)) if truncated else str(len(value))
             print(listing.service, listing.region, listing.operation, resource_type, len_string)
             if verbose > 0:
-                for item in value:
-                    idkey = None
-                    if isinstance(item, dict):
-                        guesses = [resource_type[:-1] + "Id", "id", "SerialNumber"]
-                        # Find the last uppercase word in the resource_type and construct some guesses from that
-                        uppercase_indices = [i for (i, c) in enumerate(resource_type) if c.isupper()]
-                        if uppercase_indices:
-                            last_word_in_resource_type = resource_type[uppercase_indices[-1]:]
-                            guesses.append(last_word_in_resource_type[:-1] + "Id")
-                            guesses.append(last_word_in_resource_type + "Id")
-                        for guess in guesses:
-                            if guess in item:
-                                idkey = guess
-                                break
-                        if idkey is None:
-                            for heuristic in [
-                                lambda x: x.endswith('Id'),
-                                lambda x: x.endswith('Name'),
-                            ]:
-                                idkeys = [k for k in item.keys() if heuristic(k)]
-                                if idkeys:
-                                    # Heuristic: Shortest ID is probably the Resource ID
-                                    idkeys.sort(key=len)
-                                    idkey = idkeys[0]
-                                    break
-                    if idkey:
-                        print('    - ', item.get(idkey, ', '.join(item.keys())))
-                    else:
-                        print('    - ', item)
+                id_list = verbose_list_files(resource_type, value)
+                for resource_id in id_list:
+                    print('    - ', resource_id)
                 if truncated:
                     print('    - ... (more items, query truncated)')
-                    
+
+
+def verbose_list_files(resource_type, value):
+    """Search and return a list of the resource IDs from a listing-response entry"""
+    IDs = []
+    for item in value:
+        idkey = None
+        if isinstance(item, dict):
+            guesses = [resource_type[:-1] + "Id", "id", "SerialNumber"]
+            # Find the last uppercase word in the resource_type and construct some guesses from that
+            uppercase_indices = [i for (i, c) in enumerate(resource_type) if c.isupper()]
+            if uppercase_indices:
+                last_word_in_resource_type = resource_type[uppercase_indices[-1]:]
+                guesses.append(last_word_in_resource_type[:-1] + "Id")
+                guesses.append(last_word_in_resource_type + "Id")
+            for guess in guesses:
+                if guess in item:
+                    idkey = guess
+                    break
+            if idkey is None:
+                for heuristic in [
+                    lambda x: x.endswith('Id'),
+                    lambda x: x.endswith('Name'),
+                ]:
+                    idkeys = [k for k in item.keys() if heuristic(k)]
+                    if idkeys:
+                        # Heuristic: Shortest ID is probably the Resource ID
+                        idkeys.sort(key=len)
+                        idkey = idkeys[0]
+                        break
+        if idkey:
+            IDs.append(item.get(idkey, ', '.join(item.keys())))
+        else:
+            IDs.append(item)
+
+    return IDs
+
+def do_consecutive(services, orig_dir, directory, html, selected_regions=(), selected_operations=(), verbose=0, 
+    parallel=32, selected_profile=None, unfilter=(), not_found=False, errors=False, denied=False):
+    """Execute a query and print out the summarized results in succession or display them in HTML format"""
+    if html:
+        content = html_doc_start()
+        content += print_query(
+            services, selected_regions, selected_operations, verbose,
+            parallel, selected_profile, unfilter
+        )
+        generate_file(orig_dir, html, content)
+    else:
+        do_query(
+            services, selected_regions, selected_operations, verbose,
+            parallel, selected_profile, unfilter
+        )
+        os.chdir(orig_dir)
+        filenames = []
+        for fn in os.listdir(directory):
+            filenames.append(directory.replace('./', '') + fn)
+        print('\n-------------------- Summary of saved listings --------------------\n')
+        do_list_files(filenames, verbose, not_found, errors, denied, unfilter)
+

@@ -2,6 +2,8 @@
 from __future__ import print_function
 
 import os
+import sys
+import webbrowser
 from resource import getrlimit, setrlimit, RLIMIT_NOFILE
 from argparse import ArgumentParser
 from sys import exit, stderr
@@ -9,7 +11,7 @@ from sys import exit, stderr
 from .introspection import (
     get_listing_operations, get_services, get_verbs, introspect_regions_for_service, recreate_caches
 )
-from .query import do_list_files, do_query
+from .query import show_list_files, do_query, do_consecutive
 
 
 def increase_limit_nofiles():
@@ -91,7 +93,9 @@ def main():
     show.add_argument('-v', '--verbose', action='count', help='print given listing files with detailed info')
     show.add_argument('-n', '--not_found', default=False, action='store_true', help='additionally print listing files of resources not found')
     show.add_argument('-e', '--errors', default=False, action='store_true', help='additionally print listing files of resources where queries resulted in errors')
-    show.add_argument('-d', '--denied', default=False, action='store_true', help='additionally print listing files of resources with "missing permission" errors')
+    show.add_argument('-b', '--denied', default=False, action='store_true', help='additionally print listing files of resources with "missing permission" errors')
+    show.add_argument('-w', '--html', default='', help='Print and display the results in HTML-file with given name')
+    show.add_argument('-c', '--cmp', nargs='*', default='.', help='Compare target directory to this and display the results in HTML-file named cmp.html')
     show.add_argument(
         '-u',
         '--unfilter',
@@ -135,6 +139,45 @@ def main():
     ops.add_argument('-r', '--region', default='us-east-1', help='Region to use to query for listing operations')
     introspecters.add_parser('debug', description='Debug information', help='Debug information')
 
+    # Execute the given queries, save the data and show a summary of the results (query + show),
+    # optionally print the findigs to an HTML table and open it
+    view = subparsers.add_parser(
+        'view', description='Query AWS for resources and show the results in either terminal or browser',
+        help='Query AWS for resources and show the results in either terminal or browser'
+    )
+    view.add_argument(
+        '-s',
+        '--service',
+        action='append',
+        help='Restrict querying to the given service (can be specified multiple times)'
+    )
+    view.add_argument(
+        '-r',
+        '--region',
+        action='append',
+        help='Restrict querying to the given region (can be specified multiple times)'
+    )
+    view.add_argument(
+        '-o',
+        '--operation',
+        action='append',
+        help='Restrict querying to the given operation (can be specified multiple times)'
+    )
+    view.add_argument(
+        '-u',
+        '--unfilter',
+        action='append',
+        help='Exclude given default-value filter from being applied (can be specified multiple times)'
+    )
+    view.add_argument('-p', '--parallel', default=32, type=int, help='Number of request to do in parallel')
+    view.add_argument('-d', '--directory', default='.', help='Directory to save result listings to')
+    view.add_argument('-v', '--verbose', action='count', help='Print detailed info during run')
+    view.add_argument('-c', '--profile', help='Use a specific .aws/credentials profile.')
+    view.add_argument('-n', '--not_found', default=False, action='store_true', help='additionally print listing files of resources not found')
+    view.add_argument('-e', '--errors', default=False, action='store_true', help='additionally print listing files of resources where queries resulted in errors')
+    view.add_argument('-b', '--denied', default=False, action='store_true', help='additionally print listing files of resources with "missing permission" errors')
+    view.add_argument('-w', '--html', default='', help='Print and display the query results inside HTML-file with given name')
+
     # Finally, refreshing the service/region caches comes last.
     caches = subparsers.add_parser(
         'recreate-caches',
@@ -176,10 +219,14 @@ def main():
             unfilter=args.unfilter
         )
     elif args.command == 'show':
+        orig_dir = os.getcwd()
         if args.listingfile:
             increase_limit_nofiles()
-            do_list_files(
-                args.listingfile, 
+            show_list_files(
+                args.listingfile,
+                orig_dir,
+                args.cmp,
+                args.html,
                 verbose=args.verbose or 0,
                 not_found=args.not_found,
                 errors=args.errors,
@@ -207,6 +254,31 @@ def main():
         else:
             introspect.print_help()
             return 1
+    elif args.command == 'view':
+        orig_dir = os.getcwd()
+        if args.directory:
+            try:
+                os.makedirs(args.directory)
+            except OSError:
+                pass
+            os.chdir(args.directory)
+        increase_limit_nofiles()
+        services = args.service or get_services()
+        do_consecutive(
+            services,
+            orig_dir,
+            args.directory,
+            args.html,
+            args.region,
+            args.operation,
+            verbose=args.verbose or 0,
+            parallel=args.parallel,
+            selected_profile=args.profile,
+            unfilter=args.unfilter,
+            not_found=args.not_found,
+            errors=args.errors,
+            denied=args.denied
+        )
     elif args.command == 'recreate-caches':
         increase_limit_nofiles()
         recreate_caches(args.update_packaged_values)
