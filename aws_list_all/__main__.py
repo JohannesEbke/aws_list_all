@@ -138,11 +138,11 @@ def main():
     )
     introspecters.add_parser('debug', description='Debug information', help='Debug information')
 
-    # Combine the features of query and show and optionally print the findings
-    # from query to an HTML file to be viewed in a browser
+    # Execute the given queries, save the data and show a summary of the results (query + show),
+    # optionally print the findigs to an HTML table and open it
     view = subparsers.add_parser(
-        'view', description='Print a listing to an HTML file to be viewed in a browser',
-        help='Create browser view of listing'
+        'view', description='Query AWS for resources and show the results in either terminal or browser',
+        help='Query AWS for resources and show the results in either terminal or browser'
     )
     view.add_argument(
         '-s',

@@ -16,7 +16,7 @@ from time import time
 from traceback import print_exc
 
 from .generate_html import (
-    generate_header, generate_table, generate_time_footer, generate_compare_footer, before_content, after_content
+    generate_header, generate_table, generate_time_footer, generate_compare_footer, html_doc_start, generate_file
 )
 from .introspection import get_listing_operations, get_regions_for_service
 from .listing import RawListing, FilteredListing, ResultListing
@@ -288,9 +288,12 @@ def print_query(services, selected_regions=(), selected_operations=(), verbose=0
         to_run, verbose, parallel, results_by_type, results_by_region, services_in_grid)
     
     fin = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S GMT")
-    generate_header()
-    generate_table(results_by_region, services_in_grid)
-    generate_time_footer(start, fin)
+    return (
+        generate_header()
+        + generate_table(results_by_region, services_in_grid)
+        + generate_time_footer(start, fin)
+    )
+    
 
 
 def execute_html_query(to_run, verbose, parallel, typesorted, regionsorted, services):
@@ -366,15 +369,15 @@ def acquire_listing(verbose, what):
 def show_list_files(filenames, orig_dir, cmp, html, verbose=0, not_found=False, errors=False, denied=False, unfilter=()):
     """Print out a rudimentary summary of the Listing objects contained in the given files"""
     if cmp != '.':
-        origout, url = before_content(orig_dir + '/cmp.html')
-        compare_list_files(filenames, cmp)
-        after_content(origout, url)
+        content = html_doc_start()
+        content += compare_list_files(filenames, cmp)
+        generate_file(orig_dir, 'cmp', content)
     elif html:
-        origout, url = before_content(orig_dir + '/' + html + '.html')
+        content = html_doc_start()
         _, base_regionsorted, base_services = setup_table_headers(dirname(filenames[0]), filenames)
-        generate_header()
-        generate_table(base_regionsorted, base_services)
-        after_content(origout, url)
+        content += generate_header()
+        content += generate_table(base_regionsorted, base_services)
+        generate_file(orig_dir, html, content)
     else:
         do_list_files(filenames, verbose, not_found, errors, denied, unfilter)
 
@@ -406,9 +409,12 @@ def compare_list_files(basefiles, modfiles):
                 diff_regionsorted[mod_region][result_type].append(
                     ResultListing.diffInListing(listing, DIFF_NEW))
 
-    generate_header()
-    generate_table(diff_regionsorted, diff_services)
-    generate_compare_footer(basedir, moddir)
+    return (
+        generate_header()
+        + generate_table(diff_regionsorted, diff_services)
+        + generate_compare_footer(basedir, moddir)
+    )
+    
 
 
 def setup_table_headers(dir, filenames):
@@ -512,12 +518,12 @@ def do_consecutive(services, orig_dir, directory, html, selected_regions=(), sel
     parallel=32, selected_profile=None, unfilter=(), not_found=False, errors=False, denied=False):
     """Execute a query and print out the summarized results in succession or display them in HTML format"""
     if html:
-        origout, url = before_content(orig_dir + '/' + html + '.html')
-        print_query(
+        content = html_doc_start()
+        content += print_query(
             services, selected_regions, selected_operations, verbose,
             parallel, selected_profile, unfilter
         )
-        after_content(origout, url)
+        generate_file(orig_dir, html, content)
     else:
         do_query(
             services, selected_regions, selected_operations, verbose,

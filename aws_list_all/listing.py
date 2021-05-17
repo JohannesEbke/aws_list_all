@@ -4,6 +4,7 @@ import pprint
 import boto3
 import json
 from datetime import datetime
+from functools import total_ordering
 
 from .apply_filter import apply_filters
 from .client import get_client
@@ -276,7 +277,7 @@ class RawListing(object):
 
         return response
 
-
+@total_ordering
 class ResultListing(object):
     """Represents a listing result summary acquired from the function acquire_listing in query.py"""
     def __init__(self, input, result_type, details, id_list=None, diff=''):
@@ -295,35 +296,11 @@ class ResultListing(object):
             self.input.error, self.result_type, self.details, self.id_list, self.diff)
             == (other.input.service, other.input.region, other.input.operation, other.input.profile, 
             other.input.error, other.result_type, other.details, other.id_list, other.diff))
-    
-    def __ne__(self, other):
-        return ((self.input.service, self.input.region, self.input.operation, self.input.profile, 
-            self.input.error, self.result_type, self.details, self.id_list, self.diff) 
-            != (other.input.service, other.input.region, other.input.operation, other.input.profile, 
-            other.input.error, other.result_type, other.details, other.id_list, other.diff))
 
     def __lt__(self, other):
         return ((self.input.service, self.input.region, self.input.operation, self.input.profile, 
             self.input.error, self.result_type, self.details, self.id_list, self.diff) 
             < (other.input.service, other.input.region, other.input.operation, other.input.profile, 
-            other.input.error, other.result_type, other.details, other.id_list, other.diff))
-
-    def __le__(self, other):
-        return ((self.input.service, self.input.region, self.input.operation, self.input.profile, 
-            self.input.error, self.result_type, self.details, self.id_list, self.diff) 
-            <= (other.input.service, other.input.region, other.input.operation, other.input.profile, 
-            other.input.error, other.result_type, other.details, other.id_list, other.diff))
-
-    def __gt__(self, other):
-        return ((self.input.service, self.input.region, self.input.operation, self.input.profile, 
-            self.input.error, self.result_type, self.details, self.id_list, self.diff) 
-            > (other.input.service, other.input.region, other.input.operation, other.input.profile, 
-            other.input.error, other.result_type, other.details, other.id_list, other.diff))
-
-    def __ge__(self, other):
-        return ((self.input.service, self.input.region, self.input.operation, self.input.profile, 
-            self.input.error, self.result_type, self.details, self.id_list, self.diff) 
-            >= (other.input.service, other.input.region, other.input.operation, other.input.profile, 
             other.input.error, other.result_type, other.details, other.id_list, other.diff))
 
     @property

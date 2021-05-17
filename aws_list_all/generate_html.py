@@ -10,13 +10,13 @@ DEFINE_HEADERBAR = """
     .headerbar {overflow: hidden; background-color: #232F3E; position: fixed; top: 0; width: 100%;}
     .headerbar a {float: left; color: #FFFFFF; font-size: 40px; font-family: arial;
         padding: 10px 30px; text-decoration: none;}
-    .headerbar input[type=text] {margin-top: 12px; margin-right: 30px; border: none; float: right;}
+    .headerbar input[type=text] {margin-top: 12px; margin-right: 30px; border: none; float: right;}\n
 """
 
 DEFINE_FOOTER = """
     .footer {overflow: hidden; background-color: #232F3E; position: fixed; bottom: 0; width: 100%;}
     .footer a {float: left; color: #f2f2f2; font-size: 12px; font-family: arial;
-        padding: 5px 5px; text-decoration: none;}
+        padding: 5px 5px; text-decoration: none;}\n
 """
 
 DEFINE_TABLE = """
@@ -29,17 +29,15 @@ DEFINE_TABLE = """
 """
 
 DEFINE_SEARCHINPUT = """
-    #searchInput {\n'
-      background-position: 10px 10px;\n
-      background-repeat: no-repeat;\n
-      width: 300px;\n
-      font-size: 16px;\n
-      padding: 12px 20px 12px 40px;\n
-      border: 1px solid #ddd;\n
-      margin-bottom: 12px;\n
-    }\n
-    </style>\n
-    </head>\n
+    #searchInput {
+      background-position: 10px 10px;
+      background-repeat: no-repeat;
+      width: 300px;
+      font-size: 16px;
+      padding: 12px 20px 12px 40px;
+      border: 1px solid #ddd;
+      margin-bottom: 12px;
+    }
 """
 DEFINE_POPUP = """
     .popup {position: relative; display: inline-block; cursor: pointer; 
@@ -55,86 +53,105 @@ DEFINE_POPUP = """
 """
 
 
-def before_content(name):
-    """Open a file to write HTML-content in and return the original system output and file path"""
+def html_doc_start():
+    """Return a string containing the beginning and head of appropriate html-file"""
+    return (
+        '<!DOCTYPE html>\n'
+        + '<html>\n' 
+        + generate_head()
+        + '<body>\n'
+    )
+
+
+def generate_file(orig_dir, name, content):
+    """Finish writing the HTML-content, create respective file and open it in a browser"""
+    lines = []
+    lines.append(content)
+    lines.append('<script>\n')
+    lines.append(generate_collapsibles())
+    lines.append(generate_searchfunc())
+    lines.append(generate_popupfunc())
+    lines.append('</script>\n')
+    lines.append('\n</body>\n')
+    lines.append('</html>')
+
     origout = sys.stdout
-    f = open(name, 'w')
+    url = orig_dir + '/' + name + '.html'
+    f = open(url, 'w')
     sys.stdout = f
-    print('<!DOCTYPE html>\n<html>\n')
-    generate_head()
-    print('<body>\n')
-    #url = os.getcwd() + '/' + name
-    return origout, name
-
-
-def after_content(origout, url):
-    """Finish writing the currently opened HTML-file, set system output to default and
-    open the file from given url in a browser"""
-    print('<script>\n')
-    generate_collapsibles()
-    generate_searchfunc()
-    generate_popupfunc()
-    print('</script>\n')
-    print('\n</body>\n')
-    print('</html>')
+    print(''.join(lines))
     sys.stdout = origout
-    webbrowser.open(url,new=2)
+    webbrowser.open(url, new=2)
 
 
 def generate_head():
-    print('<head>\n')
-    print('<style>\n')
-    print(DEFINE_HEADERBAR)
-    print(DEFINE_FOOTER)
-    print('.main {margin-top: 70px; margin-bottom: 30px;}')
-    print(DEFINE_TABLE)
+    html_head = []
+    html_head.append('<head>\n')
+    html_head.append('<style>\n')
+    
+    html_head.append(DEFINE_HEADERBAR)
+    html_head.append(DEFINE_FOOTER)
+    html_head.append('.main {margin-top: 70px; margin-bottom: 30px;}\n')
+    html_head.append(DEFINE_TABLE)
 
-    print('.nfound {border: 10px solid Gold; border-radius: 10px; padding: 10px;}\n')
-    print('.found {border: 10px solid LimeGreen; border-radius: 10px; padding: 10px;}\n')
-    print('.error {border: 10px solid Red; border-radius: 10px; padding: 10px;}\n')
-    print('.denied {border: 10px solid DarkOrange; border-radius: 10px; padding: 10px;}\n')
-    print('.nCollapse {background-color: Gold; border-radius: 10px; color: white; cursor: pointer; '
-        + 'padding: 14px; width: 450px; border: none; text-align: center; font-size: 20px;}\n')
-    print('.fCollapse {background-color: LimeGreen; border-radius: 10px; color: white; cursor: pointer; '
-        + 'padding: 14px; width: 450px; border: none; text-align: center; font-size: 20px;}\n')
-    print('.eCollapse {background-color: Red; border-radius: 10px; color: white; cursor: pointer; '
-        + 'padding: 14px; width: 450px; border: none; text-align: center; font-size: 20px;}\n')
-    print('.dCollapse {background-color: DarkOrange; border-radius: 10px; color: white; cursor: pointer; '
-        + 'padding: 14px; width: 450px; border: none; text-align: center; font-size: 20px;}\n')
-    print('.active, .nCollapse:hover {width: 450px; background-color: #777;}\n')
-    print('.active, .fCollapse:hover {width: 450px; background-color: #777;}\n')
-    print('.active, .eCollapse:hover {width: 450px; background-color: #777;}\n')
-    print('.active, .dCollapse:hover {width: 450px; background-color: #777;}\n')
-    print('.content {display: none; overflow: hidden; width: 450px; background-color: #f1f1f1;}\n')
+    html_head.append("""
+        .nfound {border: 10px solid Gold; border-radius: 10px; padding: 10px;}
+        .found {border: 10px solid LimeGreen; border-radius: 10px; padding: 10px;}
+        .error {border: 10px solid Red; border-radius: 10px; padding: 10px;}
+        .denied {border: 10px solid DarkOrange; border-radius: 10px; padding: 10px;}
+        .nCollapse {background-color: Gold; border-radius: 10px; color: white; cursor: pointer; 
+            padding: 14px; width: 450px; border: none; text-align: center; font-size: 20px;}
+        .fCollapse {background-color: LimeGreen; border-radius: 10px; color: white; cursor: pointer; 
+            padding: 14px; width: 450px; border: none; text-align: center; font-size: 20px;}
+        .eCollapse {background-color: Red; border-radius: 10px; color: white; cursor: pointer; 
+            padding: 14px; width: 450px; border: none; text-align: center; font-size: 20px;}
+        .dCollapse {background-color: DarkOrange; border-radius: 10px; color: white; cursor: pointer; 
+            padding: 14px; width: 450px; border: none; text-align: center; font-size: 20px;}
+        .active, .nCollapse:hover {width: 450px; background-color: #777;}
+        .active, .fCollapse:hover {width: 450px; background-color: #777;}
+        .active, .eCollapse:hover {width: 450px; background-color: #777;}
+        .active, .dCollapse:hover {width: 450px; background-color: #777;}
+        .content {display: none; overflow: hidden; width: 450px; background-color: #f1f1f1;}
+    """
+    )
+    html_head.append(DEFINE_POPUP)
+    html_head.append(DEFINE_SEARCHINPUT)
+    html_head.append('</style>\n')
+    html_head.append('</head>\n')
 
-    print(DEFINE_POPUP)
-    print(DEFINE_SEARCHINPUT)
+    return ''.join(html_head)
 
 
 def generate_header():
-    print('<div class="headerbar">')
-    print('  <a href="https://github.com/kntrain/aws_list_all"><b>aws_list_all</b></a>')
-    print('  <div class="searchbar">')
-    print('    <input type="text" id="searchInput" onkeyup="search()" placeholder="FIlter for ...">')
-    print('  </div>')
-    print('</div>')
-    print('<br>')
+    return """
+        <div class="headerbar">
+          <a href="https://github.com/kntrain/aws_list_all"><b>aws_list_all</b></a>
+          <div class="searchbar">
+            <input type="text" id="searchInput" onkeyup="search()" placeholder="FIlter for ...">
+          </div>
+        </div>
+        <br>\n
+    """
 
 
 def generate_table(results_by_region, services_in_grid):
-    print('<div class="main">')
-    print('<table class="aws-table"; id="mainTable"; table-layout:fixed;>')
-    print('    <tr>\n')
-    print('        <th>Service</th>\n')
+    html_table = []
+    html_table.append("""
+        <div class="main">
+        <table class="aws-table"; id="mainTable"; table-layout:fixed;>
+            <tr>
+                <th>Service</th>\n"""
+    )
     for region_column in sorted(results_by_region):
-        print('<th >' + str(region_column) + '</th>\n')
-    print('    </tr>\n')
+        html_table.append('<th >' + str(region_column) + '</th>\n')
+    html_table.append('    </tr>\n')
+
     rest_by_type = defaultdict(list)
     for service_type in sorted(services_in_grid):
-        print('    <tr>\n')
-        print('        <td class="service">' + service_type + '</td>\n')
+        html_table.append('    <tr>\n')
+        html_table.append('        <td class="service">' + service_type + '</td>\n')
         for result_region in sorted(results_by_region):
-            print('        <td width="450">\n')
+            html_table.append('        <td width="450">\n')
             for result_type in ('---', '+++', '>:|', '!!!'):
                 empty_type = True
                 result_type_list = list(filter(lambda x: x.input.service == service_type, sorted(results_by_region[result_region][result_type])))
@@ -142,91 +159,101 @@ def generate_table(results_by_region, services_in_grid):
                 diffs_count = diff_count(result_type_list)
                 for result in result_type_list:
                     if empty_type:
-                        print('        <button type="button" class="' + status_switch(result_type + 'col') + '">'
+                        html_table.append('        <button type="button" class="' + status_switch(result_type + 'col') + '">'
                             + status_switch(result_type + 'box') + result_type_count + diffs_count + '</button>\n')
-                        print('        <div class="content">\n')
+                        html_table.append('        <div class="content">\n')
                         empty_type = False
                     diff_color = ''
                     if result.diff:
                         diff_color = 'style="background-color:' + status_switch(result.diff) + ';"'
-                    print('<div class="' + status_switch(result_type) + '" ' + diff_color + '>')
-                    print(str(result.input.operation))
+                    html_table.append('<div class="' + status_switch(result_type) + '" ' + diff_color + '>')
+                    html_table.append(str(result.input.operation))
                     if result_type == '+++':
-                        print('<p style="font-size:14px;margin:0">')
-                        print(str(result.id_list))
-                        print('</p>')
-                    print('</div>')
+                        html_table.append('<p style="font-size:14px;margin:0">')
+                        html_table.append(str(result.id_list))
+                        html_table.append('</p>')
+                    html_table.append('</div>')
                 if not(empty_type):
-                    print('        </div>')
-            print('        </td>')
-        print('    </tr>\n')
-    print('</table>')
-    print('</div>')
+                    html_table.append('        </div>\n')
+            html_table.append('        </td>')
+        html_table.append('    </tr>\n')
+    html_table.append('</table>\n')
+    html_table.append('</div>\n')
+
+    return ''.join(html_table)
 
 
 def generate_time_footer(start, fin):
-    print('<div class="footer">')
-    print('  <a>Started processing at: ' + '<span style="color: #98FB98">' + start + '</span>'
-        + '; Finished at: ' + '<span style="color: #F08080">' + fin + '</span>' + '</a>')
-    print('</div>')
+    return (
+        '<div class="footer">\n' +
+        '  <a>Started processing at: ' + '<span style="color: #98FB98">' + start + '</span>'
+        + '; Finished at: ' + '<span style="color: #F08080">' + fin + '</span>' + '</a>\n'
+        + '</div>\n'
+    )
 
 
 def generate_compare_footer(base, mod):
-    print('<div class="footer">')
-    print('  <a>Observed changes from: ' + '<span style="color: #98FB98">' + base + '</span>'
-        + '   ---->   To: ' + '<span style="color: #F08080">' + mod + '</span>' + '</a>')
-    print('</div>')
+    return (
+        '<div class="footer">\n' +
+        '  <a>Observed changes from: ' + '<span style="color: #98FB98">' + base + '</span>'
+        + '   ---->   To: ' + '<span style="color: #F08080">' + mod + '</span>' + '</a>\n'
+        + '</div>\n'
+    )
 
 
 def generate_collapsibles():
-    print('var coll = document.querySelectorAll(".nCollapse,.fCollapse,.eCollapse,.dCollapse");')
-    print('var i;\n')
-    print('for (i = 0; i < coll.length; i++) {\n')
-    print('  coll[i].addEventListener("click", function() {\n')
-    print('    this.classList.toggle("active");\n')
-    print('    var content = this.nextElementSibling;\n')
-    print('    if (content.style.display === "block") {\n')
-    print('      content.style.display = "none";\n')
-    print('    } else {\n')
-    print('      content.style.display = "block";\n')
-    print('    }\n')
-    print('  });\n')
-    print('}\n')
+    return """
+        var coll = document.querySelectorAll(".nCollapse,.fCollapse,.eCollapse,.dCollapse");\n
+        var i;\n
+        for (i = 0; i < coll.length; i++) {\n
+          coll[i].addEventListener("click", function() {\n
+            this.classList.toggle("active");\n
+            var content = this.nextElementSibling;\n
+            if (content.style.display === "block") {\n
+              content.style.display = "none";\n
+            } else {\n
+              content.style.display = "block";\n
+            }\n
+          });\n
+        }\n
+    """
 
 
 def generate_searchfunc():
-    print('function search() {\n')
-    print('  var input, filter, table, box, btn, count, el, i, j, btnText, txtValue;\n')
-    print('  input = document.getElementById("searchInput");\n')
-    print('  filter = input.value.toUpperCase();\n')
-    print('  table = document.getElementById("mainTable");\n')
-    print("  box = table.querySelectorAll('.content');\n")
-    print("  btn = table.querySelectorAll('[type=button]');\n")
-    print('  for (i = 0; i < box.length; i++) {\n')
-
-    print("    el = box[i].querySelectorAll('.nfound, .found, .error, .denied');\n")
-    print('    count = 0;\n')
-    print('    for (j = 0; j < el.length; j++) {\n')
-    print('      txtValue = el[j].textContent || el[j].innerText;\n')
-    print('      if (txtValue.toUpperCase().indexOf(filter) > -1) {\n')
-    print('        el[j].style.display = "";\n')
-    print('        count++;\n')
-    print('      } else {\n')
-    print('        el[j].style.display = "none";\n')
-    print('      }\n')
-    print('    }\n')
-    print('    btnText = btn[i].textContent;\n')
-    print('    btn[i].textContent = btnText.substring(0, btnText.indexOf("[") + 1) + count + "]";\n')
-
-    print('  }\n')
-    print('}\n')
+    return """
+        function search() {\n
+          var input, filter, table, box, btn, count, el, i, j, btnText, txtValue;\n
+          input = document.getElementById("searchInput");\n
+          filter = input.value.toUpperCase();\n
+          table = document.getElementById("mainTable");\n
+          box = table.querySelectorAll('.content');\n
+          btn = table.querySelectorAll('[type=button]');\n
+          for (i = 0; i < box.length; i++) {\n
+            el = box[i].querySelectorAll('.nfound, .found, .error, .denied');\n
+            count = 0;\n
+            for (j = 0; j < el.length; j++) {\n
+              txtValue = el[j].textContent || el[j].innerText;\n
+              if (txtValue.toUpperCase().indexOf(filter) > -1) {\n
+                el[j].style.display = "";\n
+                count++;\n
+              } else {\n
+                el[j].style.display = "none";\n
+              }\n
+            }\n
+            btnText = btn[i].textContent;\n
+            btn[i].textContent = btnText.substring(0, btnText.indexOf("[") + 1) + count + "]";\n
+          }\n
+        }\n
+    """
 
 
 def generate_popupfunc():
-    print('function popup() {\n')
-    print('  var popup = document.getElementById("myPopup");\n')
-    print('  popup.classList.toggle("show");\n')
-    print('}\n')
+    return """
+        function popup() {\n
+          var popup = document.getElementById("myPopup");\n
+          popup.classList.toggle("show");\n
+        }\n
+    """
 
 
 def wrap_popup(result_type, text, id_list):
