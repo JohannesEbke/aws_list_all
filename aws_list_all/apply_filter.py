@@ -150,3 +150,4 @@ def apply_filters(listing, unfilterList, response, complete):
     apply_complete = getattr(filter, 'complete')
 
     return apply_complete
+

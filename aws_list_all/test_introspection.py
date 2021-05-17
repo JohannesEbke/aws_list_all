@@ -43,7 +43,6 @@ def test_get_listing_operations():
         'application-autoscaling',
         'budgets',
         'braket',  # TODO: Failure of heuristic, see issue #38
-        'connect',
         'connectparticipant',
         'ebs',
         'ec2-instance-connect',
@@ -82,6 +81,10 @@ def test_get_listing_operations():
         'workdocs',
         'worklink',
         'workmailmessageflow',
+        'connect-contact-lens',
+        'amplifybackend',
+        'sagemaker-featurestore-runtime',
+        'sagemaker-edge',
     }
 
     services_with_no_listings = set()

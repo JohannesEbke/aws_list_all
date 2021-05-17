@@ -292,8 +292,7 @@ def print_query(services, selected_regions=(), selected_operations=(), verbose=0
         generate_header()
         + generate_table(results_by_region, services_in_grid)
         + generate_time_footer(start, fin)
-    )
-    
+    )    
 
 
 def execute_html_query(to_run, verbose, parallel, typesorted, regionsorted, services):
@@ -413,8 +412,7 @@ def compare_list_files(basefiles, modfiles):
         generate_header()
         + generate_table(diff_regionsorted, diff_services)
         + generate_compare_footer(basedir, moddir)
-    )
-    
+    )    
 
 
 def setup_table_headers(dir, filenames):
@@ -535,3 +533,4 @@ def do_consecutive(services, orig_dir, directory, html, selected_regions=(), sel
             filenames.append(directory.replace('./', '') + fn)
         print('\n-------------------- Summary of saved listings --------------------\n')
         do_list_files(filenames, verbose, not_found, errors, denied, unfilter)
+

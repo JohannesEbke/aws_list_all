@@ -4,7 +4,7 @@ import re
 from collections import defaultdict
 from json import load, dump
 from multiprocessing.pool import ThreadPool
-from socket import gethostbyname
+from socket import gethostbyname, gaierror
 
 import boto3
 from pkg_resources import resource_stream, resource_filename
@@ -376,13 +376,33 @@ def get_endpoint_hosts():
     ALL_REGIONS = sorted(EC2_REGIONS | S3_REGIONS)
     ALL_SERVICES = get_services()
 
+    sessions = {region: boto3.Session(region_name=region) for region in ALL_REGIONS}
+    if sessions[ALL_REGIONS[0]].get_credentials() is None:
+        print("WARNING: No credentials available for listing. This means this operation will be EXTREMELY SLOW!")
+        print("WARNING: Try re-running with AWS credentials for a faster listing experience.")
+
     result = {}
     for service in ALL_SERVICES:
         print('  ...looking for {} in all regions...'.format(service))
         result[service] = {}
         for region in ALL_REGIONS:
-            result[service][region] = boto3.Session(region_name=region).client(service).meta.endpoint_url
-
+            meta = sessions[region].client(service).meta
+            # In some services, different operations must access different host prefixes ("api.", "env.").
+            # This means that the endpoint_url itself may not point to any host, defeating our heuristic.
+            # Therefore, we only pick the base URL if at least one operation accesses it, otherwise we pick the
+            # alphabetically first host prefix.
+            endpoint_prefixes = set(
+                meta.service_model.operation_model(op_name).endpoint.get('hostPrefix')
+                for op_name in meta.service_model.operation_names
+                if meta.service_model.operation_model(op_name).endpoint
+            )
+            if None in endpoint_prefixes or not endpoint_prefixes:
+                result[service][region] = meta.endpoint_url
+            else:
+                prefixes = sorted(endpoint_prefixes)
+                print("   Picking {} from host prefixes {}".format(prefixes[0], prefixes))
+                assert meta.endpoint_url.startswith("https://")
+                result[service][region] = "https://" + prefixes[0] + meta.endpoint_url[len("https://"):]
     print('...done.')
     return result
 
@@ -392,7 +412,9 @@ def get_endpoint_ip(service_region_host):
     try:
         result = gethostbyname(host.split('/')[2])
         return (service, region, result)
-    except Exception:
+    except gaierror as ex:
+        if ex.errno != -5:  # -5 is "No address associated with hostname"
+            raise
         return (service, region, None)
 
 

@@ -305,6 +305,7 @@ class ResultListing(object):
 
     @property
     def to_tuple(self):
-        """Return a tiple of strings describing the result of an executed query"""
+        """Return a tuple of strings describing the result of an executed query"""
         return (self.result_type, self.input.service, self.input.region, 
             self.input.operation, self.input.profile, self.details)
+
