@@ -81,6 +81,12 @@ def test_get_listing_operations():
         'connect-contact-lens',
         'sagemaker-featurestore-runtime',
         'sagemaker-edge',
+        'lexv2-runtime',
+        'controltower',
+        'chime-sdk-meetings',
+        'appconfigdata',
+        'rbin',
+        'amplifyuibuilder',
     }
 
     services_with_no_listings = set()
