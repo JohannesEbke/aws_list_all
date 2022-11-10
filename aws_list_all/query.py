@@ -97,6 +97,9 @@ RESULT_IGNORE_ERRORS = {
     'directconnect': {
         'DescribeInterconnects': 'not an authorized Direct Connect partner.',
     },
+    'discovery': {
+        'DescribeExportConfigurations': 'Home Region is not set',
+    },
     'drs': {
         'DescribeJobs': 'Account not initialized',
         'DescribeRecoveryInstances': 'Account not initialized',

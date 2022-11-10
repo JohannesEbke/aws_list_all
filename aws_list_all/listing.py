@@ -215,7 +215,7 @@ class Listing(object):
                 del response['MaxItems']
             del response['Quantity']
 
-        for neutral_thing in ('MaxItems', 'MaxResults', 'Quantity'):
+        for neutral_thing in ('MaxItems', 'MaxResults', 'Quantity', 'requestId'):
             if neutral_thing in response:
                 del response[neutral_thing]
 
@@ -370,8 +370,24 @@ class Listing(object):
                 g for g in response.get('CacheSubnetGroups', []) if g.get('CacheSubnetGroupName') != 'default'
             ]
 
+        # The pinpoint service has a strage way to report results
+        if self.service == 'pinpoint' and self.operation == 'GetRecommenderConfigurations':
+            response['ListRecommenderConfigurationsResponse'] = \
+                response['ListRecommenderConfigurationsResponse']['Item']
+
+        if self.service == 'pinpoint' and self.operation == 'GetRecommenderConfigurations':
+            response['TemplatesResponse'] = response['TemplatesResponse']['Item']
+
         # interpret nextToken in several services
-        if (self.service, self.operation) in (('inspector', 'ListFindings'), ('logs', 'DescribeLogGroups')):
+        if (self.service, self.operation) in (
+                ('applicationcostprofiler', 'ListReportDefinitions'),
+                ('connectcampaigns', 'ListCampaigns'),
+                ('inspector', 'ListFindings'),
+                ('iot-data', 'ListRetainedMessages'),
+                ('logs', 'DescribeLogGroups'),
+                ('signer', 'ListSigningJobs'),
+                ('ssm-incidents', 'ListResponsePlans'),
+           ):
             if response.get('nextToken'):
                 complete = False
                 del response['nextToken']
