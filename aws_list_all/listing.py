@@ -380,14 +380,14 @@ class Listing(object):
 
         # interpret nextToken in several services
         if (self.service, self.operation) in (
-                ('applicationcostprofiler', 'ListReportDefinitions'),
-                ('connectcampaigns', 'ListCampaigns'),
-                ('inspector', 'ListFindings'),
-                ('iot-data', 'ListRetainedMessages'),
-                ('logs', 'DescribeLogGroups'),
-                ('signer', 'ListSigningJobs'),
-                ('ssm-incidents', 'ListResponsePlans'),
-           ):
+            ('applicationcostprofiler', 'ListReportDefinitions'),
+            ('connectcampaigns', 'ListCampaigns'),
+            ('inspector', 'ListFindings'),
+            ('iot-data', 'ListRetainedMessages'),
+            ('logs', 'DescribeLogGroups'),
+            ('signer', 'ListSigningJobs'),
+            ('ssm-incidents', 'ListResponsePlans'),
+        ):
             if response.get('nextToken'):
                 complete = False
                 del response['nextToken']
