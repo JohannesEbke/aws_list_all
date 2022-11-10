@@ -2,15 +2,15 @@ import json
 import pprint
 
 import boto3
-import json
 from datetime import datetime
 from functools import total_ordering
 
 from .apply_filter import apply_filters
 from .client import get_client
-from .resource_filter import *
+# from .resource_filter import *
 
 RESULT_TYPE_LENGTH = 3
+
 
 def get_parameters():
     parameters = {
@@ -67,9 +67,9 @@ def get_parameters():
     }
 
     ssf = list(
-        boto3.Session(
-            region_name='us-east-1'
-        ).client('cloudformation').meta.service_model.shape_for('ListStacksInput').members['StackStatusFilter'].member.enum
+        boto3.Session(region_name='us-east-1'
+                      ).client('cloudformation').meta.service_model.shape_for('ListStacksInput'
+                                                                              ).members['StackStatusFilter'].member.enum
     )
     ssf.remove('DELETE_COMPLETE')
     parameters.setdefault('cloudformation', {})['ListStacks'] = {'StackStatusFilter': ssf}
@@ -111,8 +111,14 @@ class FilteredListing(object):
     @classmethod
     def from_json(cls, data):
         return cls(
-            input=RawListing(data.get('service'), data.get('region'), data.get('operation'),
-                data.get('response'), data.get('profile'), data.get('error'),),
+            input=RawListing(
+                data.get('service'),
+                data.get('region'),
+                data.get('operation'),
+                data.get('response'),
+                data.get('profile'),
+                data.get('error'),
+            ),
             directory=data.get('directory'),
             unfilter=data.get('unfilter')
         )
@@ -150,7 +156,7 @@ class FilteredListing(object):
     @property
     def resources(self):
         """Transform the response data into a dict of resource names to resource listings"""
-        if not(self.input.response):
+        if not (self.input.response):
             return self.input.response.copy()
         response = self.input.response.copy()
         complete = True
@@ -164,7 +170,9 @@ class FilteredListing(object):
         # Special handling for service-level kms keys; derived from alias name.
         if 'kmsListKeys' not in self.unfilter and self.input.service == 'kms' and self.input.operation == 'ListKeys':
             try:
-                aliases_file = '{}_{}_{}_{}.json'.format(self.input.service, 'ListAliases', self.input.region, self.input.profile)
+                aliases_file = '{}_{}_{}_{}.json'.format(
+                    self.input.service, 'ListAliases', self.input.region, self.input.profile
+                )
                 aliases_file = self.directory + '/' + aliases_file
                 aliases_listing = self.from_json(json.load(open(aliases_file, 'rb')))
                 list_aliases = aliases_listing.input.response
@@ -177,9 +185,15 @@ class FilteredListing(object):
                 self.input.error = repr(exc)
 
         # Filter default Internet Gateways
-        if 'ec2InternetGateways' not in self.unfilter and self.input.service == 'ec2' and self.input.operation == 'DescribeInternetGateways':
+        if (
+            'ec2InternetGateways' not in self.unfilter and self.input.service == 'ec2'
+            and self.input.operation == 'DescribeInternetGateways'
+        ):
+
             try:
-                vpcs_file = '{}_{}_{}_{}.json'.format(self.input.service, 'DescribeVpcs', self.input.region, self.input.profile)
+                vpcs_file = '{}_{}_{}_{}.json'.format(
+                    self.input.service, 'DescribeVpcs', self.input.region, self.input.profile
+                )
                 vpcs_file = self.directory + '/' + vpcs_file
                 vpcs_listing = self.from_json(json.load(open(vpcs_file, 'rb')))
                 describe_vpcs = vpcs_listing.input.response
@@ -207,8 +221,11 @@ class FilteredListing(object):
         # Update JSON-file in case an error occurred during resources-processing
         if len(self.input.error) > RESULT_TYPE_LENGTH:
             self.input.error = '!!!'
-            with open('{}_{}_{}_{}.json'.format(
-                self.input.service, self.input.operation, self.input.region, self.input.profile), 'w') as jsonfile:
+            with open(
+                '{}_{}_{}_{}.json'.format(
+                    self.input.service, self.input.operation, self.input.region, self.input.profile
+                ), 'w'
+            ) as jsonfile:
                 json.dump(self.to_json(), jsonfile, default=datetime.isoformat)
 
         return response
@@ -216,6 +233,7 @@ class FilteredListing(object):
 
 class RawListing(object):
     """Represents a listing operation on an AWS service and its result"""
+
     def __init__(self, service, region, operation, response, profile, error=''):
         self.service = service
         self.region = region
@@ -262,13 +280,13 @@ class RawListing(object):
     @property
     def resources(self):  # pylint:disable=too-many-branches
         """Transform the response data into a dict of resource names to resource listings"""
-        if not(self.response):
+        if not (self.response):
             return self.response.copy()
         response = self.response.copy()
         complete = True
 
         del response['ResponseMetadata']
-        #complete = apply_filters(self, response, complete)
+        # complete = apply_filters(self, response, complete)
 
         for key, value in response.items():
             if not isinstance(value, list):
@@ -279,9 +297,11 @@ class RawListing(object):
 
         return response
 
+
 @total_ordering
 class ResultListing(object):
     """Represents a listing result summary acquired from the function acquire_listing in query.py"""
+
     def __init__(self, input, result_type, details, id_list=None, diff=''):
         self.input = input
         self.result_type = result_type
@@ -294,20 +314,27 @@ class ResultListing(object):
         return cls(base.input, base.result_type, base.details, base.id_list, diff)
 
     def __eq__(self, other):
-        return ((self.input.service, self.input.region, self.input.operation, self.input.profile, 
-            self.input.error, self.result_type, self.details, self.id_list, self.diff)
-            == (other.input.service, other.input.region, other.input.operation, other.input.profile, 
-            other.input.error, other.result_type, other.details, other.id_list, other.diff))
+        return ((
+            self.input.service, self.input.region, self.input.operation, self.input.profile, self.input.error,
+            self.result_type, self.details, self.id_list, self.diff
+        ) == (
+            other.input.service, other.input.region, other.input.operation, other.input.profile, other.input.error,
+            other.result_type, other.details, other.id_list, other.diff
+        ))
 
     def __lt__(self, other):
-        return ((self.input.service, self.input.region, self.input.operation, self.input.profile, 
-            self.input.error, self.result_type, self.details, self.id_list, self.diff) 
-            < (other.input.service, other.input.region, other.input.operation, other.input.profile, 
-            other.input.error, other.result_type, other.details, other.id_list, other.diff))
+        return ((
+            self.input.service, self.input.region, self.input.operation, self.input.profile, self.input.error,
+            self.result_type, self.details, self.id_list, self.diff
+        ) < (
+            other.input.service, other.input.region, other.input.operation, other.input.profile, other.input.error,
+            other.result_type, other.details, other.id_list, other.diff
+        ))
 
     @property
     def to_tuple(self):
         """Return a tuple of strings describing the result of an executed query"""
-        return (self.result_type, self.input.service, self.input.region, 
-            self.input.operation, self.input.profile, self.details)
-
+        return (
+            self.result_type, self.input.service, self.input.region, self.input.operation, self.input.profile,
+            self.details
+        )

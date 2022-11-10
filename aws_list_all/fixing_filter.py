@@ -1,11 +1,5 @@
-import json
-import pprint
-
-import boto3
-
-from .client import get_client
-
 class CountFilter:
+
     def __init__(self, complete):
         self.complete = complete
 
@@ -17,7 +11,9 @@ class CountFilter:
                 del response['MaxResults']
             del response['Count']
 
+
 class QuantityFilter:
+
     def __init__(self, complete):
         self.complete = complete
 
@@ -29,13 +25,17 @@ class QuantityFilter:
                 del response['MaxItems']
             del response['Quantity']
 
+
 class NeutralThingFilter:
+
     def execute(self, listing, response):
         for neutral_thing in ('MaxItems', 'MaxResults', 'Quantity'):
             if neutral_thing in response:
                 del response[neutral_thing]
 
+
 class BadThingFilter:
+
     def __init__(self, complete):
         self.complete = complete
 
@@ -49,7 +49,9 @@ class BadThingFilter:
                     self.complete = False
                 del response[bad_thing]
 
+
 class NextTokenFilter:
+
     def __init__(self, complete):
         self.complete = complete
 

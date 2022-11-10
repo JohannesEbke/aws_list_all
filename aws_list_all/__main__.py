@@ -2,8 +2,6 @@
 from __future__ import print_function
 
 import os
-import sys
-import webbrowser
 from resource import getrlimit, setrlimit, RLIMIT_NOFILE
 from argparse import ArgumentParser
 from sys import exit, stderr
@@ -91,11 +89,35 @@ def main():
     )
     show.add_argument('listingfile', nargs='*', help='listing file(s) to load and print')
     show.add_argument('-v', '--verbose', action='count', help='print given listing files with detailed info')
-    show.add_argument('-n', '--not_found', default=False, action='store_true', help='additionally print listing files of resources not found')
-    show.add_argument('-e', '--errors', default=False, action='store_true', help='additionally print listing files of resources where queries resulted in errors')
-    show.add_argument('-b', '--denied', default=False, action='store_true', help='additionally print listing files of resources with "missing permission" errors')
+    show.add_argument(
+        '-n',
+        '--not_found',
+        default=False,
+        action='store_true',
+        help='additionally print listing files of resources not found'
+    )
+    show.add_argument(
+        '-e',
+        '--errors',
+        default=False,
+        action='store_true',
+        help='additionally print listing files of resources where queries resulted in errors'
+    )
+    show.add_argument(
+        '-b',
+        '--denied',
+        default=False,
+        action='store_true',
+        help='additionally print listing files of resources with "missing permission" errors'
+    )
     show.add_argument('-w', '--html', default='', help='Print and display the results in HTML-file with given name')
-    show.add_argument('-c', '--cmp', nargs='*', default='.', help='Compare target directory to this and display the results in HTML-file named cmp.html')
+    show.add_argument(
+        '-c',
+        '--cmp',
+        nargs='*',
+        default='.',
+        help='Compare target directory to this and display the results in HTML-file named cmp.html'
+    )
     show.add_argument(
         '-u',
         '--unfilter',
@@ -142,7 +164,8 @@ def main():
     # Execute the given queries, save the data and show a summary of the results (query + show),
     # optionally print the findigs to an HTML table and open it
     view = subparsers.add_parser(
-        'view', description='Query AWS for resources and show the results in either terminal or browser',
+        'view',
+        description='Query AWS for resources and show the results in either terminal or browser',
         help='Query AWS for resources and show the results in either terminal or browser'
     )
     view.add_argument(
@@ -173,10 +196,30 @@ def main():
     view.add_argument('-d', '--directory', default='.', help='Directory to save result listings to')
     view.add_argument('-v', '--verbose', action='count', help='Print detailed info during run')
     view.add_argument('-c', '--profile', help='Use a specific .aws/credentials profile.')
-    view.add_argument('-n', '--not_found', default=False, action='store_true', help='additionally print listing files of resources not found')
-    view.add_argument('-e', '--errors', default=False, action='store_true', help='additionally print listing files of resources where queries resulted in errors')
-    view.add_argument('-b', '--denied', default=False, action='store_true', help='additionally print listing files of resources with "missing permission" errors')
-    view.add_argument('-w', '--html', default='', help='Print and display the query results inside HTML-file with given name')
+    view.add_argument(
+        '-n',
+        '--not_found',
+        default=False,
+        action='store_true',
+        help='additionally print listing files of resources not found'
+    )
+    view.add_argument(
+        '-e',
+        '--errors',
+        default=False,
+        action='store_true',
+        help='additionally print listing files of resources where queries resulted in errors'
+    )
+    view.add_argument(
+        '-b',
+        '--denied',
+        default=False,
+        action='store_true',
+        help='additionally print listing files of resources with "missing permission" errors'
+    )
+    view.add_argument(
+        '-w', '--html', default='', help='Print and display the query results inside HTML-file with given name'
+    )
 
     # Finally, refreshing the service/region caches comes last.
     caches = subparsers.add_parser(

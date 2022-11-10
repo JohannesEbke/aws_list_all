@@ -313,7 +313,9 @@ PARAMETERS_REQUIRED = {
 
 def get_services():
     """Return a list of all service names where listable resources can be present"""
-    return [service for service in sorted(boto3.Session().get_available_services()) if service not in SERVICE_IGNORE_LIST]
+    return [
+        service for service in sorted(boto3.Session().get_available_services()) if service not in SERVICE_IGNORE_LIST
+    ]
 
 
 def get_verbs(service):

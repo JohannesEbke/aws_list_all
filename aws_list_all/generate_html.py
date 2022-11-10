@@ -1,10 +1,6 @@
-import os
-import sys
 import webbrowser
+import sys
 from collections import defaultdict
-from sys import exit, stderr
-
-from .listing import ResultListing
 
 DEFINE_HEADERBAR = """
     .headerbar {overflow: hidden; background-color: #232F3E; position: fixed; top: 0; width: 100%;}
@@ -20,11 +16,11 @@ DEFINE_FOOTER = """
 """
 
 DEFINE_TABLE = """
-    .aws-table th {border: none; border-collapse: collapse; border-radius: 10px; background-color: #f1f1f1; 
+    .aws-table th {border: none; border-collapse: collapse; border-radius: 10px; background-color: #f1f1f1;
         font-family: Arial; font-size: 20px; padding: 10px; text-align: center; table-layout:fixed;}\n
-    .aws-table td {border: none; border-collapse: collapse; border-radius: 10px; background-color: #f1f1f1; 
+    .aws-table td {border: none; border-collapse: collapse; border-radius: 10px; background-color: #f1f1f1;
         text-align: center; table-layout:fixed;}\n
-    .aws-table .service {border: none; border-collapse: collapse; font-family: Arial; 
+    .aws-table .service {border: none; border-collapse: collapse; font-family: Arial;
         font-size: 18px; text-align: center; table-layout:fixed; background-color: #f1f1f1;}\n
 """
 
@@ -40,12 +36,12 @@ DEFINE_SEARCHINPUT = """
     }
 """
 DEFINE_POPUP = """
-    .popup {position: relative; display: inline-block; cursor: pointer; 
+    .popup {position: relative; display: inline-block; cursor: pointer;
         -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;}\n
-    .popup .popuptext {visibility: hidden; width: 160px; background-color: #555; color: #fff; 
-        text-align: center; border-radius: 6px; padding: 8px 0; position: absolute; z-index: 1; 
+    .popup .popuptext {visibility: hidden; width: 160px; background-color: #555; color: #fff;
+        text-align: center; border-radius: 6px; padding: 8px 0; position: absolute; z-index: 1;
         bottom: 125%; left: 50%; margin-left: -80px;}\n
-    .popup .popuptext::after {content: ""; position: absolute; top: 100%; left: 50%; margin-left: -5px; 
+    .popup .popuptext::after {content: ""; position: absolute; top: 100%; left: 50%; margin-left: -5px;
         border-width: 5px; border-style: solid; border-color: #555 transparent transparent transparent;}\n
     .popup .show {visibility: visible; -webkit-animation: fadeIn 1s; animation: fadeIn 1s;}\n
     @-webkit-keyframes fadeIn {from {opacity: 0;} to {opacity: 1;}}\n
@@ -55,12 +51,7 @@ DEFINE_POPUP = """
 
 def html_doc_start():
     """Return a string containing the beginning and head of appropriate html-file"""
-    return (
-        '<!DOCTYPE html>\n'
-        + '<html>\n' 
-        + generate_head()
-        + '<body>\n'
-    )
+    return ('<!DOCTYPE html>\n' + '<html>\n' + generate_head() + '<body>\n')
 
 
 def generate_file(orig_dir, name, content):
@@ -88,24 +79,25 @@ def generate_head():
     html_head = []
     html_head.append('<head>\n')
     html_head.append('<style>\n')
-    
+
     html_head.append(DEFINE_HEADERBAR)
     html_head.append(DEFINE_FOOTER)
     html_head.append('.main {margin-top: 70px; margin-bottom: 30px;}\n')
     html_head.append(DEFINE_TABLE)
 
-    html_head.append("""
+    html_head.append(
+        """
         .nfound {border: 10px solid Gold; border-radius: 10px; padding: 10px;}
         .found {border: 10px solid LimeGreen; border-radius: 10px; padding: 10px;}
         .error {border: 10px solid Red; border-radius: 10px; padding: 10px;}
         .denied {border: 10px solid DarkOrange; border-radius: 10px; padding: 10px;}
-        .nCollapse {background-color: Gold; border-radius: 10px; color: white; cursor: pointer; 
+        .nCollapse {background-color: Gold; border-radius: 10px; color: white; cursor: pointer;
             padding: 14px; width: 450px; border: none; text-align: center; font-size: 20px;}
-        .fCollapse {background-color: LimeGreen; border-radius: 10px; color: white; cursor: pointer; 
+        .fCollapse {background-color: LimeGreen; border-radius: 10px; color: white; cursor: pointer;
             padding: 14px; width: 450px; border: none; text-align: center; font-size: 20px;}
-        .eCollapse {background-color: Red; border-radius: 10px; color: white; cursor: pointer; 
+        .eCollapse {background-color: Red; border-radius: 10px; color: white; cursor: pointer;
             padding: 14px; width: 450px; border: none; text-align: center; font-size: 20px;}
-        .dCollapse {background-color: DarkOrange; border-radius: 10px; color: white; cursor: pointer; 
+        .dCollapse {background-color: DarkOrange; border-radius: 10px; color: white; cursor: pointer;
             padding: 14px; width: 450px; border: none; text-align: center; font-size: 20px;}
         .active, .nCollapse:hover {width: 450px; background-color: #777;}
         .active, .fCollapse:hover {width: 450px; background-color: #777;}
@@ -136,7 +128,8 @@ def generate_header():
 
 def generate_table(results_by_region, services_in_grid):
     html_table = []
-    html_table.append("""
+    html_table.append(
+        """
         <div class="main">
         <table class="aws-table"; id="mainTable"; table-layout:fixed;>
             <tr>
@@ -146,7 +139,6 @@ def generate_table(results_by_region, services_in_grid):
         html_table.append('<th >' + str(region_column) + '</th>\n')
     html_table.append('    </tr>\n')
 
-    rest_by_type = defaultdict(list)
     for service_type in sorted(services_in_grid):
         html_table.append('    <tr>\n')
         html_table.append('        <td class="service">' + service_type + '</td>\n')
@@ -154,13 +146,20 @@ def generate_table(results_by_region, services_in_grid):
             html_table.append('        <td width="450">\n')
             for result_type in ('---', '+++', '>:|', '!!!'):
                 empty_type = True
-                result_type_list = list(filter(lambda x: x.input.service == service_type, sorted(results_by_region[result_region][result_type])))
+                result_type_list = list(
+                    filter(
+                        lambda x: x.input.service == service_type,
+                        sorted(results_by_region[result_region][result_type])
+                    )
+                )
                 result_type_count = ' [' + str(len(result_type_list)) + ']'
                 diffs_count = diff_count(result_type_list)
                 for result in result_type_list:
                     if empty_type:
-                        html_table.append('        <button type="button" class="' + status_switch(result_type + 'col') + '">'
-                            + status_switch(result_type + 'box') + result_type_count + diffs_count + '</button>\n')
+                        html_table.append(
+                            '        <button type="button" class="' + status_switch(result_type + 'col') + '">' +
+                            status_switch(result_type + 'box') + result_type_count + diffs_count + '</button>\n'
+                        )
                         html_table.append('        <div class="content">\n')
                         empty_type = False
                     diff_color = ''
@@ -173,7 +172,7 @@ def generate_table(results_by_region, services_in_grid):
                         html_table.append(str(result.id_list))
                         html_table.append('</p>')
                     html_table.append('</div>')
-                if not(empty_type):
+                if not (empty_type):
                     html_table.append('        </div>\n')
             html_table.append('        </td>')
         html_table.append('    </tr>\n')
@@ -185,19 +184,15 @@ def generate_table(results_by_region, services_in_grid):
 
 def generate_time_footer(start, fin):
     return (
-        '<div class="footer">\n' +
-        '  <a>Started processing at: ' + '<span style="color: #98FB98">' + start + '</span>'
-        + '; Finished at: ' + '<span style="color: #F08080">' + fin + '</span>' + '</a>\n'
-        + '</div>\n'
+        '<div class="footer">\n' + '  <a>Started processing at: ' + '<span style="color: #98FB98">' + start +
+        '</span>' + '; Finished at: ' + '<span style="color: #F08080">' + fin + '</span>' + '</a>\n' + '</div>\n'
     )
 
 
 def generate_compare_footer(base, mod):
     return (
-        '<div class="footer">\n' +
-        '  <a>Observed changes from: ' + '<span style="color: #98FB98">' + base + '</span>'
-        + '   ---->   To: ' + '<span style="color: #F08080">' + mod + '</span>' + '</a>\n'
-        + '</div>\n'
+        '<div class="footer">\n' + '  <a>Observed changes from: ' + '<span style="color: #98FB98">' + base + '</span>' +
+        '   ---->   To: ' + '<span style="color: #F08080">' + mod + '</span>' + '</a>\n' + '</div>\n'
     )
 
 
@@ -260,9 +255,11 @@ def wrap_popup(result_type, text, id_list):
     if not result_type == '+++':
         return text
     else:
-        return ('<div class="popup" onclick="popup()">' + text + '\n'
-            + '  <span class="popuptext" id="myPopup">' + str(id_list) + '</span>\n'
-            + '</div>\n')
+        return (
+            '<div class="popup" onclick="popup()">' + text + '\n' + '  <span class="popuptext" id="myPopup">' +
+            str(id_list) + '</span>\n' + '</div>\n'
+        )
+
 
 def diff_count(result_list):
     count_str = '-'

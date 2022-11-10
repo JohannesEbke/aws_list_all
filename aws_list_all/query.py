@@ -1,17 +1,14 @@
 from __future__ import print_function
 
-import codecs
 import json
-import os
 import sys
 import contextlib
 from collections import defaultdict
 from datetime import datetime
 from functools import partial
 from multiprocessing.pool import ThreadPool
-from os import listdir
+from os import chdir, listdir
 from random import shuffle
-from sys import stdout
 from time import time
 from traceback import print_exc
 
@@ -32,8 +29,8 @@ DIFF_NEW = 'added'
 DIFF_DEL = 'deleted'
 
 DEPENDENT_OPERATIONS = {
-    'ListKeys' : 'ListAliases',
-    'DescribeInternetGateways' : 'DescribeVpcs',
+    'ListKeys': 'ListAliases',
+    'DescribeInternetGateways': 'DescribeVpcs',
 }
 
 # List of requests with legitimate, persistent errors that indicate that no listable resources are present.
@@ -212,7 +209,9 @@ NOT_AVAILABLE_FOR_ACCOUNT_STRINGS = [
 NOT_AVAILABLE_STRINGS = NOT_AVAILABLE_FOR_REGION_STRINGS + NOT_AVAILABLE_FOR_ACCOUNT_STRINGS
 
 
-def do_query(services, selected_regions=(), selected_operations=(), verbose=0, parallel=32, selected_profile=None, unfilter=()):
+def do_query(
+    services, selected_regions=(), selected_operations=(), verbose=0, parallel=32, selected_profile=None, unfilter=()
+):
     """For the given services, execute all selected operations (default: all) in selected regions
     (default: all)"""
     to_run = []
@@ -225,7 +224,9 @@ def do_query(services, selected_regions=(), selected_operations=(), verbose=0, p
                     region_name = region or 'n/a'
                     print('Service: {: <28} | Region: {:<15} | Operation: {}'.format(service, region_name, operation))
                 if operation in DEPENDENT_OPERATIONS:
-                    dependencies[DEPENDENT_OPERATIONS[operation], region] = [service, region, DEPENDENT_OPERATIONS[operation], selected_profile, unfilter]
+                    dependencies[DEPENDENT_OPERATIONS[operation], region] = [
+                        service, region, DEPENDENT_OPERATIONS[operation], selected_profile, unfilter
+                    ]
                 if operation in DEPENDENT_OPERATIONS.values():
                     dependencies[operation, region] = [service, region, operation, selected_profile, unfilter]
                     continue
@@ -257,7 +258,9 @@ def execute_query(to_run, verbose, parallel, results_by_type):
     return results_by_type
 
 
-def print_query(services, selected_regions=(), selected_operations=(), verbose=0, parallel=32, selected_profile=None, unfilter=()):
+def print_query(
+    services, selected_regions=(), selected_operations=(), verbose=0, parallel=32, selected_profile=None, unfilter=()
+):
     """For the given services, execute all selected operations (default: all) in selected regions
     (default: all) and display result in HTML-format"""
     to_run = []
@@ -269,7 +272,9 @@ def print_query(services, selected_regions=(), selected_operations=(), verbose=0
                     region_name = region or 'n/a'
                     print('Service: {: <28} | Region: {:<15} | Operation: {}'.format(service, region_name, operation))
                 if operation in DEPENDENT_OPERATIONS:
-                    dependencies[DEPENDENT_OPERATIONS[operation], region] = [service, region, DEPENDENT_OPERATIONS[operation], selected_profile, unfilter]
+                    dependencies[DEPENDENT_OPERATIONS[operation], region] = [
+                        service, region, DEPENDENT_OPERATIONS[operation], selected_profile, unfilter
+                    ]
                 if operation in DEPENDENT_OPERATIONS.values():
                     dependencies[operation, region] = [service, region, operation, selected_profile, unfilter]
                     continue
@@ -279,24 +284,22 @@ def print_query(services, selected_regions=(), selected_operations=(), verbose=0
     results_by_type = defaultdict(list)
     results_by_region = defaultdict(lambda: defaultdict(list))
     services_in_grid = set()
-    
+
     start = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S GMT")
 
     results_by_type, results_by_region, services_in_grid = execute_html_query(
-        dependencies.values(), verbose, parallel, results_by_type, results_by_region, services_in_grid)
+        dependencies.values(), verbose, parallel, results_by_type, results_by_region, services_in_grid
+    )
     results_by_type, results_by_region, services_in_grid = execute_html_query(
-        to_run, verbose, parallel, results_by_type, results_by_region, services_in_grid)
-    
+        to_run, verbose, parallel, results_by_type, results_by_region, services_in_grid
+    )
+
     fin = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S GMT")
-    return (
-        generate_header()
-        + generate_table(results_by_region, services_in_grid)
-        + generate_time_footer(start, fin)
-    )    
+    return (generate_header() + generate_table(results_by_region, services_in_grid) + generate_time_footer(start, fin))
 
 
 def execute_html_query(to_run, verbose, parallel, typesorted, regionsorted, services):
-    """Execute the queries in the given list and save the results in the given dictionaries 
+    """Execute the queries in the given list and save the results in the given dictionaries
     sorted by result type and region"""
     with contextlib.closing(ThreadPool(parallel)) as pool:
         for result in pool.imap_unordered(partial(acquire_listing, verbose), to_run):
@@ -325,7 +328,7 @@ def acquire_listing(verbose, what):
             print(what, '...request successful')
             print("timing [success]:", duration, what)
         with open('{}_{}_{}_{}.json'.format(service, operation, region, profile), 'w') as jsonfile:
-                json.dump(listingFile.to_json(), jsonfile, default=datetime.isoformat)
+            json.dump(listingFile.to_json(), jsonfile, default=datetime.isoformat)
 
         resource_count = listingFile.resource_total_count
         if listingFile.input.error == RESULT_ERROR:
@@ -361,11 +364,13 @@ def acquire_listing(verbose, what):
         listing = RawListing(service, region, operation, {}, profile, result_type)
         listingFile = FilteredListing(listing, './', unfilter)
         with open('{}_{}_{}_{}.json'.format(service, operation, region, profile), 'w') as jsonfile:
-                json.dump(listingFile.to_json(), jsonfile, default=datetime.isoformat)
+            json.dump(listingFile.to_json(), jsonfile, default=datetime.isoformat)
         return ResultListing(listing, result_type, repr(exc))
 
 
-def show_list_files(filenames, orig_dir, cmp, html, verbose=0, not_found=False, errors=False, denied=False, unfilter=()):
+def show_list_files(
+    filenames, orig_dir, cmp, html, verbose=0, not_found=False, errors=False, denied=False, unfilter=()
+):
     """Print out a rudimentary summary of the Listing objects contained in the given files"""
     if cmp != '.':
         content = html_doc_start()
@@ -382,7 +387,7 @@ def show_list_files(filenames, orig_dir, cmp, html, verbose=0, not_found=False, 
 
 
 def compare_list_files(basefiles, modfiles):
-    """Compare the saved listing-files from two directories and display the changes from base to mod 
+    """Compare the saved listing-files from two directories and display the changes from base to mod
     in HTML-format"""
     basedir = dirname(basefiles[0])
     moddir = dirname(modfiles[0])
@@ -395,24 +400,19 @@ def compare_list_files(basefiles, modfiles):
         for result_type in base_regionsorted[base_region]:
             for listing in base_regionsorted[base_region][result_type]:
                 if listing in mod_regionsorted[base_region][result_type]:
-                    diff_regionsorted[base_region][result_type].append(
-                        ResultListing.diffInListing(listing, DIFF_NONE))
+                    diff_regionsorted[base_region][result_type].append(ResultListing.diffInListing(listing, DIFF_NONE))
                     mod_regionsorted[base_region][result_type].remove(listing)
                 else:
-                    diff_regionsorted[base_region][result_type].append(
-                        ResultListing.diffInListing(listing, DIFF_DEL))
+                    diff_regionsorted[base_region][result_type].append(ResultListing.diffInListing(listing, DIFF_DEL))
 
     for mod_region in mod_regionsorted:
         for result_type in mod_regionsorted[mod_region]:
             for listing in mod_regionsorted[mod_region][result_type]:
-                diff_regionsorted[mod_region][result_type].append(
-                    ResultListing.diffInListing(listing, DIFF_NEW))
+                diff_regionsorted[mod_region][result_type].append(ResultListing.diffInListing(listing, DIFF_NEW))
 
     return (
-        generate_header()
-        + generate_table(diff_regionsorted, diff_services)
-        + generate_compare_footer(basedir, moddir)
-    )    
+        generate_header() + generate_table(diff_regionsorted, diff_services) + generate_compare_footer(basedir, moddir)
+    )
 
 
 def setup_table_headers(dir, filenames):
@@ -512,25 +512,34 @@ def verbose_list_files(resource_type, value):
 
     return IDs
 
-def do_consecutive(services, orig_dir, directory, html, selected_regions=(), selected_operations=(), verbose=0, 
-    parallel=32, selected_profile=None, unfilter=(), not_found=False, errors=False, denied=False):
+
+def do_consecutive(
+    services,
+    orig_dir,
+    directory,
+    html,
+    selected_regions=(),
+    selected_operations=(),
+    verbose=0,
+    parallel=32,
+    selected_profile=None,
+    unfilter=(),
+    not_found=False,
+    errors=False,
+    denied=False
+):
     """Execute a query and print out the summarized results in succession or display them in HTML format"""
     if html:
         content = html_doc_start()
         content += print_query(
-            services, selected_regions, selected_operations, verbose,
-            parallel, selected_profile, unfilter
+            services, selected_regions, selected_operations, verbose, parallel, selected_profile, unfilter
         )
         generate_file(orig_dir, html, content)
     else:
-        do_query(
-            services, selected_regions, selected_operations, verbose,
-            parallel, selected_profile, unfilter
-        )
-        os.chdir(orig_dir)
+        do_query(services, selected_regions, selected_operations, verbose, parallel, selected_profile, unfilter)
+        chdir(orig_dir)
         filenames = []
-        for fn in os.listdir(directory):
+        for fn in listdir(directory):
             filenames.append(directory.replace('./', '') + fn)
         print('\n-------------------- Summary of saved listings --------------------\n')
         do_list_files(filenames, verbose, not_found, errors, denied, unfilter)
-
