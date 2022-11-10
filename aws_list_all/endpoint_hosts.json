@@ -33,6 +33,9 @@
         "eu-central-1": [
             "https://access-analyzer.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://access-analyzer.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://access-analyzer.eu-north-1.amazonaws.com"
         ],
@@ -102,6 +105,9 @@
             "https://account.us-east-1.amazonaws.com"
         ],
         "eu-central-1": [
+            "https://account.us-east-1.amazonaws.com"
+        ],
+        "eu-central-2": [
             "https://account.us-east-1.amazonaws.com"
         ],
         "eu-north-1": [
@@ -175,6 +181,9 @@
         "eu-central-1": [
             "https://acm.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://acm.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://acm.eu-north-1.amazonaws.com"
         ],
@@ -245,6 +254,9 @@
         ],
         "eu-central-1": [
             "https://acm-pca.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://acm-pca.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://acm-pca.eu-north-1.amazonaws.com"
@@ -317,6 +329,9 @@
         "eu-central-1": [
             "https://aps.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://aps.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://aps.eu-north-1.amazonaws.com"
         ],
@@ -387,6 +402,9 @@
         ],
         "eu-central-1": [
             "https://amplify.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://amplify.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://amplify.eu-north-1.amazonaws.com"
@@ -459,6 +477,9 @@
         "eu-central-1": [
             "https://amplifybackend.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://amplifybackend.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://amplifybackend.eu-north-1.amazonaws.com"
         ],
@@ -529,6 +550,9 @@
         ],
         "eu-central-1": [
             "https://amplifyuibuilder.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://amplifyuibuilder.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://amplifyuibuilder.eu-north-1.amazonaws.com"
@@ -601,6 +625,9 @@
         "eu-central-1": [
             "https://apigateway.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://apigateway.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://apigateway.eu-north-1.amazonaws.com"
         ],
@@ -671,6 +698,9 @@
         ],
         "eu-central-1": [
             "https://apigateway.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://apigateway.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://apigateway.eu-north-1.amazonaws.com"
@@ -743,6 +773,9 @@
         "eu-central-1": [
             "https://appconfig.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://appconfig.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://appconfig.eu-north-1.amazonaws.com"
         ],
@@ -813,6 +846,9 @@
         ],
         "eu-central-1": [
             "https://appconfigdata.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://appconfigdata.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://appconfigdata.eu-north-1.amazonaws.com"
@@ -885,6 +921,9 @@
         "eu-central-1": [
             "https://appflow.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://appflow.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://appflow.eu-north-1.amazonaws.com"
         ],
@@ -955,6 +994,9 @@
         ],
         "eu-central-1": [
             "https://app-integrations.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://app-integrations.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://app-integrations.eu-north-1.amazonaws.com"
@@ -1027,6 +1069,9 @@
         "eu-central-1": [
             "https://application-autoscaling.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://application-autoscaling.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://application-autoscaling.eu-north-1.amazonaws.com"
         ],
@@ -1097,6 +1142,9 @@
         ],
         "eu-central-1": [
             "https://applicationinsights.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://applicationinsights.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://applicationinsights.eu-north-1.amazonaws.com"
@@ -1169,6 +1217,9 @@
         "eu-central-1": [
             "https://application-cost-profiler.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://application-cost-profiler.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://application-cost-profiler.eu-north-1.amazonaws.com"
         ],
@@ -1239,6 +1290,9 @@
         ],
         "eu-central-1": [
             "https://appmesh.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://appmesh.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://appmesh.eu-north-1.amazonaws.com"
@@ -1311,6 +1365,9 @@
         "eu-central-1": [
             "https://apprunner.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://apprunner.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://apprunner.eu-north-1.amazonaws.com"
         ],
@@ -1381,6 +1438,9 @@
         ],
         "eu-central-1": [
             "https://appstream2.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://appstream2.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://appstream2.eu-north-1.amazonaws.com"
@@ -1453,6 +1513,9 @@
         "eu-central-1": [
             "https://appsync.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://appsync.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://appsync.eu-north-1.amazonaws.com"
         ],
@@ -1523,6 +1586,9 @@
         ],
         "eu-central-1": [
             "https://athena.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://athena.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://athena.eu-north-1.amazonaws.com"
@@ -1595,6 +1661,9 @@
         "eu-central-1": [
             "https://auditmanager.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://auditmanager.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://auditmanager.eu-north-1.amazonaws.com"
         ],
@@ -1665,6 +1734,9 @@
         ],
         "eu-central-1": [
             "https://autoscaling.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://autoscaling.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://autoscaling.eu-north-1.amazonaws.com"
@@ -1737,6 +1809,9 @@
         "eu-central-1": [
             "https://autoscaling-plans.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://autoscaling-plans.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://autoscaling-plans.eu-north-1.amazonaws.com"
         ],
@@ -1807,6 +1882,9 @@
         ],
         "eu-central-1": [
             "https://backup.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://backup.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://backup.eu-north-1.amazonaws.com"
@@ -1879,6 +1957,9 @@
         "eu-central-1": [
             "https://backup-gateway.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://backup-gateway.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://backup-gateway.eu-north-1.amazonaws.com"
         ],
@@ -1916,77 +1997,6 @@
             "https://backup-gateway.us-west-2.amazonaws.com"
         ]
     },
-    "backupstorage": {
-        "af-south-1": [
-            "https://backupstorage.af-south-1.amazonaws.com"
-        ],
-        "ap-east-1": [
-            "https://backupstorage.ap-east-1.amazonaws.com"
-        ],
-        "ap-northeast-1": [
-            "https://backupstorage.ap-northeast-1.amazonaws.com"
-        ],
-        "ap-northeast-2": [
-            "https://backupstorage.ap-northeast-2.amazonaws.com"
-        ],
-        "ap-northeast-3": [
-            "https://backupstorage.ap-northeast-3.amazonaws.com"
-        ],
-        "ap-south-1": [
-            "https://backupstorage.ap-south-1.amazonaws.com"
-        ],
-        "ap-southeast-1": [
-            "https://backupstorage.ap-southeast-1.amazonaws.com"
-        ],
-        "ap-southeast-2": [
-            "https://backupstorage.ap-southeast-2.amazonaws.com"
-        ],
-        "ap-southeast-3": [
-            "https://backupstorage.ap-southeast-3.amazonaws.com"
-        ],
-        "ca-central-1": [
-            "https://backupstorage.ca-central-1.amazonaws.com"
-        ],
-        "eu-central-1": [
-            "https://backupstorage.eu-central-1.amazonaws.com"
-        ],
-        "eu-north-1": [
-            "https://backupstorage.eu-north-1.amazonaws.com"
-        ],
-        "eu-south-1": [
-            "https://backupstorage.eu-south-1.amazonaws.com"
-        ],
-        "eu-west-1": [
-            "https://backupstorage.eu-west-1.amazonaws.com"
-        ],
-        "eu-west-2": [
-            "https://backupstorage.eu-west-2.amazonaws.com"
-        ],
-        "eu-west-3": [
-            "https://backupstorage.eu-west-3.amazonaws.com"
-        ],
-        "me-central-1": [
-            "https://backupstorage.me-central-1.amazonaws.com"
-        ],
-        "me-south-1": [
-            "https://backupstorage.me-south-1.amazonaws.com"
-        ],
-        "sa-east-1": [
-            "https://backupstorage.sa-east-1.amazonaws.com"
-        ],
-        "us-east-1": [
-            "https://backupstorage.us-east-1.amazonaws.com"
-        ],
-        "us-east-2": [
-            "https://backupstorage.us-east-2.amazonaws.com"
-        ],
-        "us-west-1": [
-            "https://backupstorage.us-west-1.amazonaws.com"
-        ],
-        "us-west-2": [
-            "https://backupstorage.us-west-2.amazonaws.com"
-        ]
-    },
     "batch": {
         "af-south-1": [
             "https://batch.af-south-1.amazonaws.com"
@@ -2020,6 +2030,9 @@
         ],
         "eu-central-1": [
             "https://batch.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://batch.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://batch.eu-north-1.amazonaws.com"
@@ -2090,6 +2103,9 @@
             "https://billingconductor.us-east-1.amazonaws.com"
         ],
         "eu-central-1": [
+            "https://billingconductor.us-east-1.amazonaws.com"
+        ],
+        "eu-central-2": [
             "https://billingconductor.us-east-1.amazonaws.com"
         ],
         "eu-north-1": [
@@ -2163,6 +2179,9 @@
         "eu-central-1": [
             "https://braket.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://braket.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://braket.eu-north-1.amazonaws.com"
         ],
@@ -2234,6 +2253,9 @@
         "eu-central-1": [
             "https://budgets.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://budgets.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://budgets.amazonaws.com"
         ],
@@ -2303,6 +2325,9 @@
             "https://ce.us-east-1.amazonaws.com"
         ],
         "eu-central-1": [
+            "https://ce.us-east-1.amazonaws.com"
+        ],
+        "eu-central-2": [
             "https://ce.us-east-1.amazonaws.com"
         ],
         "eu-north-1": [
@@ -2384,6 +2409,10 @@
             "https://messaging-chime.us-east-1.amazonaws.com"
         ],
         "eu-central-1": [
+            "https://identity-chime.us-east-1.amazonaws.com",
+            "https://messaging-chime.us-east-1.amazonaws.com"
+        ],
+        "eu-central-2": [
             "https://identity-chime.us-east-1.amazonaws.com",
             "https://messaging-chime.us-east-1.amazonaws.com"
         ],
@@ -2470,6 +2499,9 @@
         "eu-central-1": [
             "https://identity-chime.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://identity-chime.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://identity-chime.eu-north-1.amazonaws.com"
         ],
@@ -2540,6 +2572,9 @@
         ],
         "eu-central-1": [
             "https://media-pipelines-chime.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://media-pipelines-chime.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://media-pipelines-chime.eu-north-1.amazonaws.com"
@@ -2612,6 +2647,9 @@
         "eu-central-1": [
             "https://meetings-chime.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://meetings-chime.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://meetings-chime.eu-north-1.amazonaws.com"
         ],
@@ -2682,6 +2720,9 @@
         ],
         "eu-central-1": [
             "https://messaging-chime.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://messaging-chime.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://messaging-chime.eu-north-1.amazonaws.com"
@@ -2754,6 +2795,9 @@
         "eu-central-1": [
             "https://cloud9.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://cloud9.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://cloud9.eu-north-1.amazonaws.com"
         ],
@@ -2824,6 +2868,9 @@
         ],
         "eu-central-1": [
             "https://cloudcontrolapi.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://cloudcontrolapi.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://cloudcontrolapi.eu-north-1.amazonaws.com"
@@ -2896,6 +2943,9 @@
         "eu-central-1": [
             "https://clouddirectory.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://clouddirectory.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://clouddirectory.eu-north-1.amazonaws.com"
         ],
@@ -2967,6 +3017,9 @@
         "eu-central-1": [
             "https://cloudformation.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://cloudformation.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://cloudformation.eu-north-1.amazonaws.com"
         ],
@@ -3036,6 +3089,9 @@
             "https://cloudfront.amazonaws.com"
         ],
         "eu-central-1": [
+            "https://cloudfront.amazonaws.com"
+        ],
+        "eu-central-2": [
             "https://cloudfront.amazonaws.com"
         ],
         "eu-north-1": [
@@ -3109,6 +3165,9 @@
         "eu-central-1": [
             "https://cloudhsm.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://cloudhsm.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://cloudhsm.eu-north-1.amazonaws.com"
         ],
@@ -3179,6 +3238,9 @@
         ],
         "eu-central-1": [
             "https://cloudhsmv2.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://cloudhsmv2.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://cloudhsmv2.eu-north-1.amazonaws.com"
@@ -3251,6 +3313,9 @@
         "eu-central-1": [
             "https://cloudsearch.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://cloudsearch.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://cloudsearch.eu-north-1.amazonaws.com"
         ],
@@ -3321,6 +3386,9 @@
         ],
         "eu-central-1": [
             "https://cloudtrail.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://cloudtrail.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://cloudtrail.eu-north-1.amazonaws.com"
@@ -3393,6 +3461,9 @@
         "eu-central-1": [
             "https://monitoring.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://monitoring.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://monitoring.eu-north-1.amazonaws.com"
         ],
@@ -3463,6 +3534,9 @@
         ],
         "eu-central-1": [
             "https://codeartifact.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://codeartifact.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://codeartifact.eu-north-1.amazonaws.com"
@@ -3535,6 +3609,9 @@
         "eu-central-1": [
             "https://codebuild.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://codebuild.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://codebuild.eu-north-1.amazonaws.com"
         ],
@@ -3605,6 +3682,9 @@
         ],
         "eu-central-1": [
             "https://codecommit.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://codecommit.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://codecommit.eu-north-1.amazonaws.com"
@@ -3677,6 +3757,9 @@
         "eu-central-1": [
             "https://codedeploy.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://codedeploy.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://codedeploy.eu-north-1.amazonaws.com"
         ],
@@ -3747,6 +3830,9 @@
         ],
         "eu-central-1": [
             "https://codeguru-reviewer.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://codeguru-reviewer.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://codeguru-reviewer.eu-north-1.amazonaws.com"
@@ -3819,6 +3905,9 @@
         "eu-central-1": [
             "https://codeguru-profiler.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://codeguru-profiler.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://codeguru-profiler.eu-north-1.amazonaws.com"
         ],
@@ -3889,6 +3978,9 @@
         ],
         "eu-central-1": [
             "https://codepipeline.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://codepipeline.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://codepipeline.eu-north-1.amazonaws.com"
@@ -3961,6 +4053,9 @@
         "eu-central-1": [
             "https://codestar.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://codestar.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://codestar.eu-north-1.amazonaws.com"
         ],
@@ -4031,6 +4126,9 @@
         ],
         "eu-central-1": [
             "https://codestar-connections.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://codestar-connections.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://codestar-connections.eu-north-1.amazonaws.com"
@@ -4103,6 +4201,9 @@
         "eu-central-1": [
             "https://codestar-notifications.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://codestar-notifications.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://codestar-notifications.eu-north-1.amazonaws.com"
         ],
@@ -4173,6 +4274,9 @@
         ],
         "eu-central-1": [
             "https://cognito-identity.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://cognito-identity.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://cognito-identity.eu-north-1.amazonaws.com"
@@ -4245,6 +4349,9 @@
         "eu-central-1": [
             "https://cognito-idp.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://cognito-idp.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://cognito-idp.eu-north-1.amazonaws.com"
         ],
@@ -4315,6 +4422,9 @@
         ],
         "eu-central-1": [
             "https://cognito-sync.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://cognito-sync.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://cognito-sync.eu-north-1.amazonaws.com"
@@ -4387,6 +4497,9 @@
         "eu-central-1": [
             "https://comprehend.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://comprehend.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://comprehend.eu-north-1.amazonaws.com"
         ],
@@ -4457,6 +4570,9 @@
         ],
         "eu-central-1": [
             "https://comprehendmedical.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://comprehendmedical.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://comprehendmedical.eu-north-1.amazonaws.com"
@@ -4529,6 +4645,9 @@
         "eu-central-1": [
             "https://compute-optimizer.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://compute-optimizer.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://compute-optimizer.eu-north-1.amazonaws.com"
         ],
@@ -4599,6 +4718,9 @@
         ],
         "eu-central-1": [
             "https://config.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://config.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://config.eu-north-1.amazonaws.com"
@@ -4671,6 +4793,9 @@
         "eu-central-1": [
             "https://connect.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://connect.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://connect.eu-north-1.amazonaws.com"
         ],
@@ -4741,6 +4866,9 @@
         ],
         "eu-central-1": [
             "https://contact-lens.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://contact-lens.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://contact-lens.eu-north-1.amazonaws.com"
@@ -4813,6 +4941,9 @@
         "eu-central-1": [
             "https://connect-campaigns.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://connect-campaigns.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://connect-campaigns.eu-north-1.amazonaws.com"
         ],
@@ -4883,6 +5014,9 @@
         ],
         "eu-central-1": [
             "https://cases.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://cases.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://cases.eu-north-1.amazonaws.com"
@@ -4955,6 +5089,9 @@
         "eu-central-1": [
             "https://participant.connect.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://participant.connect.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://participant.connect.eu-north-1.amazonaws.com"
         ],
@@ -5025,6 +5162,9 @@
         ],
         "eu-central-1": [
             "https://controltower.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://controltower.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://controltower.eu-north-1.amazonaws.com"
@@ -5097,6 +5237,9 @@
         "eu-central-1": [
             "https://cur.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://cur.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://cur.eu-north-1.amazonaws.com"
         ],
@@ -5168,6 +5311,9 @@
         "eu-central-1": [
             "https://profile.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://profile.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://profile.eu-north-1.amazonaws.com"
         ],
@@ -5238,6 +5384,9 @@
         ],
         "eu-central-1": [
             "https://databrew.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://databrew.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://databrew.eu-north-1.amazonaws.com"
@@ -5320,6 +5469,10 @@
         "eu-central-1": [
             "https://dataexchange.eu-central-1.amazonaws.com",
             "https://api-fulfill.dataexchange.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://dataexchange.eu-central-2.amazonaws.com",
+            "https://api-fulfill.dataexchange.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://dataexchange.eu-north-1.amazonaws.com",
@@ -5404,6 +5557,9 @@
         "eu-central-1": [
             "https://datapipeline.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://datapipeline.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://datapipeline.eu-north-1.amazonaws.com"
         ],
@@ -5474,6 +5630,9 @@
         ],
         "eu-central-1": [
             "https://datasync.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://datasync.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://datasync.eu-north-1.amazonaws.com"
@@ -5546,6 +5705,9 @@
         "eu-central-1": [
             "https://dax.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://dax.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://dax.eu-north-1.amazonaws.com"
         ],
@@ -5616,6 +5778,9 @@
         ],
         "eu-central-1": [
             "https://api.detective.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://api.detective.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://api.detective.eu-north-1.amazonaws.com"
@@ -5688,6 +5853,9 @@
         "eu-central-1": [
             "https://devicefarm.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://devicefarm.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://devicefarm.eu-north-1.amazonaws.com"
         ],
@@ -5758,6 +5926,9 @@
         ],
         "eu-central-1": [
             "https://devops-guru.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://devops-guru.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://devops-guru.eu-north-1.amazonaws.com"
@@ -5830,6 +6001,9 @@
         "eu-central-1": [
             "https://directconnect.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://directconnect.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://directconnect.eu-north-1.amazonaws.com"
         ],
@@ -5900,6 +6074,9 @@
         ],
         "eu-central-1": [
             "https://discovery.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://discovery.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://discovery.eu-north-1.amazonaws.com"
@@ -5972,6 +6149,9 @@
         "eu-central-1": [
             "https://dlm.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://dlm.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://dlm.eu-north-1.amazonaws.com"
         ],
@@ -6042,6 +6222,9 @@
         ],
         "eu-central-1": [
             "https://dms.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://dms.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://dms.eu-north-1.amazonaws.com"
@@ -6114,6 +6297,9 @@
         "eu-central-1": [
             "https://rds.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://rds.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://rds.eu-north-1.amazonaws.com"
         ],
@@ -6184,6 +6370,9 @@
         ],
         "eu-central-1": [
             "https://drs.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://drs.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://drs.eu-north-1.amazonaws.com"
@@ -6256,6 +6445,9 @@
         "eu-central-1": [
             "https://ds.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://ds.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://ds.eu-north-1.amazonaws.com"
         ],
@@ -6326,6 +6518,9 @@
         ],
         "eu-central-1": [
             "https://dynamodb.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://dynamodb.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://dynamodb.eu-north-1.amazonaws.com"
@@ -6398,6 +6593,9 @@
         "eu-central-1": [
             "https://streams.dynamodb.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://streams.dynamodb.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://streams.dynamodb.eu-north-1.amazonaws.com"
         ],
@@ -6468,6 +6666,9 @@
         ],
         "eu-central-1": [
             "https://ebs.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://ebs.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://ebs.eu-north-1.amazonaws.com"
@@ -6540,6 +6741,9 @@
         "eu-central-1": [
             "https://ec2.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://ec2.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://ec2.eu-north-1.amazonaws.com"
         ],
@@ -6610,6 +6814,9 @@
         ],
         "eu-central-1": [
             "https://ec2-instance-connect.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://ec2-instance-connect.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://ec2-instance-connect.eu-north-1.amazonaws.com"
@@ -6682,6 +6889,9 @@
         "eu-central-1": [
             "https://api.ecr.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://api.ecr.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://api.ecr.eu-north-1.amazonaws.com"
         ],
@@ -6752,6 +6962,9 @@
         ],
         "eu-central-1": [
             "https://api.ecr-public.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://api.ecr-public.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://api.ecr-public.eu-north-1.amazonaws.com"
@@ -6824,6 +7037,9 @@
         "eu-central-1": [
             "https://ecs.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://ecs.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://ecs.eu-north-1.amazonaws.com"
         ],
@@ -6894,6 +7110,9 @@
         ],
         "eu-central-1": [
             "https://elasticfilesystem.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://elasticfilesystem.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://elasticfilesystem.eu-north-1.amazonaws.com"
@@ -6966,6 +7185,9 @@
         "eu-central-1": [
             "https://eks.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://eks.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://eks.eu-north-1.amazonaws.com"
         ],
@@ -7036,6 +7258,9 @@
         ],
         "eu-central-1": [
             "https://api.elastic-inference.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://api.elastic-inference.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://api.elastic-inference.eu-north-1.amazonaws.com"
@@ -7108,6 +7333,9 @@
         "eu-central-1": [
             "https://elasticache.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://elasticache.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://elasticache.eu-north-1.amazonaws.com"
         ],
@@ -7178,6 +7406,9 @@
         ],
         "eu-central-1": [
             "https://elasticbeanstalk.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://elasticbeanstalk.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://elasticbeanstalk.eu-north-1.amazonaws.com"
@@ -7250,6 +7481,9 @@
         "eu-central-1": [
             "https://elastictranscoder.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://elastictranscoder.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://elastictranscoder.eu-north-1.amazonaws.com"
         ],
@@ -7320,6 +7554,9 @@
         ],
         "eu-central-1": [
             "https://elasticloadbalancing.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://elasticloadbalancing.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://elasticloadbalancing.eu-north-1.amazonaws.com"
@@ -7392,6 +7629,9 @@
         "eu-central-1": [
             "https://elasticloadbalancing.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://elasticloadbalancing.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://elasticloadbalancing.eu-north-1.amazonaws.com"
         ],
@@ -7462,6 +7702,9 @@
         ],
         "eu-central-1": [
             "https://elasticmapreduce.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://elasticmapreduce.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://elasticmapreduce.eu-north-1.amazonaws.com"
@@ -7534,6 +7777,9 @@
         "eu-central-1": [
             "https://emr-containers.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://emr-containers.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://emr-containers.eu-north-1.amazonaws.com"
         ],
@@ -7604,6 +7850,9 @@
         ],
         "eu-central-1": [
             "https://emr-serverless.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://emr-serverless.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://emr-serverless.eu-north-1.amazonaws.com"
@@ -7676,6 +7925,9 @@
         "eu-central-1": [
             "https://es.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://es.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://es.eu-north-1.amazonaws.com"
         ],
@@ -7746,6 +7998,9 @@
         ],
         "eu-central-1": [
             "https://events.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://events.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://events.eu-north-1.amazonaws.com"
@@ -7828,6 +8083,10 @@
         "eu-central-1": [
             "https://evidently.eu-central-1.amazonaws.com",
             "https://dataplane.evidently.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://evidently.eu-central-2.amazonaws.com",
+            "https://dataplane.evidently.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://evidently.eu-north-1.amazonaws.com",
@@ -7912,6 +8171,9 @@
         "eu-central-1": [
             "https://finspace.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://finspace.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://finspace.eu-north-1.amazonaws.com"
         ],
@@ -7982,6 +8244,9 @@
         ],
         "eu-central-1": [
             "https://finspace-api.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://finspace-api.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://finspace-api.eu-north-1.amazonaws.com"
@@ -8054,6 +8319,9 @@
         "eu-central-1": [
             "https://firehose.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://firehose.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://firehose.eu-north-1.amazonaws.com"
         ],
@@ -8124,6 +8392,9 @@
         ],
         "eu-central-1": [
             "https://fis.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://fis.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://fis.eu-north-1.amazonaws.com"
@@ -8196,6 +8467,9 @@
         "eu-central-1": [
             "https://fms.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://fms.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://fms.eu-north-1.amazonaws.com"
         ],
@@ -8266,6 +8540,9 @@
         ],
         "eu-central-1": [
             "https://forecast.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://forecast.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://forecast.eu-north-1.amazonaws.com"
@@ -8338,6 +8615,9 @@
         "eu-central-1": [
             "https://forecastquery.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://forecastquery.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://forecastquery.eu-north-1.amazonaws.com"
         ],
@@ -8408,6 +8688,9 @@
         ],
         "eu-central-1": [
             "https://frauddetector.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://frauddetector.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://frauddetector.eu-north-1.amazonaws.com"
@@ -8480,6 +8763,9 @@
         "eu-central-1": [
             "https://fsx.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://fsx.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://fsx.eu-north-1.amazonaws.com"
         ],
@@ -8550,6 +8836,9 @@
         ],
         "eu-central-1": [
             "https://gamelift.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://gamelift.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://gamelift.eu-north-1.amazonaws.com"
@@ -8622,6 +8911,9 @@
         "eu-central-1": [
             "https://gamesparks.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://gamesparks.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://gamesparks.eu-north-1.amazonaws.com"
         ],
@@ -8692,6 +8984,9 @@
         ],
         "eu-central-1": [
             "https://glacier.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://glacier.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://glacier.eu-north-1.amazonaws.com"
@@ -8764,6 +9059,9 @@
         "eu-central-1": [
             "https://globalaccelerator.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://globalaccelerator.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://globalaccelerator.eu-north-1.amazonaws.com"
         ],
@@ -8834,6 +9132,9 @@
         ],
         "eu-central-1": [
             "https://glue.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://glue.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://glue.eu-north-1.amazonaws.com"
@@ -8906,6 +9207,9 @@
         "eu-central-1": [
             "https://grafana.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://grafana.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://grafana.eu-north-1.amazonaws.com"
         ],
@@ -8976,6 +9280,9 @@
         ],
         "eu-central-1": [
             "https://greengrass.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://greengrass.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://greengrass.eu-north-1.amazonaws.com"
@@ -9048,6 +9355,9 @@
         "eu-central-1": [
             "https://greengrass.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://greengrass.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://greengrass.eu-north-1.amazonaws.com"
         ],
@@ -9118,6 +9428,9 @@
         ],
         "eu-central-1": [
             "https://groundstation.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://groundstation.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://groundstation.eu-north-1.amazonaws.com"
@@ -9190,6 +9503,9 @@
         "eu-central-1": [
             "https://guardduty.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://guardduty.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://guardduty.eu-north-1.amazonaws.com"
         ],
@@ -9259,6 +9575,9 @@
             "https://global.health.amazonaws.com"
         ],
         "eu-central-1": [
+            "https://global.health.amazonaws.com"
+        ],
+        "eu-central-2": [
             "https://global.health.amazonaws.com"
         ],
         "eu-north-1": [
@@ -9332,6 +9651,9 @@
         "eu-central-1": [
             "https://healthlake.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://healthlake.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://healthlake.eu-north-1.amazonaws.com"
         ],
@@ -9403,6 +9725,9 @@
         "eu-central-1": [
             "https://honeycode.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://honeycode.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://honeycode.eu-north-1.amazonaws.com"
         ],
@@ -9472,6 +9797,9 @@
             "https://iam.amazonaws.com"
         ],
         "eu-central-1": [
+            "https://iam.amazonaws.com"
+        ],
+        "eu-central-2": [
             "https://iam.amazonaws.com"
         ],
         "eu-north-1": [
@@ -9545,6 +9873,9 @@
         "eu-central-1": [
             "https://identitystore.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://identitystore.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://identitystore.eu-north-1.amazonaws.com"
         ],
@@ -9616,6 +9947,9 @@
         "eu-central-1": [
             "https://imagebuilder.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://imagebuilder.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://imagebuilder.eu-north-1.amazonaws.com"
         ],
@@ -9685,6 +10019,9 @@
             "https://importexport.amazonaws.com"
         ],
         "eu-central-1": [
+            "https://importexport.amazonaws.com"
+        ],
+        "eu-central-2": [
             "https://importexport.amazonaws.com"
         ],
         "eu-north-1": [
@@ -9758,6 +10095,9 @@
         "eu-central-1": [
             "https://inspector.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://inspector.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://inspector.eu-north-1.amazonaws.com"
         ],
@@ -9828,6 +10168,9 @@
         ],
         "eu-central-1": [
             "https://inspector2.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://inspector2.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://inspector2.eu-north-1.amazonaws.com"
@@ -9900,6 +10243,9 @@
         "eu-central-1": [
             "https://iot.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://iot.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://iot.eu-north-1.amazonaws.com"
         ],
@@ -9970,6 +10316,9 @@
         ],
         "eu-central-1": [
             "https://data-ats.iot.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://data-ats.iot.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://data-ats.iot.eu-north-1.amazonaws.com"
@@ -10042,6 +10391,9 @@
         "eu-central-1": [
             "https://data.jobs.iot.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://data.jobs.iot.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://data.jobs.iot.eu-north-1.amazonaws.com"
         ],
@@ -10112,6 +10464,9 @@
         ],
         "eu-central-1": [
             "https://devices.iot1click.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://devices.iot1click.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://devices.iot1click.eu-north-1.amazonaws.com"
@@ -10184,6 +10539,9 @@
         "eu-central-1": [
             "https://projects.iot1click.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://projects.iot1click.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://projects.iot1click.eu-north-1.amazonaws.com"
         ],
@@ -10254,6 +10612,9 @@
         ],
         "eu-central-1": [
             "https://iotanalytics.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://iotanalytics.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://iotanalytics.eu-north-1.amazonaws.com"
@@ -10326,6 +10687,9 @@
         "eu-central-1": [
             "https://api.iotdeviceadvisor.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://api.iotdeviceadvisor.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://api.iotdeviceadvisor.eu-north-1.amazonaws.com"
         ],
@@ -10396,6 +10760,9 @@
         ],
         "eu-central-1": [
             "https://iotevents.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://iotevents.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://iotevents.eu-north-1.amazonaws.com"
@@ -10468,6 +10835,9 @@
         "eu-central-1": [
             "https://data.iotevents.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://data.iotevents.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://data.iotevents.eu-north-1.amazonaws.com"
         ],
@@ -10538,6 +10908,9 @@
         ],
         "eu-central-1": [
             "https://api.fleethub.iot.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://api.fleethub.iot.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://api.fleethub.iot.eu-north-1.amazonaws.com"
@@ -10610,6 +10983,9 @@
         "eu-central-1": [
             "https://iotfleetwise.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://iotfleetwise.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://iotfleetwise.eu-north-1.amazonaws.com"
         ],
@@ -10680,6 +11056,9 @@
         ],
         "eu-central-1": [
             "https://api.tunneling.iot.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://api.tunneling.iot.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://api.tunneling.iot.eu-north-1.amazonaws.com"
@@ -10784,6 +11163,12 @@
             "https://api.iotsitewise.eu-central-1.amazonaws.com",
             "https://data.iotsitewise.eu-central-1.amazonaws.com",
             "https://monitor.iotsitewise.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://iotsitewise.eu-central-2.amazonaws.com",
+            "https://api.iotsitewise.eu-central-2.amazonaws.com",
+            "https://data.iotsitewise.eu-central-2.amazonaws.com",
+            "https://monitor.iotsitewise.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://iotsitewise.eu-north-1.amazonaws.com",
@@ -10892,6 +11277,9 @@
         "eu-central-1": [
             "https://iotthingsgraph.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://iotthingsgraph.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://iotthingsgraph.eu-north-1.amazonaws.com"
         ],
@@ -10984,6 +11372,11 @@
             "https://iottwinmaker.eu-central-1.amazonaws.com",
             "https://api.iottwinmaker.eu-central-1.amazonaws.com",
             "https://data.iottwinmaker.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://iottwinmaker.eu-central-2.amazonaws.com",
+            "https://api.iottwinmaker.eu-central-2.amazonaws.com",
+            "https://data.iottwinmaker.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://iottwinmaker.eu-north-1.amazonaws.com",
@@ -11080,6 +11473,9 @@
         "eu-central-1": [
             "https://api.iotwireless.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://api.iotwireless.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://api.iotwireless.eu-north-1.amazonaws.com"
         ],
@@ -11150,6 +11546,9 @@
         ],
         "eu-central-1": [
             "https://ivs.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://ivs.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://ivs.eu-north-1.amazonaws.com"
@@ -11222,6 +11621,9 @@
         "eu-central-1": [
             "https://ivschat.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://ivschat.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://ivschat.eu-north-1.amazonaws.com"
         ],
@@ -11292,6 +11694,9 @@
         ],
         "eu-central-1": [
             "https://kafka.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://kafka.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://kafka.eu-north-1.amazonaws.com"
@@ -11364,6 +11769,9 @@
         "eu-central-1": [
             "https://kafkaconnect.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://kafkaconnect.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://kafkaconnect.eu-north-1.amazonaws.com"
         ],
@@ -11434,6 +11842,9 @@
         ],
         "eu-central-1": [
             "https://kendra.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://kendra.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://kendra.eu-north-1.amazonaws.com"
@@ -11506,6 +11917,9 @@
         "eu-central-1": [
             "https://cassandra.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://cassandra.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://cassandra.eu-north-1.amazonaws.com"
         ],
@@ -11576,6 +11990,9 @@
         ],
         "eu-central-1": [
             "https://kinesis.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://kinesis.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://kinesis.eu-north-1.amazonaws.com"
@@ -11648,6 +12065,9 @@
         "eu-central-1": [
             "https://kinesisvideo.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://kinesisvideo.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://kinesisvideo.eu-north-1.amazonaws.com"
         ],
@@ -11718,6 +12138,9 @@
         ],
         "eu-central-1": [
             "https://kinesisanalytics.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://kinesisanalytics.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://kinesisanalytics.eu-north-1.amazonaws.com"
@@ -11790,6 +12213,9 @@
         "eu-central-1": [
             "https://kinesisanalytics.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://kinesisanalytics.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://kinesisanalytics.eu-north-1.amazonaws.com"
         ],
@@ -11861,6 +12287,9 @@
         "eu-central-1": [
             "https://kinesisvideo.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://kinesisvideo.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://kinesisvideo.eu-north-1.amazonaws.com"
         ],
@@ -11931,6 +12360,9 @@
         ],
         "eu-central-1": [
             "https://kms.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://kms.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://kms.eu-north-1.amazonaws.com"
@@ -12013,6 +12445,10 @@
         "eu-central-1": [
             "https://data-lakeformation.eu-central-1.amazonaws.com",
             "https://query-lakeformation.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://data-lakeformation.eu-central-2.amazonaws.com",
+            "https://query-lakeformation.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://data-lakeformation.eu-north-1.amazonaws.com",
@@ -12097,6 +12533,9 @@
         "eu-central-1": [
             "https://lambda.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://lambda.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://lambda.eu-north-1.amazonaws.com"
         ],
@@ -12167,6 +12606,9 @@
         ],
         "eu-central-1": [
             "https://models.lex.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://models.lex.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://models.lex.eu-north-1.amazonaws.com"
@@ -12239,6 +12681,9 @@
         "eu-central-1": [
             "https://runtime.lex.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://runtime.lex.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://runtime.lex.eu-north-1.amazonaws.com"
         ],
@@ -12309,6 +12754,9 @@
         ],
         "eu-central-1": [
             "https://models-v2-lex.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://models-v2-lex.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://models-v2-lex.eu-north-1.amazonaws.com"
@@ -12381,6 +12829,9 @@
         "eu-central-1": [
             "https://runtime-v2-lex.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://runtime-v2-lex.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://runtime-v2-lex.eu-north-1.amazonaws.com"
         ],
@@ -12451,6 +12902,9 @@
         ],
         "eu-central-1": [
             "https://license-manager.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://license-manager.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://license-manager.eu-north-1.amazonaws.com"
@@ -12523,6 +12977,9 @@
         "eu-central-1": [
             "https://license-manager-user-subscriptions.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://license-manager-user-subscriptions.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://license-manager-user-subscriptions.eu-north-1.amazonaws.com"
         ],
@@ -12593,6 +13050,9 @@
         ],
         "eu-central-1": [
             "https://lightsail.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://lightsail.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://lightsail.eu-north-1.amazonaws.com"
@@ -12730,6 +13190,15 @@
             "https://places.geo.eu-central-1.amazonaws.com",
             "https://routes.geo.eu-central-1.amazonaws.com",
             "https://tracking.geo.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://geo.eu-central-2.amazonaws.com",
+            "https://geofencing.geo.eu-central-2.amazonaws.com",
+            "https://maps.geo.eu-central-2.amazonaws.com",
+            "https://metadata.geo.eu-central-2.amazonaws.com",
+            "https://places.geo.eu-central-2.amazonaws.com",
+            "https://routes.geo.eu-central-2.amazonaws.com",
+            "https://tracking.geo.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://geo.eu-north-1.amazonaws.com",
@@ -12874,6 +13343,9 @@
         "eu-central-1": [
             "https://logs.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://logs.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://logs.eu-north-1.amazonaws.com"
         ],
@@ -12944,6 +13416,9 @@
         ],
         "eu-central-1": [
             "https://lookoutequipment.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://lookoutequipment.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://lookoutequipment.eu-north-1.amazonaws.com"
@@ -13016,6 +13491,9 @@
         "eu-central-1": [
             "https://lookoutmetrics.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://lookoutmetrics.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://lookoutmetrics.eu-north-1.amazonaws.com"
         ],
@@ -13086,6 +13564,9 @@
         ],
         "eu-central-1": [
             "https://lookoutvision.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://lookoutvision.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://lookoutvision.eu-north-1.amazonaws.com"
@@ -13158,6 +13639,9 @@
         "eu-central-1": [
             "https://m2.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://m2.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://m2.eu-north-1.amazonaws.com"
         ],
@@ -13229,6 +13713,9 @@
         "eu-central-1": [
             "https://machinelearning.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://machinelearning.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://machinelearning.eu-north-1.amazonaws.com"
         ],
@@ -13266,77 +13753,6 @@
             "https://machinelearning.us-west-2.amazonaws.com"
         ]
     },
-    "macie": {
-        "af-south-1": [
-            "https://macie.af-south-1.amazonaws.com"
-        ],
-        "ap-east-1": [
-            "https://macie.ap-east-1.amazonaws.com"
-        ],
-        "ap-northeast-1": [
-            "https://macie.ap-northeast-1.amazonaws.com"
-        ],
-        "ap-northeast-2": [
-            "https://macie.ap-northeast-2.amazonaws.com"
-        ],
-        "ap-northeast-3": [
-            "https://macie.ap-northeast-3.amazonaws.com"
-        ],
-        "ap-south-1": [
-            "https://macie.ap-south-1.amazonaws.com"
-        ],
-        "ap-southeast-1": [
-            "https://macie.ap-southeast-1.amazonaws.com"
-        ],
-        "ap-southeast-2": [
-            "https://macie.ap-southeast-2.amazonaws.com"
-        ],
-        "ap-southeast-3": [
-            "https://macie.ap-southeast-3.amazonaws.com"
-        ],
-        "ca-central-1": [
-            "https://macie.ca-central-1.amazonaws.com"
-        ],
-        "eu-central-1": [
-            "https://macie.eu-central-1.amazonaws.com"
-        ],
-        "eu-north-1": [
-            "https://macie.eu-north-1.amazonaws.com"
-        ],
-        "eu-south-1": [
-            "https://macie.eu-south-1.amazonaws.com"
-        ],
-        "eu-west-1": [
-            "https://macie.eu-west-1.amazonaws.com"
-        ],
-        "eu-west-2": [
-            "https://macie.eu-west-2.amazonaws.com"
-        ],
-        "eu-west-3": [
-            "https://macie.eu-west-3.amazonaws.com"
-        ],
-        "me-central-1": [
-            "https://macie.me-central-1.amazonaws.com"
-        ],
-        "me-south-1": [
-            "https://macie.me-south-1.amazonaws.com"
-        ],
-        "sa-east-1": [
-            "https://macie.sa-east-1.amazonaws.com"
-        ],
-        "us-east-1": [
-            "https://macie.us-east-1.amazonaws.com"
-        ],
-        "us-east-2": [
-            "https://macie.us-east-2.amazonaws.com"
-        ],
-        "us-west-1": [
-            "https://macie.us-west-1.amazonaws.com"
-        ],
-        "us-west-2": [
-            "https://macie.us-west-2.amazonaws.com"
-        ]
-    },
     "macie2": {
         "af-south-1": [
             "https://macie2.af-south-1.amazonaws.com"
@@ -13370,6 +13786,9 @@
         ],
         "eu-central-1": [
             "https://macie2.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://macie2.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://macie2.eu-north-1.amazonaws.com"
@@ -13442,6 +13861,9 @@
         "eu-central-1": [
             "https://catalog.marketplace.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://catalog.marketplace.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://catalog.marketplace.eu-north-1.amazonaws.com"
         ],
@@ -13512,6 +13934,9 @@
         ],
         "eu-central-1": [
             "https://entitlement.marketplace.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://entitlement.marketplace.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://entitlement.marketplace.eu-north-1.amazonaws.com"
@@ -13584,6 +14009,9 @@
         "eu-central-1": [
             "https://marketplacecommerceanalytics.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://marketplacecommerceanalytics.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://marketplacecommerceanalytics.eu-north-1.amazonaws.com"
         ],
@@ -13654,6 +14082,9 @@
         ],
         "eu-central-1": [
             "https://mediaconnect.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://mediaconnect.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://mediaconnect.eu-north-1.amazonaws.com"
@@ -13726,6 +14157,9 @@
         "eu-central-1": [
             "https://mediaconvert.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://mediaconvert.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://mediaconvert.eu-north-1.amazonaws.com"
         ],
@@ -13796,6 +14230,9 @@
         ],
         "eu-central-1": [
             "https://medialive.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://medialive.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://medialive.eu-north-1.amazonaws.com"
@@ -13868,6 +14305,9 @@
         "eu-central-1": [
             "https://mediapackage.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://mediapackage.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://mediapackage.eu-north-1.amazonaws.com"
         ],
@@ -13938,6 +14378,9 @@
         ],
         "eu-central-1": [
             "https://mediapackage-vod.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://mediapackage-vod.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://mediapackage-vod.eu-north-1.amazonaws.com"
@@ -14010,6 +14453,9 @@
         "eu-central-1": [
             "https://mediastore.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://mediastore.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://mediastore.eu-north-1.amazonaws.com"
         ],
@@ -14080,6 +14526,9 @@
         ],
         "eu-central-1": [
             "https://api.mediatailor.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://api.mediatailor.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://api.mediatailor.eu-north-1.amazonaws.com"
@@ -14152,6 +14601,9 @@
         "eu-central-1": [
             "https://memory-db.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://memory-db.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://memory-db.eu-north-1.amazonaws.com"
         ],
@@ -14222,6 +14674,9 @@
         ],
         "eu-central-1": [
             "https://metering.marketplace.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://metering.marketplace.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://metering.marketplace.eu-north-1.amazonaws.com"
@@ -14294,6 +14749,9 @@
         "eu-central-1": [
             "https://mgh.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://mgh.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://mgh.eu-north-1.amazonaws.com"
         ],
@@ -14364,6 +14822,9 @@
         ],
         "eu-central-1": [
             "https://mgn.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://mgn.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://mgn.eu-north-1.amazonaws.com"
@@ -14436,6 +14897,9 @@
         "eu-central-1": [
             "https://refactor-spaces.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://refactor-spaces.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://refactor-spaces.eu-north-1.amazonaws.com"
         ],
@@ -14506,6 +14970,9 @@
         ],
         "eu-central-1": [
             "https://migrationhub-config.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://migrationhub-config.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://migrationhub-config.eu-north-1.amazonaws.com"
@@ -14578,6 +15045,9 @@
         "eu-central-1": [
             "https://migrationhub-orchestrator.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://migrationhub-orchestrator.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://migrationhub-orchestrator.eu-north-1.amazonaws.com"
         ],
@@ -14648,6 +15118,9 @@
         ],
         "eu-central-1": [
             "https://migrationhub-strategy.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://migrationhub-strategy.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://migrationhub-strategy.eu-north-1.amazonaws.com"
@@ -14720,6 +15193,9 @@
         "eu-central-1": [
             "https://mobile.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://mobile.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://mobile.eu-north-1.amazonaws.com"
         ],
@@ -14791,6 +15267,9 @@
         "eu-central-1": [
             "https://mq.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://mq.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://mq.eu-north-1.amazonaws.com"
         ],
@@ -14861,6 +15340,9 @@
         ],
         "eu-central-1": [
             "https://mturk-requester.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://mturk-requester.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://mturk-requester.eu-north-1.amazonaws.com"
@@ -14965,6 +15447,12 @@
             "https://api.airflow.eu-central-1.amazonaws.com",
             "https://env.airflow.eu-central-1.amazonaws.com",
             "https://ops.airflow.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://airflow.eu-central-2.amazonaws.com",
+            "https://api.airflow.eu-central-2.amazonaws.com",
+            "https://env.airflow.eu-central-2.amazonaws.com",
+            "https://ops.airflow.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://airflow.eu-north-1.amazonaws.com",
@@ -15073,6 +15561,9 @@
         "eu-central-1": [
             "https://rds.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://rds.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://rds.eu-north-1.amazonaws.com"
         ],
@@ -15144,6 +15635,9 @@
         "eu-central-1": [
             "https://network-firewall.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://network-firewall.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://network-firewall.eu-north-1.amazonaws.com"
         ],
@@ -15213,6 +15707,9 @@
             "https://networkmanager.us-west-2.amazonaws.com"
         ],
         "eu-central-1": [
+            "https://networkmanager.us-west-2.amazonaws.com"
+        ],
+        "eu-central-2": [
             "https://networkmanager.us-west-2.amazonaws.com"
         ],
         "eu-north-1": [
@@ -15286,6 +15783,9 @@
         "eu-central-1": [
             "https://nimble.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://nimble.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://nimble.eu-north-1.amazonaws.com"
         ],
@@ -15356,6 +15856,9 @@
         ],
         "eu-central-1": [
             "https://es.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://es.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://es.eu-north-1.amazonaws.com"
@@ -15428,6 +15931,9 @@
         "eu-central-1": [
             "https://opsworks.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://opsworks.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://opsworks.eu-north-1.amazonaws.com"
         ],
@@ -15499,6 +16005,9 @@
         "eu-central-1": [
             "https://opsworks-cm.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://opsworks-cm.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://opsworks-cm.eu-north-1.amazonaws.com"
         ],
@@ -15568,6 +16077,9 @@
             "https://organizations.us-east-1.amazonaws.com"
         ],
         "eu-central-1": [
+            "https://organizations.us-east-1.amazonaws.com"
+        ],
+        "eu-central-2": [
             "https://organizations.us-east-1.amazonaws.com"
         ],
         "eu-north-1": [
@@ -15641,6 +16153,9 @@
         "eu-central-1": [
             "https://outposts.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://outposts.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://outposts.eu-north-1.amazonaws.com"
         ],
@@ -15711,6 +16226,9 @@
         ],
         "eu-central-1": [
             "https://panorama.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://panorama.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://panorama.eu-north-1.amazonaws.com"
@@ -15783,6 +16301,9 @@
         "eu-central-1": [
             "https://personalize.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://personalize.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://personalize.eu-north-1.amazonaws.com"
         ],
@@ -15853,6 +16374,9 @@
         ],
         "eu-central-1": [
             "https://personalize-events.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://personalize-events.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://personalize-events.eu-north-1.amazonaws.com"
@@ -15925,6 +16449,9 @@
         "eu-central-1": [
             "https://personalize-runtime.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://personalize-runtime.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://personalize-runtime.eu-north-1.amazonaws.com"
         ],
@@ -15995,6 +16522,9 @@
         ],
         "eu-central-1": [
             "https://pi.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://pi.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://pi.eu-north-1.amazonaws.com"
@@ -16067,6 +16597,9 @@
         "eu-central-1": [
             "https://pinpoint.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://pinpoint.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://pinpoint.eu-north-1.amazonaws.com"
         ],
@@ -16137,6 +16670,9 @@
         ],
         "eu-central-1": [
             "https://email.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://email.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://email.eu-north-1.amazonaws.com"
@@ -16209,6 +16745,9 @@
         "eu-central-1": [
             "https://sms-voice.pinpoint.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://sms-voice.pinpoint.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://sms-voice.pinpoint.eu-north-1.amazonaws.com"
         ],
@@ -16279,6 +16818,9 @@
         ],
         "eu-central-1": [
             "https://sms-voice.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://sms-voice.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://sms-voice.eu-north-1.amazonaws.com"
@@ -16351,6 +16893,9 @@
         "eu-central-1": [
             "https://polly.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://polly.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://polly.eu-north-1.amazonaws.com"
         ],
@@ -16421,6 +16966,9 @@
         ],
         "eu-central-1": [
             "https://api.pricing.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://api.pricing.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://api.pricing.eu-north-1.amazonaws.com"
@@ -16493,6 +17041,9 @@
         "eu-central-1": [
             "https://private-networks.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://private-networks.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://private-networks.eu-north-1.amazonaws.com"
         ],
@@ -16563,6 +17114,9 @@
         ],
         "eu-central-1": [
             "https://proton.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://proton.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://proton.eu-north-1.amazonaws.com"
@@ -16635,6 +17189,9 @@
         "eu-central-1": [
             "https://qldb.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://qldb.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://qldb.eu-north-1.amazonaws.com"
         ],
@@ -16705,6 +17262,9 @@
         ],
         "eu-central-1": [
             "https://session.qldb.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://session.qldb.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://session.qldb.eu-north-1.amazonaws.com"
@@ -16777,6 +17337,9 @@
         "eu-central-1": [
             "https://quicksight.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://quicksight.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://quicksight.eu-north-1.amazonaws.com"
         ],
@@ -16847,6 +17410,9 @@
         ],
         "eu-central-1": [
             "https://ram.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://ram.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://ram.eu-north-1.amazonaws.com"
@@ -16919,6 +17485,9 @@
         "eu-central-1": [
             "https://rbin.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://rbin.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://rbin.eu-north-1.amazonaws.com"
         ],
@@ -16989,6 +17558,9 @@
         ],
         "eu-central-1": [
             "https://rds.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://rds.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://rds.eu-north-1.amazonaws.com"
@@ -17061,6 +17633,9 @@
         "eu-central-1": [
             "https://rds-data.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://rds-data.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://rds-data.eu-north-1.amazonaws.com"
         ],
@@ -17131,6 +17706,9 @@
         ],
         "eu-central-1": [
             "https://redshift.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://redshift.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://redshift.eu-north-1.amazonaws.com"
@@ -17203,6 +17781,9 @@
         "eu-central-1": [
             "https://redshift-data.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://redshift-data.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://redshift-data.eu-north-1.amazonaws.com"
         ],
@@ -17273,6 +17854,9 @@
         ],
         "eu-central-1": [
             "https://redshift-serverless.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://redshift-serverless.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://redshift-serverless.eu-north-1.amazonaws.com"
@@ -17345,6 +17929,9 @@
         "eu-central-1": [
             "https://rekognition.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://rekognition.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://rekognition.eu-north-1.amazonaws.com"
         ],
@@ -17415,6 +18002,9 @@
         ],
         "eu-central-1": [
             "https://resiliencehub.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://resiliencehub.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://resiliencehub.eu-north-1.amazonaws.com"
@@ -17487,6 +18077,9 @@
         "eu-central-1": [
             "https://resource-explorer-2.eu-central-1.api.aws"
         ],
+        "eu-central-2": [
+            "https://resource-explorer-2.eu-central-2.api.aws"
+        ],
         "eu-north-1": [
             "https://resource-explorer-2.eu-north-1.api.aws"
         ],
@@ -17557,6 +18150,9 @@
         ],
         "eu-central-1": [
             "https://resource-groups.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://resource-groups.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://resource-groups.eu-north-1.amazonaws.com"
@@ -17629,6 +18225,9 @@
         "eu-central-1": [
             "https://tagging.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://tagging.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://tagging.eu-north-1.amazonaws.com"
         ],
@@ -17699,6 +18298,9 @@
         ],
         "eu-central-1": [
             "https://robomaker.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://robomaker.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://robomaker.eu-north-1.amazonaws.com"
@@ -17771,6 +18373,9 @@
         "eu-central-1": [
             "https://rolesanywhere.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://rolesanywhere.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://rolesanywhere.eu-north-1.amazonaws.com"
         ],
@@ -17840,6 +18445,9 @@
             "https://route53.amazonaws.com"
         ],
         "eu-central-1": [
+            "https://route53.amazonaws.com"
+        ],
+        "eu-central-2": [
             "https://route53.amazonaws.com"
         ],
         "eu-north-1": [
@@ -17913,6 +18521,9 @@
         "eu-central-1": [
             "https://route53-recovery-cluster.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://route53-recovery-cluster.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://route53-recovery-cluster.eu-north-1.amazonaws.com"
         ],
@@ -17983,6 +18594,9 @@
         ],
         "eu-central-1": [
             "https://route53-recovery-control-config.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://route53-recovery-control-config.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://route53-recovery-control-config.eu-north-1.amazonaws.com"
@@ -18055,6 +18669,9 @@
         "eu-central-1": [
             "https://route53-recovery-readiness.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://route53-recovery-readiness.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://route53-recovery-readiness.eu-north-1.amazonaws.com"
         ],
@@ -18126,6 +18743,9 @@
         "eu-central-1": [
             "https://route53domains.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://route53domains.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://route53domains.eu-north-1.amazonaws.com"
         ],
@@ -18196,6 +18816,9 @@
         ],
         "eu-central-1": [
             "https://route53resolver.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://route53resolver.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://route53resolver.eu-north-1.amazonaws.com"
@@ -18278,6 +18901,10 @@
         "eu-central-1": [
             "https://rum.eu-central-1.amazonaws.com",
             "https://dataplane.rum.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://rum.eu-central-2.amazonaws.com",
+            "https://dataplane.rum.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://rum.eu-north-1.amazonaws.com",
@@ -18373,6 +19000,10 @@
             "https://s3.eu-central-1.amazonaws.com",
             "https://{RequestRoute}.s3.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://s3.eu-central-2.amazonaws.com",
+            "https://{RequestRoute}.s3.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://s3.eu-north-1.amazonaws.com",
             "https://{RequestRoute}.s3.eu-north-1.amazonaws.com"
@@ -18456,6 +19087,9 @@
         "eu-central-1": [
             "https://s3-outposts.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://s3-outposts.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://s3-outposts.eu-north-1.amazonaws.com"
         ],
@@ -18526,6 +19160,9 @@
         ],
         "eu-central-1": [
             "https://api.sagemaker.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://api.sagemaker.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://api.sagemaker.eu-north-1.amazonaws.com"
@@ -18598,6 +19235,9 @@
         "eu-central-1": [
             "https://a2i-runtime.sagemaker.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://a2i-runtime.sagemaker.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://a2i-runtime.sagemaker.eu-north-1.amazonaws.com"
         ],
@@ -18668,6 +19308,9 @@
         ],
         "eu-central-1": [
             "https://edge.sagemaker.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://edge.sagemaker.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://edge.sagemaker.eu-north-1.amazonaws.com"
@@ -18740,6 +19383,9 @@
         "eu-central-1": [
             "https://featurestore-runtime.sagemaker.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://featurestore-runtime.sagemaker.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://featurestore-runtime.sagemaker.eu-north-1.amazonaws.com"
         ],
@@ -18810,6 +19456,9 @@
         ],
         "eu-central-1": [
             "https://runtime.sagemaker.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://runtime.sagemaker.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://runtime.sagemaker.eu-north-1.amazonaws.com"
@@ -18882,6 +19531,9 @@
         "eu-central-1": [
             "https://savingsplans.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://savingsplans.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://savingsplans.amazonaws.com"
         ],
@@ -18919,6 +19571,80 @@
             "https://savingsplans.amazonaws.com"
         ]
     },
+    "scheduler": {
+        "af-south-1": [
+            "https://scheduler.af-south-1.amazonaws.com"
+        ],
+        "ap-east-1": [
+            "https://scheduler.ap-east-1.amazonaws.com"
+        ],
+        "ap-northeast-1": [
+            "https://scheduler.ap-northeast-1.amazonaws.com"
+        ],
+        "ap-northeast-2": [
+            "https://scheduler.ap-northeast-2.amazonaws.com"
+        ],
+        "ap-northeast-3": [
+            "https://scheduler.ap-northeast-3.amazonaws.com"
+        ],
+        "ap-south-1": [
+            "https://scheduler.ap-south-1.amazonaws.com"
+        ],
+        "ap-southeast-1": [
+            "https://scheduler.ap-southeast-1.amazonaws.com"
+        ],
+        "ap-southeast-2": [
+            "https://scheduler.ap-southeast-2.amazonaws.com"
+        ],
+        "ap-southeast-3": [
+            "https://scheduler.ap-southeast-3.amazonaws.com"
+        ],
+        "ca-central-1": [
+            "https://scheduler.ca-central-1.amazonaws.com"
+        ],
+        "eu-central-1": [
+            "https://scheduler.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://scheduler.eu-central-2.amazonaws.com"
+        ],
+        "eu-north-1": [
+            "https://scheduler.eu-north-1.amazonaws.com"
+        ],
+        "eu-south-1": [
+            "https://scheduler.eu-south-1.amazonaws.com"
+        ],
+        "eu-west-1": [
+            "https://scheduler.eu-west-1.amazonaws.com"
+        ],
+        "eu-west-2": [
+            "https://scheduler.eu-west-2.amazonaws.com"
+        ],
+        "eu-west-3": [
+            "https://scheduler.eu-west-3.amazonaws.com"
+        ],
+        "me-central-1": [
+            "https://scheduler.me-central-1.amazonaws.com"
+        ],
+        "me-south-1": [
+            "https://scheduler.me-south-1.amazonaws.com"
+        ],
+        "sa-east-1": [
+            "https://scheduler.sa-east-1.amazonaws.com"
+        ],
+        "us-east-1": [
+            "https://scheduler.us-east-1.amazonaws.com"
+        ],
+        "us-east-2": [
+            "https://scheduler.us-east-2.amazonaws.com"
+        ],
+        "us-west-1": [
+            "https://scheduler.us-west-1.amazonaws.com"
+        ],
+        "us-west-2": [
+            "https://scheduler.us-west-2.amazonaws.com"
+        ]
+    },
     "schemas": {
         "af-south-1": [
             "https://schemas.af-south-1.amazonaws.com"
@@ -18952,6 +19678,9 @@
         ],
         "eu-central-1": [
             "https://schemas.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://schemas.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://schemas.eu-north-1.amazonaws.com"
@@ -19024,6 +19753,9 @@
         "eu-central-1": [
             "https://sdb.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://sdb.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://sdb.eu-north-1.amazonaws.com"
         ],
@@ -19094,6 +19826,9 @@
         ],
         "eu-central-1": [
             "https://secretsmanager.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://secretsmanager.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://secretsmanager.eu-north-1.amazonaws.com"
@@ -19166,6 +19901,9 @@
         "eu-central-1": [
             "https://securityhub.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://securityhub.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://securityhub.eu-north-1.amazonaws.com"
         ],
@@ -19236,6 +19974,9 @@
         ],
         "eu-central-1": [
             "https://serverlessrepo.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://serverlessrepo.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://serverlessrepo.eu-north-1.amazonaws.com"
@@ -19308,6 +20049,9 @@
         "eu-central-1": [
             "https://servicequotas.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://servicequotas.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://servicequotas.eu-north-1.amazonaws.com"
         ],
@@ -19378,6 +20122,9 @@
         ],
         "eu-central-1": [
             "https://servicecatalog.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://servicecatalog.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://servicecatalog.eu-north-1.amazonaws.com"
@@ -19450,6 +20197,9 @@
         "eu-central-1": [
             "https://servicecatalog-appregistry.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://servicecatalog-appregistry.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://servicecatalog-appregistry.eu-north-1.amazonaws.com"
         ],
@@ -19520,6 +20270,9 @@
         ],
         "eu-central-1": [
             "https://data-servicediscovery.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://data-servicediscovery.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://data-servicediscovery.eu-north-1.amazonaws.com"
@@ -19592,6 +20345,9 @@
         "eu-central-1": [
             "https://email.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://email.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://email.eu-north-1.amazonaws.com"
         ],
@@ -19663,6 +20419,9 @@
         "eu-central-1": [
             "https://email.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://email.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://email.eu-north-1.amazonaws.com"
         ],
@@ -19732,6 +20491,9 @@
             "https://shield.us-east-1.amazonaws.com"
         ],
         "eu-central-1": [
+            "https://shield.us-east-1.amazonaws.com"
+        ],
+        "eu-central-2": [
             "https://shield.us-east-1.amazonaws.com"
         ],
         "eu-north-1": [
@@ -19805,6 +20567,9 @@
         "eu-central-1": [
             "https://signer.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://signer.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://signer.eu-north-1.amazonaws.com"
         ],
@@ -19875,6 +20640,9 @@
         ],
         "eu-central-1": [
             "https://sms.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://sms.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://sms.eu-north-1.amazonaws.com"
@@ -19947,6 +20715,9 @@
         "eu-central-1": [
             "https://sms-voice.pinpoint.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://sms-voice.pinpoint.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://sms-voice.pinpoint.eu-north-1.amazonaws.com"
         ],
@@ -20017,6 +20788,9 @@
         ],
         "eu-central-1": [
             "https://snow-device-management.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://snow-device-management.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://snow-device-management.eu-north-1.amazonaws.com"
@@ -20089,6 +20863,9 @@
         "eu-central-1": [
             "https://snowball.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://snowball.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://snowball.eu-north-1.amazonaws.com"
         ],
@@ -20159,6 +20936,9 @@
         ],
         "eu-central-1": [
             "https://sns.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://sns.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://sns.eu-north-1.amazonaws.com"
@@ -20231,6 +21011,9 @@
         "eu-central-1": [
             "https://sqs.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://sqs.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://sqs.eu-north-1.amazonaws.com"
         ],
@@ -20301,6 +21084,9 @@
         ],
         "eu-central-1": [
             "https://ssm.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://ssm.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://ssm.eu-north-1.amazonaws.com"
@@ -20373,6 +21159,9 @@
         "eu-central-1": [
             "https://ssm-contacts.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://ssm-contacts.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://ssm-contacts.eu-north-1.amazonaws.com"
         ],
@@ -20443,6 +21232,9 @@
         ],
         "eu-central-1": [
             "https://ssm-incidents.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://ssm-incidents.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://ssm-incidents.eu-north-1.amazonaws.com"
@@ -20515,6 +21307,9 @@
         "eu-central-1": [
             "https://portal.sso.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://portal.sso.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://portal.sso.eu-north-1.amazonaws.com"
         ],
@@ -20585,6 +21380,9 @@
         ],
         "eu-central-1": [
             "https://sso.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://sso.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://sso.eu-north-1.amazonaws.com"
@@ -20657,6 +21455,9 @@
         "eu-central-1": [
             "https://oidc.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://oidc.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://oidc.eu-north-1.amazonaws.com"
         ],
@@ -20727,6 +21528,9 @@
         ],
         "eu-central-1": [
             "https://sync-states.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://sync-states.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://sync-states.eu-north-1.amazonaws.com"
@@ -20799,6 +21603,9 @@
         "eu-central-1": [
             "https://storagegateway.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://storagegateway.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://storagegateway.eu-north-1.amazonaws.com"
         ],
@@ -20869,6 +21676,9 @@
         ],
         "eu-central-1": [
             "https://sts.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://sts.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://sts.amazonaws.com"
@@ -20941,6 +21751,9 @@
         "eu-central-1": [
             "https://support.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://support.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://support.eu-north-1.amazonaws.com"
         ],
@@ -21011,6 +21824,9 @@
         ],
         "eu-central-1": [
             "https://supportapp.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://supportapp.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://supportapp.eu-north-1.amazonaws.com"
@@ -21083,6 +21899,9 @@
         "eu-central-1": [
             "https://swf.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://swf.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://swf.eu-north-1.amazonaws.com"
         ],
@@ -21153,6 +21972,9 @@
         ],
         "eu-central-1": [
             "https://synthetics.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://synthetics.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://synthetics.eu-north-1.amazonaws.com"
@@ -21225,6 +22047,9 @@
         "eu-central-1": [
             "https://textract.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://textract.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://textract.eu-north-1.amazonaws.com"
         ],
@@ -21295,6 +22120,9 @@
         ],
         "eu-central-1": [
             "https://query.timestream.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://query.timestream.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://query.timestream.eu-north-1.amazonaws.com"
@@ -21367,6 +22195,9 @@
         "eu-central-1": [
             "https://ingest.timestream.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://ingest.timestream.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://ingest.timestream.eu-north-1.amazonaws.com"
         ],
@@ -21437,6 +22268,9 @@
         ],
         "eu-central-1": [
             "https://transcribe.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://transcribe.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://transcribe.eu-north-1.amazonaws.com"
@@ -21509,6 +22343,9 @@
         "eu-central-1": [
             "https://transfer.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://transfer.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://transfer.eu-north-1.amazonaws.com"
         ],
@@ -21579,6 +22416,9 @@
         ],
         "eu-central-1": [
             "https://translate.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://translate.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://translate.eu-north-1.amazonaws.com"
@@ -21651,6 +22491,9 @@
         "eu-central-1": [
             "https://voiceid.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://voiceid.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://voiceid.eu-north-1.amazonaws.com"
         ],
@@ -21720,6 +22563,9 @@
             "https://waf.amazonaws.com"
         ],
         "eu-central-1": [
+            "https://waf.amazonaws.com"
+        ],
+        "eu-central-2": [
             "https://waf.amazonaws.com"
         ],
         "eu-north-1": [
@@ -21793,6 +22639,9 @@
         "eu-central-1": [
             "https://waf-regional.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://waf-regional.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://waf-regional.eu-north-1.amazonaws.com"
         ],
@@ -21863,6 +22712,9 @@
         ],
         "eu-central-1": [
             "https://wafv2.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://wafv2.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://wafv2.eu-north-1.amazonaws.com"
@@ -21935,6 +22787,9 @@
         "eu-central-1": [
             "https://wellarchitected.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://wellarchitected.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://wellarchitected.eu-north-1.amazonaws.com"
         ],
@@ -22005,6 +22860,9 @@
         ],
         "eu-central-1": [
             "https://wisdom.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://wisdom.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://wisdom.eu-north-1.amazonaws.com"
@@ -22077,6 +22935,9 @@
         "eu-central-1": [
             "https://workdocs.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://workdocs.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://workdocs.eu-north-1.amazonaws.com"
         ],
@@ -22114,77 +22975,6 @@
             "https://workdocs.us-west-2.amazonaws.com"
         ]
     },
-    "worklink": {
-        "af-south-1": [
-            "https://worklink.af-south-1.amazonaws.com"
-        ],
-        "ap-east-1": [
-            "https://worklink.ap-east-1.amazonaws.com"
-        ],
-        "ap-northeast-1": [
-            "https://worklink.ap-northeast-1.amazonaws.com"
-        ],
-        "ap-northeast-2": [
-            "https://worklink.ap-northeast-2.amazonaws.com"
-        ],
-        "ap-northeast-3": [
-            "https://worklink.ap-northeast-3.amazonaws.com"
-        ],
-        "ap-south-1": [
-            "https://worklink.ap-south-1.amazonaws.com"
-        ],
-        "ap-southeast-1": [
-            "https://worklink.ap-southeast-1.amazonaws.com"
-        ],
-        "ap-southeast-2": [
-            "https://worklink.ap-southeast-2.amazonaws.com"
-        ],
-        "ap-southeast-3": [
-            "https://worklink.ap-southeast-3.amazonaws.com"
-        ],
-        "ca-central-1": [
-            "https://worklink.ca-central-1.amazonaws.com"
-        ],
-        "eu-central-1": [
-            "https://worklink.eu-central-1.amazonaws.com"
-        ],
-        "eu-north-1": [
-            "https://worklink.eu-north-1.amazonaws.com"
-        ],
-        "eu-south-1": [
-            "https://worklink.eu-south-1.amazonaws.com"
-        ],
-        "eu-west-1": [
-            "https://worklink.eu-west-1.amazonaws.com"
-        ],
-        "eu-west-2": [
-            "https://worklink.eu-west-2.amazonaws.com"
-        ],
-        "eu-west-3": [
-            "https://worklink.eu-west-3.amazonaws.com"
-        ],
-        "me-central-1": [
-            "https://worklink.me-central-1.amazonaws.com"
-        ],
-        "me-south-1": [
-            "https://worklink.me-south-1.amazonaws.com"
-        ],
-        "sa-east-1": [
-            "https://worklink.sa-east-1.amazonaws.com"
-        ],
-        "us-east-1": [
-            "https://worklink.us-east-1.amazonaws.com"
-        ],
-        "us-east-2": [
-            "https://worklink.us-east-2.amazonaws.com"
-        ],
-        "us-west-1": [
-            "https://worklink.us-west-1.amazonaws.com"
-        ],
-        "us-west-2": [
-            "https://worklink.us-west-2.amazonaws.com"
-        ]
-    },
     "workmail": {
         "af-south-1": [
             "https://workmail.af-south-1.amazonaws.com"
@@ -22218,6 +23008,9 @@
         ],
         "eu-central-1": [
             "https://workmail.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://workmail.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://workmail.eu-north-1.amazonaws.com"
@@ -22290,6 +23083,9 @@
         "eu-central-1": [
             "https://workmailmessageflow.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://workmailmessageflow.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://workmailmessageflow.eu-north-1.amazonaws.com"
         ],
@@ -22360,6 +23156,9 @@
         ],
         "eu-central-1": [
             "https://workspaces.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://workspaces.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://workspaces.eu-north-1.amazonaws.com"
@@ -22432,6 +23231,9 @@
         "eu-central-1": [
             "https://workspaces-web.eu-central-1.amazonaws.com"
         ],
+        "eu-central-2": [
+            "https://workspaces-web.eu-central-2.amazonaws.com"
+        ],
         "eu-north-1": [
             "https://workspaces-web.eu-north-1.amazonaws.com"
         ],
@@ -22502,6 +23304,9 @@
         ],
         "eu-central-1": [
             "https://xray.eu-central-1.amazonaws.com"
+        ],
+        "eu-central-2": [
+            "https://xray.eu-central-2.amazonaws.com"
         ],
         "eu-north-1": [
             "https://xray.eu-north-1.amazonaws.com"
