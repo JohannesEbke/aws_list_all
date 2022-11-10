@@ -17,15 +17,18 @@ cache = AppCache('aws_list_all')
 
 VERBS_LISTINGS = ['Describe', 'Get', 'List']
 
-SERVICE_BLACKLIST = [
+SERVICE_IGNORE_LIST = [
     'alexaforbusiness',  # TODO: Mostly organization-specific calls and would need to be queried differently
     'apigatewaymanagementapi',  # This API allows management of deployed APIs, and requires an endpoint per API.
+    'backupstorage',  # This seems to be an API centerered around Jobs, no listings possible
     'cloudsearchdomain',  # Domain-specific endpoint required
     'kinesis-video-archived-media',  # API operating on stream-specific endpoints
     'kinesis-video-media',  # API operating on stream-specific endpoints
+    'macie',  # This service has been deprecated and turned off
     'managedblockchain',  # TODO: Unclear, does not have a region
     'mediastore-data',  # Mediastore Container-specific endpoint required
     's3control',  # TODO: Account-ID specific endpoint required
+    'worklink',  # Seems to have no API?
 ]
 
 DEPRECATED_OR_DISALLOWED = {
@@ -310,7 +313,7 @@ PARAMETERS_REQUIRED = {
 
 def get_services():
     """Return a list of all service names where listable resources can be present"""
-    return [service for service in sorted(boto3.Session().get_available_services()) if service not in SERVICE_BLACKLIST]
+    return [service for service in sorted(boto3.Session().get_available_services()) if service not in SERVICE_IGNORE_LIST]
 
 
 def get_verbs(service):
