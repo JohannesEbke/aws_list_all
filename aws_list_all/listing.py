@@ -12,73 +12,75 @@ from .resource_filter import *
 
 RESULT_TYPE_LENGTH = 3
 
-PARAMETERS = {
-    'cloudfront': {
-        'ListCachePolicies': {
-            'Type': 'custom'
+def get_parameters():
+    parameters = {
+        'cloudfront': {
+            'ListCachePolicies': {
+                'Type': 'custom'
+            },
         },
-    },
-    'ec2': {
-        'DescribeSnapshots': {
-            'OwnerIds': ['self']
+        'ec2': {
+            'DescribeSnapshots': {
+                'OwnerIds': ['self']
+            },
+            'DescribeImages': {
+                'Owners': ['self']
+            },
         },
-        'DescribeImages': {
-            'Owners': ['self']
+        'ecs': {
+            'ListTaskDefinitionFamilies': {
+                'status': 'ACTIVE',
+            }
         },
-    },
-    'ecs': {
-        'ListTaskDefinitionFamilies': {
-            'status': 'ACTIVE',
-        }
-    },
-    'elasticbeanstalk': {
-        'ListPlatformVersions': {
-            'Filters': [{
-                'Operator': '=',
-                'Type': 'PlatformOwner',
-                'Values': ['self']
-            }]
-        }
-    },
-    'emr': {
-        'ListClusters': {
-            'ClusterStates': ['STARTING', 'BOOTSTRAPPING', 'RUNNING', 'WAITING', 'TERMINATING'],
-        }
-    },
-    'iam': {
-        'ListPolicies': {
-            'Scope': 'Local'
+        'elasticbeanstalk': {
+            'ListPlatformVersions': {
+                'Filters': [{
+                    'Operator': '=',
+                    'Type': 'PlatformOwner',
+                    'Values': ['self']
+                }]
+            }
         },
-    },
-    'ssm': {
-        'ListDocuments': {
-            'DocumentFilterList': [{
-                'key': 'Owner',
-                'value': 'self'
-            }]
+        'emr': {
+            'ListClusters': {
+                'ClusterStates': ['STARTING', 'BOOTSTRAPPING', 'RUNNING', 'WAITING', 'TERMINATING'],
+            }
         },
-    },
-    'waf-regional': {
-        'ListLoggingConfigurations': {
-            'Limit': 100,
+        'iam': {
+            'ListPolicies': {
+                'Scope': 'Local'
+            },
         },
-    },
-}
+        'ssm': {
+            'ListDocuments': {
+                'DocumentFilterList': [{
+                    'key': 'Owner',
+                    'value': 'self'
+                }]
+            },
+        },
+        'waf-regional': {
+            'ListLoggingConfigurations': {
+                'Limit': 100,
+            },
+        },
+    }
 
-ssf = list(
-    boto3.Session(
-        region_name='us-east-1'
-    ).client('cloudformation').meta.service_model.shape_for('ListStacksInput').members['StackStatusFilter'].member.enum
-)
-ssf.remove('DELETE_COMPLETE')
-PARAMETERS.setdefault('cloudformation', {})['ListStacks'] = {'StackStatusFilter': ssf}
+    ssf = list(
+        boto3.Session(
+            region_name='us-east-1'
+        ).client('cloudformation').meta.service_model.shape_for('ListStacksInput').members['StackStatusFilter'].member.enum
+    )
+    ssf.remove('DELETE_COMPLETE')
+    parameters.setdefault('cloudformation', {})['ListStacks'] = {'StackStatusFilter': ssf}
+    return parameters
 
 
 def run_raw_listing_operation(service, region, operation, profile):
     """Execute a given operation and return its raw result"""
     client = get_client(service, region, profile)
     api_to_method_mapping = dict((v, k) for k, v in client.meta.method_to_api_mapping.items())
-    parameters = PARAMETERS.get(service, {}).get(operation, {})
+    parameters = get_parameters().get(service, {}).get(operation, {})
     op_model = client.meta.service_model.operation_model(operation)
     required_members = op_model.input_shape.required_members if op_model.input_shape else []
     if "MaxResults" in required_members:
