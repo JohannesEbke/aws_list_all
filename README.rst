@@ -14,7 +14,7 @@ List all resources in an AWS account, all regions, all services(*). Writes JSON 
 Usage
 -----
 
-You need to have python (both 2 or 3 work) as well as AWS credentials set up as usual.
+You need to have python (only python3 tested) as well as AWS credentials set up as usual.
 
 Quick Start with virtualenv::
 
@@ -56,7 +56,7 @@ region, and operation used to find them. They can be dumped with::
 How do I really list everything?
 ------------------------------------------------
 
-Warning: As AWS has over 1024 API endpoints, you may have to increase your allowed number of open files
+Warning: As AWS has over 1024 API endpoints, aws-list-all tries to increase your allowed number of open files
 See https://github.com/JohannesEbke/aws_list_all/issues/6
 
 Restricting the region and service is optional, a simple ``query`` without arguments lists everything.
