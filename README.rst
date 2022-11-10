@@ -8,8 +8,8 @@ List all resources in an AWS account, all regions, all services(*). Writes JSON 
 .. image:: https://img.shields.io/pypi/v/aws-list-all
    :alt: PyPI
 
-.. image:: https://github.com/JohannesEbke/aws_list_all/actions/workflows/tests/badge.svg
-   :target: https://github.com/JohannesEbke/aws_list_all/actions/workflows/tests
+.. image:: https://github.com/JohannesEbke/aws_list_all/actions/workflows/tests.yaml/badge.svg
+   :target: https://github.com/JohannesEbke/aws_list_all/actions/workflows/tests.yaml
 
 Usage
 -----
