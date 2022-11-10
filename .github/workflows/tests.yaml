@@ -3,14 +3,17 @@ run-name: Push by ${{ github.actor }}
 on: [push]
 jobs:
   pytest37:
+    strategy:
+      matrix:
+        version: [3.7, 3.11]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Install Python 3.7
+      - name: Install Python ${{ matrix.version }}
         uses: actions/setup-python@v4
         with:
-          python-version: '3.7'
+          python-version: ${{ matrix.version }}
       - name: Install Dependencies
         run: pip install flake8 yapf pytest
       - name: Install aws-list-all
