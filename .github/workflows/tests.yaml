@@ -2,7 +2,7 @@ name: Tests
 run-name: Push by ${{ github.actor }}
 on: [push]
 jobs:
-  pytest37:
+  pytest:
     strategy:
       matrix:
         version: [3.7, 3.11]
