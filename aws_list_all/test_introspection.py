@@ -16,7 +16,7 @@ def test_get_endpoint_hosts():
     endpoint_hosts = get_endpoint_hosts()
     assert set(services) - set(endpoint_hosts) == set()
     services_with_no_endpoint = [service for service in services if len(endpoint_hosts[service]) == 0]
-    # Services with no endpoint means they should probably go to the SERVICE_BLACKLIST
+    # Services with no endpoint means they should probably go to the SERVICE_IGNORE_LIST
     assert not services_with_no_endpoint
 
 
@@ -24,9 +24,10 @@ def test_get_service_regions():
     services = get_services()
     regions = get_service_regions()
     assert set(services) - set(regions) == set()
-    services_with_no_region = [service for service in services if len(regions[service]) == 0]
-    # Services with no region means they should probably go to the SERVICE_BLACKLIST
-    assert not services_with_no_region
+    services_with_no_region = {service for service in services if len(regions[service]) == 0}
+    expected_no_region = {'route53-recovery-cluster', 'mobile'}
+    # Services with no region that have no listings means they should probably go to the SERVICE_IGNORE_LIST
+    assert services_with_no_region == expected_no_region
 
 
 def test_get_regions_for_service():
@@ -43,7 +44,6 @@ def test_get_listing_operations():
         'application-autoscaling',
         'budgets',
         'braket',  # TODO: Failure of heuristic, see issue #38
-        'connect',
         'connectparticipant',
         'ebs',
         'ec2-instance-connect',
@@ -82,6 +82,15 @@ def test_get_listing_operations():
         'workdocs',
         'worklink',
         'workmailmessageflow',
+        'connect-contact-lens',
+        'sagemaker-featurestore-runtime',
+        'sagemaker-edge',
+        'lexv2-runtime',
+        'controltower',
+        'chime-sdk-meetings',
+        'appconfigdata',
+        'rbin',
+        'amplifyuibuilder',
     }
 
     services_with_no_listings = set()

@@ -81,6 +81,7 @@ def run_raw_listing_operation(service, region, operation, profile):
 
 class Listing(object):
     """Represents a listing operation on an AWS service and its result"""
+
     def __init__(self, service, region, operation, response, profile):
         self.service = service
         self.region = region

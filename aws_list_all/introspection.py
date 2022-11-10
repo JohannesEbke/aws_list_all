@@ -4,7 +4,7 @@ import re
 from collections import defaultdict
 from json import load, dump
 from multiprocessing.pool import ThreadPool
-from socket import gethostbyname
+from socket import gethostbyname, gaierror
 
 import boto3
 from pkg_resources import resource_stream, resource_filename
@@ -17,15 +17,18 @@ cache = AppCache('aws_list_all')
 
 VERBS_LISTINGS = ['Describe', 'Get', 'List']
 
-SERVICE_BLACKLIST = [
+SERVICE_IGNORE_LIST = [
     'alexaforbusiness',  # TODO: Mostly organization-specific calls and would need to be queried differently
     'apigatewaymanagementapi',  # This API allows management of deployed APIs, and requires an endpoint per API.
+    'backupstorage',  # This seems to be an API centerered around Jobs, no listings possible
     'cloudsearchdomain',  # Domain-specific endpoint required
     'kinesis-video-archived-media',  # API operating on stream-specific endpoints
     'kinesis-video-media',  # API operating on stream-specific endpoints
+    'macie',  # This service has been deprecated and turned off
     'managedblockchain',  # TODO: Unclear, does not have a region
     'mediastore-data',  # Mediastore Container-specific endpoint required
     's3control',  # TODO: Account-ID specific endpoint required
+    'worklink',  # Seems to have no API?
 ]
 
 DEPRECATED_OR_DISALLOWED = {
@@ -310,7 +313,9 @@ PARAMETERS_REQUIRED = {
 
 def get_services():
     """Return a list of all service names where listable resources can be present"""
-    return [service for service in sorted(boto3.Session().get_available_services()) if service not in SERVICE_BLACKLIST]
+    return [
+        service for service in sorted(boto3.Session().get_available_services()) if service not in SERVICE_IGNORE_LIST
+    ]
 
 
 def get_verbs(service):
@@ -381,28 +386,49 @@ def get_endpoint_hosts():
         print('  ...looking for {} in all regions...'.format(service))
         result[service] = {}
         for region in ALL_REGIONS:
-            result[service][region] = boto3.Session(region_name=region).client(service).meta.endpoint_url
-
+            meta = get_client(service, region=region).meta
+            # In some services, different operations must access different host prefixes ("api.", "env.").
+            # This means that the endpoint_url itself may not point to any host, defeating our heuristic.
+            # Therefore, we only pick the base URL if at least one operation accesses it, otherwise we pick the
+            # alphabetically first host prefix.
+            endpoint_prefixes = set(
+                meta.service_model.operation_model(op_name).endpoint.get('hostPrefix')
+                for op_name in meta.service_model.operation_names
+                if meta.service_model.operation_model(op_name).endpoint
+            )
+            if None in endpoint_prefixes or not endpoint_prefixes:
+                result[service][region] = [meta.endpoint_url]
+            else:
+                assert meta.endpoint_url.startswith("https://"), meta.endpoint_url
+                result[service][region] = []
+                prefixes = sorted(endpoint_prefixes)
+                if any(pf.endswith(".") for pf in prefixes):
+                    result[service][region] = [meta.endpoint_url]
+                for prefix in prefixes:
+                    result[service][region].append("https://" + prefix + meta.endpoint_url[len("https://"):])
     print('...done.')
     return result
 
 
-def get_endpoint_ip(service_region_host):
-    (service, region), host = service_region_host
-    try:
-        result = gethostbyname(host.split('/')[2])
+def get_endpoint_ip(service_region_hosts):
+    (service, region), hosts = service_region_hosts
+    result = None
+    for host in hosts:
+        try:
+            result = gethostbyname(host.split('/')[2])
+        except gaierror as ex:
+            if ex.errno != -5:  # -5 is "No address associated with hostname"
+                raise
         return (service, region, result)
-    except Exception:
-        return (service, region, None)
 
 
 def get_service_region_ip_in_dns():
-    service_region_host = {}
-    for service, region_host in get_endpoint_hosts().items():
-        for region, host in region_host.items():
-            service_region_host[(service, region)] = host
+    service_region_hosts = {}
+    for service, region_hosts in get_endpoint_hosts().items():
+        for region, hosts in region_hosts.items():
+            service_region_hosts[(service, region)] = hosts
     print('Resolving endpoint IPs to find active endpoints...')
-    result = ThreadPool(128).map(get_endpoint_ip, service_region_host.items())
+    result = ThreadPool(128).map(get_endpoint_ip, service_region_hosts.items())
     print('...done')
     return result
 
