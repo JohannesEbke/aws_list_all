@@ -140,6 +140,10 @@ def main():
     )
 
     args = parser.parse_args()
+    services = []
+    if args.service:
+        for service in args.service:
+            services.extend(service.split(","))
 
     if args.command == 'query':
         if args.directory:
@@ -149,9 +153,8 @@ def main():
                 pass
             os.chdir(args.directory)
         increase_limit_nofiles()
-        services = args.service or get_services()
         do_query(
-            services,
+            services or get_services(),
             args.region,
             args.operation,
             verbose=args.verbose or 0,
