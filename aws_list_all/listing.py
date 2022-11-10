@@ -215,7 +215,7 @@ class Listing(object):
                 del response['MaxItems']
             del response['Quantity']
 
-        for neutral_thing in ('MaxItems', 'MaxResults', 'Quantity', 'requestId'):
+        for neutral_thing in ('MaxItems', 'MaxResults', 'Quantity', 'requestId', 'BillingPeriod'):
             if neutral_thing in response:
                 del response[neutral_thing]
 
@@ -285,6 +285,13 @@ class Listing(object):
         # This API returns a dict instead of a list
         if self.service == 'pinpoint' and self.operation == 'GetApps':
             response['ApplicationsResponse'] = response.get('ApplicationsResponse', {}).get('Items', [])
+
+        if self.service == 'pinpoint' and self.operation == 'GetRecommenderConfigurations':
+            response['ListRecommenderConfigurationsResponse'] = \
+                response['ListRecommenderConfigurationsResponse']['Item']
+
+        if self.service == 'pinpoint' and self.operation == 'ListTemplates':
+            response['TemplatesResponse'] = response['TemplatesResponse']['Item']
 
         # Remove AWS-defined Baselines
         if self.service == 'ssm' and self.operation == 'DescribePatchBaselines':
@@ -370,13 +377,6 @@ class Listing(object):
                 g for g in response.get('CacheSubnetGroups', []) if g.get('CacheSubnetGroupName') != 'default'
             ]
 
-        # The pinpoint service has a strage way to report results
-        if self.service == 'pinpoint' and self.operation == 'GetRecommenderConfigurations':
-            response['ListRecommenderConfigurationsResponse'] = \
-                response['ListRecommenderConfigurationsResponse']['Item']
-
-        if self.service == 'pinpoint' and self.operation == 'GetRecommenderConfigurations':
-            response['TemplatesResponse'] = response['TemplatesResponse']['Item']
 
         # interpret nextToken in several services
         if (self.service, self.operation) in (
@@ -390,6 +390,7 @@ class Listing(object):
         ):
             if response.get('nextToken'):
                 complete = False
+            if 'nextToken' in response:
                 del response['nextToken']
 
         for key, value in response.items():

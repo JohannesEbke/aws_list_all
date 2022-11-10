@@ -87,6 +87,11 @@ def test_get_listing_operations():
         'appconfigdata',
         'rbin',
         'amplifyuibuilder',
+        'mediaconvert',
+        'personalize-runtime',
+        'account',
+        'wafv2',
+        'chime-sdk-messaging',
     }
 
     services_with_no_listings = set()
