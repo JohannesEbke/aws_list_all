@@ -27,6 +27,17 @@ RESULT_NO_ACCESS = '>:|'
 # TODO: If the error just indicates that the current user does not have the permissions to list resources,
 # the user of this tool should probably be warned.
 RESULT_IGNORE_ERRORS = {
+    'auditmanager': {
+        # Needs enabling
+        'GetDelegations': 'AccessDeniedException',
+        'GetInsights': 'AccessDeniedException',
+        'GetOrganizationAdminAccount': 'AccessDeniedException',
+        'GetServicesInScope': 'AccessDeniedException',
+        'ListAssessmentReports': 'AccessDeniedException',
+        'ListAssessments': 'AccessDeniedException',
+        'ListControlDomainInsights': 'AccessDeniedException',
+        'ListNotifications': 'AccessDeniedException',
+    },
     'apigateway': {
         # apigateway<->vpc links not supported in all regions
         'GetVpcLinks': 'vpc link not supported for region',
@@ -52,16 +63,46 @@ RESULT_IGNORE_ERRORS = {
         'ListLunaClients': 'This service is unavailable.',
         'ListHsms': 'This service is unavailable.',
     },
+    'compute-optimizer': {
+        'DescribeRecommendationExportJobs':
+            'Aws account is not registered for recommendation.',
+        'GetAutoScalingGroupRecommendations':
+            'Aws account is not registered for recommendation.',
+        'GetEBSVolumeRecommendations':
+            'Aws account is not registered for recommendation.',
+        'GetEC2InstanceRecommendations':
+            'Aws account is not registered for recommendation.',
+        'GetEnrollmentStatusesForOrganization':
+            "You can't get enrollment statuses for member accounts of an organization.",
+        'GetLambdaFunctionRecommendations':
+            'Aws account is not registered for recommendation.',
+        'GetRecommendationSummaries':
+            'Aws account is not registered for recommendation.',
+    },
     'config': {
         # config service not available in all advertised regions
         'DescribeConfigRules': 'AccessDeniedException',
+    },
+    'connect': {
+        # needs allowlisting
+        'ListTrafficDistributionGroups': 'AccessDeniedException',
     },
     'cur': {
         # Linked accounts are not authorized to describe report definitions
         'DescribeReportDefinitions': 'is not authorized to callDescribeReportDefinitions',
     },
+    'devops-guru': {
+        'DescribeEventSourcesConfig': 'Please onboard to DevOps Guru',
+    },
     'directconnect': {
         'DescribeInterconnects': 'not an authorized Direct Connect partner.',
+    },
+    'drs': {
+        'DescribeJobs': 'Account not initialized',
+        'DescribeRecoveryInstances': 'Account not initialized',
+        'DescribeReplicationConfigurationTemplates': 'Account not initialized',
+        'DescribeSourceServers': 'Account not initialized',
+        'ListStagingAccounts': 'Account not initialized',
     },
     'dynamodb': {
         # dynamodb Backups not available in all advertised regions
@@ -86,6 +127,13 @@ RESULT_IGNORE_ERRORS = {
     'fms': {
         'ListMemberAccounts': 'not currently delegated by AWS FM',
         'ListPolicies': 'not currently delegated by AWS FM',
+        'ListAppsLists': 'not currently delegated by AWS FM',
+        'ListProtocolsLists': 'not currently delegated by AWS FM',
+        'ListResourceSets': 'not currently delegated by AWS FM',
+    },
+    'finspace-data': {
+        'GetWorkingLocation': 'Failed to retrieve environment',
+        'ListDatasets': 'Failed to retrieve environment',
     },
     'iot': {
         # full iot service not available in all advertised regions
@@ -103,8 +151,19 @@ RESULT_IGNORE_ERRORS = {
     },
     'license-manager': {
         'GetServiceSettings': 'Service role not found',
+        'ListDistributedGrants': 'Service role not found',
         'ListLicenseConfigurations': 'Service role not found',
+        'ListLicenseConversionTasks': 'Service role not found',
+        'ListLicenseManagerReportGenerators': 'Service role not found',
+        'ListLicenses': 'Service role not found',
+        'ListReceivedGrants': 'Service role not found',
+        'ListReceivedLicenses': 'Service role not found',
         'ListResourceInventory': 'Service role not found',
+        'ListTokens': 'Service role not found',
+    },
+    'license-manager-user-subscriptions': {
+        'ListIdentityProviders': 'Service Linked role is not present',
+        'ListInstances': 'Service Linked role is not present',
     },
     'lightsail': {
         # lightsail GetDomains only available in us-east-1
@@ -119,6 +178,30 @@ RESULT_IGNORE_ERRORS = {
     'macie': {
         'ListMemberAccounts': 'Macie is not enabled',
         'ListS3Resources': 'Macie is not enabled',
+    },
+    'macie2': {
+        'DescribeBuckets': 'Macie is not enabled',
+        'DescribeOrganizationConfiguration': 'you must be the Macie administrator',
+        'GetAdministratorAccount': 'Macie is not enabled',
+        'GetBucketStatistics': 'Macie is not enabled',
+        'GetFindingsPublicationConfiguration': 'Macie is not enabled',
+        'GetMacieSession': 'Macie is not enabled',
+        'GetMasterAccount': 'Macie is not enabled',
+        'GetRevealConfiguration': 'you have to enable Macie for your account',
+        'ListAllowLists': 'Macie isn’t enabled',
+        'ListClassificationJobs': 'Macie is not enabled',
+        'ListCustomDataIdentifiers': 'Macie is not enabled',
+        'ListFindings': 'Macie is not enabled',
+        'ListFindingsFilters': 'Macie is not enabled',
+        'ListManagedDataIdentifiers': 'Macie is not enabled',
+        'ListMembers': 'Macie is not enabled',
+    },
+    'mgn': {
+        'DescribeJobs': 'Account not initialized',
+        'DescribeLaunchConfigurationTemplates': 'Account not initialized',
+        'DescribeReplicationConfigurationTemplates': 'Account not initialized',
+        'DescribeSourceServers': 'Account not initialized',
+        'DescribeVcenterClients': 'Account not initialized',
     },
     'mturk': {
         'GetAccountBalance': 'Your AWS account must be linked to your Amazon Mechanical Turk Account',
@@ -143,6 +226,10 @@ RESULT_IGNORE_ERRORS = {
         # rekognition stream processors not available in all advertised regions
         'ListStreamProcessors': 'AccessDeniedException',
     },
+    'resource-explorer-2': {
+        'GetDefaultView': 'No Resource Explorer index exists in this region.',
+        'GetIndex': 'No index found for the account.',
+    },
     'robomaker': {
         # ForbiddenException is raised if robomaker is not available in a region
         'ListDeploymentJobs': 'ForbiddenException',
@@ -164,18 +251,35 @@ RESULT_IGNORE_ERRORS = {
         'ListReceiptFilters': 'Service returned the HTTP status code: 404',
         'ListReceiptRuleSets': 'Service returned the HTTP status code: 404',
     },
+    'sesv2': {
+        'ListImportJobs': 'Your account is still in the sandbox.',
+        'ListRecommendations': 'To use this feature you must enable',
+    },
     'shield': {
         'DescribeDRTAccess': 'An error occurred',
         'DescribeEmergencyContactSettings': 'An error occurred',
         'ListProtections': 'ResourceNotFoundException',
+        'ListProtectionGroups': 'ResourceNotFoundException',
     },
     'snowball': {
         'ListCompatibleImages': 'An error occurred',
+    },
+    'snow-device-management': {
+        'ListDevices': 'No devices found in this region.',
+        'ListTasks': 'No devices found in this region.',
+    },
+    'sso-admin': {
+        'ListInstances': 'is not authorized to perform: sso:ListInstances',
     },
     'storagegateway': {
         # The storagegateway advertised but not available in some regions
         'DescribeTapeArchives': 'InvalidGatewayRequestException',
         'ListTapes': 'InvalidGatewayRequestException',
+    },
+    'support': {
+        'DescribeCases': 'Amazon Web Services Premium Support Subscription is required',
+        'DescribeServices': 'Amazon Web Services Premium Support Subscription is required',
+        'DescribeSeverityLevels': 'Amazon Web Services Premium Support Subscription is required',
     },
 }
 
