@@ -168,6 +168,7 @@ AWS_RESOURCE_QUERIES = {
 # still be used later for change tracking, e.g. tracking account limits over time with DescribeAccountLimits.
 NOT_RESOURCE_DESCRIPTIONS = {
     'apigateway': ['GetAccount'],
+    'account': ['GetContactInformation'],
     'autoscaling': ['DescribeAccountLimits'],
     'alexaforbusiness': ['GetInvitationConfiguration'],
     'athena': ['ListQueryExecutions'],
@@ -187,9 +188,16 @@ NOT_RESOURCE_DESCRIPTIONS = {
     'ds': ['GetDirectoryLimits'],
     'dynamodb': ['DescribeLimits'],
     'ec2': [
-        'DescribeAccountAttributes', 'DescribeDhcpOptions', 'DescribeVpcClassicLink',
-        'DescribeVpcClassicLinkDnsSupport', 'DescribePrincipalIdFormat', 'GetEbsDefaultKmsKeyId',
-        'GetEbsEncryptionByDefault'
+        'DescribeAccountAttributes',
+        'DescribeDhcpOptions',
+        'DescribeInstanceEventNotificationAttributes',
+        'DescribePrincipalIdFormat',
+        'DescribeVpcClassicLink',
+        'DescribeVpcClassicLinkDnsSupport',
+        'GetEbsDefaultKmsKeyId',
+        'GetEbsEncryptionByDefault',
+        'GetSerialConsoleAccessStatus',
+        'InstanceTagAttribute',
     ],
     'ecr': ['GetAuthorizationToken'],
     'ecs': ['DescribeClusters'],  # This gives duplicates from ListClusters, and also includes deleted clusters
@@ -252,14 +260,30 @@ NOT_RESOURCE_DESCRIPTIONS = {
 PARAMETERS_REQUIRED = {
     'appstream': ['DescribeUserStackAssociations'],
     'batch': ['ListJobs'],
-    'cloudformation': ['GetTemplateSummary', 'DescribeStackResources', 'DescribeStackEvents', 'GetTemplate'],
+    'cloudformation': [
+        'DescribeStackEvents',
+        'DescribeStackResources',
+        'DescribeType' ,
+        'GetTemplate',
+        'GetTemplateSummary',
+        'ListTypeVersions'
+    ],
+    'cloudfront': [
+        'GetRealtimeLogConfig',
+        'ListDistributionsByRealtimeLogConfig',
+    ],
     'cloudhsm': ['DescribeHsm', 'DescribeLunaClient'],
     'cloudtrail': ['GetEventSelectors'],
     'codecommit': ['GetBranch'],
     'codedeploy': ['GetDeploymentTarget', 'ListDeploymentTargets'],
     'cognito-idp': ['GetUser'],
     'directconnect': ['DescribeDirectConnectGatewayAssociations', 'DescribeDirectConnectGatewayAttachments'],
-    'ec2': ['DescribeSpotDatafeedSubscription', 'DescribeLaunchTemplateVersions'],
+    'ec2': [
+        'DescribeLaunchTemplateVersions',
+        'DescribeSpotDatafeedSubscription',
+        'GetAssociatedEnclaveCertificateIamRoles',
+        'GetTransitGatewayMulticastDomainAssociations',
+    ],
     'ecs': ['ListContainerInstances', 'ListServices', 'ListTasks'],
     'efs': ['DescribeMountTargets'],
     'elasticache': ['ListAllowedNodeTypeModifications', 'DescribeCacheSecurityGroups'],

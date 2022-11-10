@@ -43,6 +43,10 @@ RESULT_IGNORE_ERRORS = {
         'ListEnvironments': 'SSLError',
         'DescribeEnvironmentMemberships': 'SSLError',
     },
+    'cloudformation': {
+        # DescribePublisher only works if the account itself is a publisher
+        'DescribePublisher': 'CFNRegistryException',
+    },
     'cloudhsm': {
         'ListHapgs': 'This service is unavailable.',
         'ListLunaClients': 'This service is unavailable.',
@@ -75,6 +79,9 @@ RESULT_IGNORE_ERRORS = {
         # This seems to be the error if no ClientVpnEndpoints are available in the region
         'DescribeClientVpnEndpoints':
             'InternalError',
+        # The following API needs explicit whitelisting
+        'DescribeTrunkInterfaceAssociations':
+            'OperationNotPermitted'
     },
     'fms': {
         'ListMemberAccounts': 'not currently delegated by AWS FM',
