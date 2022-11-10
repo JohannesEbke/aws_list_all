@@ -397,34 +397,38 @@ def get_endpoint_hosts():
                 if meta.service_model.operation_model(op_name).endpoint
             )
             if None in endpoint_prefixes or not endpoint_prefixes:
-                result[service][region] = meta.endpoint_url
+                result[service][region] = [meta.endpoint_url]
             else:
+                assert meta.endpoint_url.startswith("https://"), meta.endpoint_url
+                result[service][region] = []
                 prefixes = sorted(endpoint_prefixes)
-                print("   Picking {} from host prefixes {}".format(prefixes[0], prefixes))
-                assert meta.endpoint_url.startswith("https://")
-                result[service][region] = "https://" + prefixes[0] + meta.endpoint_url[len("https://"):]
+                if any(pf.endswith(".") for pf in prefixes):
+                    result[service][region] = [meta.endpoint_url]
+                for prefix in prefixes:
+                    result[service][region].append("https://" + prefix + meta.endpoint_url[len("https://"):])
     print('...done.')
     return result
 
 
-def get_endpoint_ip(service_region_host):
-    (service, region), host = service_region_host
-    try:
-        result = gethostbyname(host.split('/')[2])
-        return (service, region, result)
-    except gaierror as ex:
-        if ex.errno != -5:  # -5 is "No address associated with hostname"
-            raise
-        return (service, region, None)
+def get_endpoint_ip(service_region_hosts):
+    (service, region), hosts = service_region_hosts
+    result = None
+    for host in hosts:
+        try:
+            result = gethostbyname(host.split('/')[2])
+        except gaierror as ex:
+            if ex.errno != -5:  # -5 is "No address associated with hostname"
+                raise
+    return (service, region, result)
 
 
 def get_service_region_ip_in_dns():
-    service_region_host = {}
-    for service, region_host in get_endpoint_hosts().items():
-        for region, host in region_host.items():
-            service_region_host[(service, region)] = host
+    service_region_hosts = {}
+    for service, region_hosts in get_endpoint_hosts().items():
+        for region, hosts in region_hosts.items():
+            service_region_hosts[(service, region)] = hosts
     print('Resolving endpoint IPs to find active endpoints...')
-    result = ThreadPool(128).map(get_endpoint_ip, service_region_host.items())
+    result = ThreadPool(128).map(get_endpoint_ip, service_region_hosts.items())
     print('...done')
     return result
 
