@@ -377,7 +377,6 @@ class Listing(object):
                 g for g in response.get('CacheSubnetGroups', []) if g.get('CacheSubnetGroupName') != 'default'
             ]
 
-
         # interpret nextToken in several services
         if (self.service, self.operation) in (
             ('applicationcostprofiler', 'ListReportDefinitions'),

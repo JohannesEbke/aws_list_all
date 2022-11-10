@@ -314,7 +314,6 @@ NOT_RESOURCE_DESCRIPTIONS = {
     'workspaces': ['DescribeAccount', 'DescribeAccountModifications'],
 }
 
-
 # TODO wafv2 ListWebAcls needs a scope parameter - this may not be caught here!
 
 PARAMETERS_REQUIRED = {
