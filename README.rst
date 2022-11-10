@@ -11,6 +11,8 @@ List all resources in an AWS account, all regions, all services(*). Writes JSON 
 .. image:: https://github.com/JohannesEbke/aws_list_all/actions/workflows/tests.yaml/badge.svg
    :target: https://github.com/JohannesEbke/aws_list_all/actions/workflows/tests.yaml
 
+(Note that the build will break on some boto3 updates)
+
 Usage
 -----
 
