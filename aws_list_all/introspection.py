@@ -340,6 +340,8 @@ PARAMETERS_REQUIRED = {
     'dms': ['ListTagsForResource'],
     'ec2': [
         'DescribeLaunchTemplateVersions',
+        # This works without parameters, returns default sec group rules
+        'DescribeSecurityGroupRules',
         'DescribeSpotDatafeedSubscription',
         'GetAssociatedEnclaveCertificateIamRoles',
         'GetTransitGatewayMulticastDomainAssociations',
