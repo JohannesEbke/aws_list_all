@@ -2,7 +2,14 @@
 from __future__ import print_function
 
 import os
-from resource import getrlimit, setrlimit, RLIMIT_NOFILE
+
+CAN_SET_OPEN_FILE_LIMIT = False
+try:
+    from resource import getrlimit, setrlimit, RLIMIT_NOFILE
+    CAN_SET_OPEN_FILE_LIMIT = True
+except ImportError:
+    pass
+
 from argparse import ArgumentParser
 from sys import exit, stderr
 
@@ -13,6 +20,10 @@ from .query import do_list_files, do_query
 
 
 def increase_limit_nofiles():
+    if not CAN_SET_OPEN_FILE_LIMIT:
+        print("Warning: Cannot import module 'resource' necessary to change open file limits.")
+        print("This is expected if you run Windows without WSL.")
+        return
     soft_limit, hard_limit = getrlimit(RLIMIT_NOFILE)
     desired_limit = 6000  # This should be comfortably larger than the product of services and regions
     if hard_limit < desired_limit:
