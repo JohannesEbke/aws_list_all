@@ -539,7 +539,9 @@ def get_endpoint_ip(service_region_hosts):
         except gaierror as ex:
             if ex.errno != -5:  # -5 is "No address associated with hostname"
                 raise
-        return (service, region, result)
+        if result:
+            break
+    return (service, region, result)
 
 
 def get_service_region_ip_in_dns():
