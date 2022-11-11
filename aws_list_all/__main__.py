@@ -1,14 +1,15 @@
 #!/usr/bin/env python
 from __future__ import print_function
 
-from platform import python_version_tuple
-
-python_major, python_minor, _ = python_version_tuple()
-if int(python_major) < 3 or (int(python_major) == 3 and int(python_minor) < 7):
-    print("WARNING: Unsupported python version. The program may crash now.")
-
-
 import os
+from platform import python_version_tuple
+from argparse import ArgumentParser
+from sys import exit, stderr
+
+from .introspection import (
+    get_listing_operations, get_services, get_verbs, introspect_regions_for_service, recreate_caches
+)
+from .query import do_list_files, do_query
 
 CAN_SET_OPEN_FILE_LIMIT = False
 try:
@@ -17,13 +18,9 @@ try:
 except ImportError:
     pass
 
-from argparse import ArgumentParser
-from sys import exit, stderr
-
-from .introspection import (
-    get_listing_operations, get_services, get_verbs, introspect_regions_for_service, recreate_caches
-)
-from .query import do_list_files, do_query
+python_major, python_minor, _ = python_version_tuple()
+if int(python_major) < 3 or (int(python_major) == 3 and int(python_minor) < 7):
+    print("WARNING: Unsupported python version. The program may crash now.")
 
 
 def increase_limit_nofiles():
