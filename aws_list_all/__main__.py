@@ -1,4 +1,10 @@
 #!/usr/bin/env python
+from platform import python_version_tuple
+
+python_major, python_minor = python_version_tuple()
+if python_major < 3 or (python_major == 3 and python_minor < 7):
+    print("WARNING: Unsupported python version. The program may crash now.")
+
 from __future__ import print_function
 
 import os
