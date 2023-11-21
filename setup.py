@@ -11,7 +11,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 setup(
     name='aws_list_all',
-    version='0.9.2',
+    version='0.9.3',
     description='List all your AWS resources, all regions, all services.',
     long_description=long_description,
     url='https://github.com/JohannesEbke/aws_list_all',
@@ -29,7 +29,7 @@ setup(
     ],
     keywords='aws boto3 listings resources region services',
     packages=['aws_list_all'],
-    install_requires=['boto3>=1.26.7', 'app_json_file_cache>=0.2.2'],
+    install_requires=['boto3>=1.29.4', 'app_json_file_cache>=0.2.2'],
     entry_points={
         'console_scripts': [
             'aws_list_all=aws_list_all.__main__:main',
