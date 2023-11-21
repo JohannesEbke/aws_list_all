@@ -74,7 +74,6 @@ def test_get_listing_operations():
         'sso-oidc',
         'sts',
         'swf',
-        'textract',
         'workdocs',
         'workmailmessageflow',
         'connect-contact-lens',
