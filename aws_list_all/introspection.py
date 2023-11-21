@@ -28,6 +28,7 @@ SERVICE_IGNORE_LIST = [
     'macie',  # This service has been deprecated and turned off
     'managedblockchain',  # TODO: Unclear, does not have a region
     'mediastore-data',  # Mediastore Container-specific endpoint required
+    'neptunedata',  # Data access API
     's3control',  # TODO: Account-ID specific endpoint required
     'worklink',  # Seems to have no API?
 ]
