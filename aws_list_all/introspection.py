@@ -181,7 +181,7 @@ AWS_RESOURCE_QUERIES = {
 # still be used later for change tracking, e.g. tracking account limits over time with DescribeAccountLimits.
 NOT_RESOURCE_DESCRIPTIONS = {
     'apigateway': ['GetAccount'],
-    'account': ['GetContactInformation'],
+    'account': ['GetContactInformation', 'ListRegions'],
     'acm': ['GetAccountConfiguration'],
     'auditmanager': ['GetAccountStatus'],
     'autoscaling': ['DescribeAccountLimits'],
