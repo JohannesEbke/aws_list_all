@@ -125,7 +125,11 @@ RESULT_IGNORE_ERRORS = {
             'InternalError',
         # The following API needs explicit whitelisting
         'DescribeTrunkInterfaceAssociations':
-            'OperationNotPermitted'
+            'OperationNotPermitted',
+        # Not available in this region
+        'DescribeElasticGpus':
+            'not available in this region',
+
     },
     'fms': {
         'ListMemberAccounts': 'not currently delegated by AWS FM',
