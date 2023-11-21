@@ -243,6 +243,7 @@ NOT_RESOURCE_DESCRIPTIONS = {
     'glue': ['GetCatalogImportStatus', 'GetDataCatalogEncryptionSettings'],
     'guardduty': ['GetInvitationsCount'],
     'greengrassv2': ['GetServiceRoleForAccount'],
+    'health': ['DescribeAffectedEntitiesForOrganization'],
     'healthlake': ['DescribeFHIRDatastore'],
     'iam': ['GetAccountPasswordPolicy', 'GetAccountSummary', 'GetUser', 'GetAccountAuthorizationDetails'],
     'iotdeviceadvisor': ['GetEndpoint'],
