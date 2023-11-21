@@ -22,6 +22,7 @@ SERVICE_IGNORE_LIST = [
     'apigatewaymanagementapi',  # This API allows management of deployed APIs, and requires an endpoint per API.
     'backupstorage',  # This seems to be an API centerered around Jobs, no listings possible
     'cloudsearchdomain',  # Domain-specific endpoint required
+    'iotthingsgraph',  # Discontinued
     'kinesis-video-archived-media',  # API operating on stream-specific endpoints
     'kinesis-video-media',  # API operating on stream-specific endpoints
     'macie',  # This service has been deprecated and turned off

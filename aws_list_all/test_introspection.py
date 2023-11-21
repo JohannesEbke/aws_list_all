@@ -54,7 +54,6 @@ def test_get_listing_operations():
         'identitystore',
         'iot-jobs-data',
         'iotevents-data',
-        'iotthingsgraph',
         'kinesis-video-signaling',
         'lex-runtime',
         'marketplace-catalog',
