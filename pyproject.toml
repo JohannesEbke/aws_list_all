@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aws_list_all"
+authors = [
+    {name = "Johannes Ebke", email = "johannes@ebke.org"}
+]
+description = "List all your AWS resources, all regions, all services."
+readme = "README.rst"
+requires-python = ">=3.7"                                                                                                
+keywords = "aws boto3 listings resources region services"
+license = {text = "MIT"}                                                                                                 
+classifiers = [                                                                                                          
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",                                                                                
+]
+dependencies = [
+    "boto3>=1.29.4",
+    "app_json_file_cache>=1.0.1",
+]
+include-package-data = true
+dynamic = ["version"]
+
+[project.urls]
+Homepage = "https://github.com/JohannesEbke/aws_list_all"
+Repository = "https://github.com/JohannesEbke/aws_list_all.git"
+Issues = "https://github.com/JohannesEbke/aws_list_all/issues"
+
+[project.scripts]
+aws_list_all = "aws_list_all.__main__:main"
+aws-list-all = "aws_list_all.__main__:main"
+
+[tool.setuptools.dynamic]
+version = {attr = "app_json_file_cache.__version__"}
