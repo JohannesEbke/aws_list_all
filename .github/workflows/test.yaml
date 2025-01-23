@@ -1,0 +1,29 @@
+name: test
+run-name: Triggered on ${{ github.ref }} by ${{ github.actor }}
+on: [push, pull-request]
+jobs:
+  test:
+    strategy:
+      matrix:
+        version: ["3.9", "3.13"]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Python ${{ matrix.version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.version }}
+      - name: Install Test Software and System under Test
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install flake8 yapf pytest build
+          python -m pip install .
+      - name: Check that aws-list-all --help works.
+        run: aws_list_all --help
+      - name: Lint
+        run: |
+          flake8
+          yapf -d -r aws_list_all/
+      - name: pytest
+        run: pytest -vvv
