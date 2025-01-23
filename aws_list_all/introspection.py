@@ -1,13 +1,13 @@
 from __future__ import print_function
 
 import re
+import importlib_resources
 from collections import defaultdict
 from json import load, dump
 from multiprocessing.pool import ThreadPool
 from socket import gethostbyname, gaierror
 
 import boto3
-from pkg_resources import resource_stream, resource_filename
 
 from app_json_file_cache import AppCache
 
@@ -485,17 +485,21 @@ def recreate_caches(update_packaged_values):
     if update_packaged_values:
         print('Updating packaged values at:')
 
-        endpoint_hosts_packaged_json = resource_filename(__package__, 'endpoint_hosts.json')
-        print(' *', endpoint_hosts_packaged_json)
-        dump(get_endpoint_hosts(), open(endpoint_hosts_packaged_json, 'w'), sort_keys=True, indent=4)
+        ref_endpoint_hosts = importlib_resources.files(__package__) / 'endpoint_hosts.json'
+        with importlib_resources.as_file(ref_endpoint_hosts) as endpoint_hosts_packaged_json:
+            print(' *', endpoint_hosts_packaged_json)
+            dump(get_endpoint_hosts(), open(endpoint_hosts_packaged_json, 'w'), sort_keys=True, indent=4)
 
-        service_regions_packaged_json = resource_filename(__package__, 'service_regions.json')
-        print(' *', service_regions_packaged_json)
-        dump(get_service_regions(), open(service_regions_packaged_json, 'w'), sort_keys=True, indent=4)
+        ref_service_regions = importlib_resources.files(__package__) / 'service_regions.json'
+        with importlib_resources.as_file(ref_service_regions) as service_regions_packaged_json:
+            print(' *', service_regions_packaged_json)
+            dump(get_service_regions(), open(service_regions_packaged_json, 'w'), sort_keys=True, indent=4)
 
 
 def packaged_endpoint_hosts():
-    return load(resource_stream(__package__, 'endpoint_hosts.json'))
+    ref_endpoint_hosts = importlib_resources.files(__package__) / 'endpoint_hosts.json'
+    with ref_endpoint_hosts.open('rb') as endpoint_hosts_packaged_json:
+        return load(endpoint_hosts_packaged_json)
 
 
 @cache('endpoint_hosts', vary={'boto3_version': boto3.__version__}, cheap_default_func=packaged_endpoint_hosts)
@@ -562,7 +566,9 @@ def get_service_region_ip_in_dns():
 
 
 def packaged_service_regions():
-    return load(resource_stream(__package__, 'service_regions.json'))
+    ref_service_regions = importlib_resources.files(__package__) / 'service_regions.json'
+    with ref_service_regions.open('rb') as service_regions_packaged_json:
+        return load(service_regions_packaged_json)
 
 
 @cache('service_regions', vary={'boto3_version': boto3.__version__}, cheap_default_func=packaged_service_regions)
